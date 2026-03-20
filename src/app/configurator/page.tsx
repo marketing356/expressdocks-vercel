@@ -118,7 +118,7 @@ export default function ConfiguratorPage() {
         position: 'sticky', top: 0, zIndex: 10,
       }}>
         <div style={{ minWidth: '140px' }}>
-          <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Configurator</div>
+          <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Builder</div>
           <div style={{ color: '#4B5A90', fontSize: '11px', marginTop: '1px' }}>Free design tool</div>
         </div>
 

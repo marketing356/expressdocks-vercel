@@ -501,21 +501,20 @@ export default function ConfiguratorCanvas({
                 onDragStart={(e) => { e.cancelBubble = true; onSelect(s.id); const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grabbing'; }}
                 onDragEnd={(e) => {
                   e.cancelBubble = true;
-                  const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab';
-                  // The group was dragged — its absolute position in virtual canvas coords
-                  // e.target.x() and y() are the GROUP offset from its original position
-                  const dragOffsetX = e.target.x();
-                  const dragOffsetY = e.target.y();
-                  // Original position in virtual canvas
+                  const stage = e.target.getStage();
+                  if (stage) stage.container().style.cursor = 'grab';
+                  // Get current scale from stage transform
+                  const scale = stage ? stage.scaleX() : 1;
+                  // e.target.x()/y() is the drag offset in SCREEN pixels
+                  // Divide by scale to convert to virtual canvas pixels
+                  const dragOffsetX = e.target.x() / scale;
+                  const dragOffsetY = e.target.y() / scale;
                   const origX = s.gx * CELL;
                   const origY = s.gy * CELL;
-                  // New absolute position
                   const rawNewX = origX + dragOffsetX;
                   const rawNewY = origY + dragOffsetY;
-                  // Snap to grid
                   const newGX = Math.max(0, Math.round(rawNewX / CELL));
                   const newGY = Math.max(0, Math.round(rawNewY / CELL));
-                  // Reset group offset (section will re-render at new grid position)
                   e.target.position({ x: 0, y: 0 });
                   if (onMove) onMove(s.id, newGX, newGY);
                 }}
@@ -573,7 +572,7 @@ export default function ConfiguratorCanvas({
         fontSize: '11px', color: '#4B5563',
         display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '4px',
       }}>
-        <span>Click to select · drag corners to resize · × to delete · middle-click or space+drag to pan · scroll to zoom</span>
+        <span>Click to select · drag section to move · drag corners to resize · × to delete · scroll to zoom</span>
         <span style={{ color: '#8A95C9', fontWeight: 600 }}>1 ft = {pxPerFt}px &nbsp;·&nbsp; {Math.round(scale * 100)}%</span>
       </div>
     </div>
