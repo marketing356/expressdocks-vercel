@@ -31,9 +31,18 @@ export default function Home() {
             Starting at <strong style={{ color: '#EEF1FA' }}>$50/sqft</strong>. Ships to US, Canada & Caribbean.
             50-year residential guarantee.
           </p>
-          <p className="mb-12 font-medium" style={{ color: '#8A95C9' }}>
-            ✓ Free Custom 3D Design in 48 Hours — No Obligation
-          </p>
+          <a href="/contact" className="mb-12 inline-block group cursor-pointer" title="Free Custom 3D Design in 48 Hours — No Obligation">
+            <div className="relative mx-auto w-24 h-24 transition-all duration-500 group-hover:scale-125"
+              style={{ filter: 'drop-shadow(0 0 20px rgba(138,149,201,0.8))' }}>
+              <img src="/logo.png" alt="ExpressDocks - Free 3D Design"
+                className="w-full h-full object-contain group-hover:animate-spin"
+                style={{ animationDuration: '1s' }} />
+            </div>
+            <p className="mt-4 text-sm font-semibold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-300"
+              style={{ color: '#8A95C9' }}>
+              Free 3D Design → Tap to Start
+            </p>
+          </a>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" className="px-10 py-4 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105"
               style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
