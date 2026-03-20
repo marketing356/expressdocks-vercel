@@ -137,23 +137,36 @@ export default function Home() {
       </section>
 
 
-      {/* CONFIGURATOR CTA */}
-      <section className="py-20 px-6 text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0a1030 0%, #1a2a6c 50%, #0a1030 100%)' }}>
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #8A95C9 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>New Feature</p>
-          <h2 className="text-4xl md:text-6xl font-bold mb-6" style={{ color: '#EEF1FA' }}>
-            Design Your Dock<br/>
-            <span style={{ color: '#8A95C9' }}>In Real Time</span>
+      {/* DOCK BUILDER 3D — PRIMARY CTA */}
+      <section className="py-28 px-6 text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #080d26 0%, #1a2a6c 40%, #3B4A8F 60%, #080d26 100%)' }}>
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #8A95C9 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <div className="inline-block px-4 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6"
+            style={{ background: 'rgba(138,149,201,0.2)', border: '1px solid rgba(138,149,201,0.4)', color: '#8A95C9' }}>
+            ✦ Only on ExpressDocks — No One Else Has This
+          </div>
+          <h2 className="text-5xl md:text-7xl font-black mb-6 leading-tight" style={{ color: '#EEF1FA' }}>
+            Build Your Dock.<br/>
+            <span style={{ background: 'linear-gradient(135deg, #8A95C9, #EEF1FA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              See It in 3D.
+            </span>
           </h2>
-          <p className="text-xl mb-10 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.75)' }}>
-            Draw your exact dock layout on our interactive canvas. See live dimensions and instant pricing. No phone call needed to get started.
+          <p className="text-xl md:text-2xl mb-4 max-w-3xl mx-auto" style={{ color: 'rgba(238,241,250,0.8)' }}>
+            Draw your exact layout on our live canvas. Get instant pricing. Then watch your dock come to life in a photorealistic 3D render.
           </p>
-          <a href="/configurator" className="inline-block px-12 py-5 rounded-xl font-bold text-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl"
-            style={{ background: 'linear-gradient(135deg, #3B4A8F, #8A95C9)', color: '#EEF1FA', boxShadow: '0 8px 40px rgba(138,149,201,0.4)' }}>
-            🎨 Start Designing Your Dock →
+          <p className="text-base mb-12" style={{ color: 'rgba(138,149,201,0.8)' }}>
+            No other dock company on the internet offers this.
+          </p>
+          <a href="/configurator" className="inline-block px-14 py-6 rounded-2xl font-black text-2xl transition-all duration-300 hover:scale-105"
+            style={{ background: '#EEF1FA', color: '#0E1433', boxShadow: '0 12px 60px rgba(238,241,250,0.25)' }}>
+            Start Building My Dock →
           </a>
-          <p className="mt-4 text-sm" style={{ color: 'rgba(238,241,250,0.5)' }}>Free · No account required · Instant pricing</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-8 text-sm" style={{ color: 'rgba(238,241,250,0.5)' }}>
+            <span>✓ Free to use</span>
+            <span>✓ No account needed</span>
+            <span>✓ Instant pricing</span>
+            <span>✓ 3D render included</span>
+          </div>
         </div>
       </section>
 

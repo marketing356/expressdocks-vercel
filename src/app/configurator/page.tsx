@@ -151,7 +151,7 @@ export default function ConfiguratorPage() {
               onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
               onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
-              Get My Quote →
+              See Your Dock Come to Life →
             </button>
             <div style={{ textAlign: 'center', color: '#4B5A90', fontSize: '11px', marginTop: '6px' }}>
               Free 3D design in 48 hrs · No commitment
