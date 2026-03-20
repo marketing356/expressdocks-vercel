@@ -136,6 +136,27 @@ export default function Home() {
         </FadeIn>
       </section>
 
+
+      {/* CONFIGURATOR CTA */}
+      <section className="py-20 px-6 text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0a1030 0%, #1a2a6c 50%, #0a1030 100%)' }}>
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #8A95C9 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>New Feature</p>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6" style={{ color: '#EEF1FA' }}>
+            Design Your Dock<br/>
+            <span style={{ color: '#8A95C9' }}>In Real Time</span>
+          </h2>
+          <p className="text-xl mb-10 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.75)' }}>
+            Draw your exact dock layout on our interactive canvas. See live dimensions and instant pricing. No phone call needed to get started.
+          </p>
+          <a href="/configurator" className="inline-block px-12 py-5 rounded-xl font-bold text-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl"
+            style={{ background: 'linear-gradient(135deg, #3B4A8F, #8A95C9)', color: '#EEF1FA', boxShadow: '0 8px 40px rgba(138,149,201,0.4)' }}>
+            🎨 Start Designing Your Dock →
+          </a>
+          <p className="mt-4 text-sm" style={{ color: 'rgba(238,241,250,0.5)' }}>Free · No account required · Instant pricing</p>
+        </div>
+      </section>
+
       {/* FEATURE STRIP */}
       <section className="py-24 px-6" style={{ background: '#0E1433' }}>
         <div className="max-w-6xl mx-auto">
