@@ -12,11 +12,11 @@ export default function Home() {
           backgroundImage: 'url("/images/gallery-4.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'brightness(0.4)',
+          filter: 'brightness(0.65)',
         }} />
         {/* Indigo gradient overlay */}
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, rgba(14,20,51,0.85) 0%, rgba(59,74,143,0.4) 50%, rgba(14,20,51,0.9) 100%)'
+          background: 'linear-gradient(135deg, rgba(14,20,51,0.55) 0%, rgba(59,74,143,0.4) 50%, rgba(14,20,51,0.6) 100%)'
         }} />
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
