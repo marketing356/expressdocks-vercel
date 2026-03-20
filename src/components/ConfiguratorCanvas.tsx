@@ -493,39 +493,47 @@ export default function ConfiguratorCanvas({
             const price = sqft * priceRate
             const sel = selectedId === s.id
             return (
-              <Group
-                key={s.id}
-                draggable
-                onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab'; }}
-                onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'crosshair'; }}
-                onDragStart={(e) => { e.cancelBubble = true; onSelect(s.id); const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grabbing'; }}
-                onDragEnd={(e) => {
-                  e.cancelBubble = true;
-                  const stage = e.target.getStage();
-                  if (stage) stage.container().style.cursor = 'grab';
-                  // Get current scale from stage transform
-                  const scale = stage ? stage.scaleX() : 1;
-                  // e.target.x()/y() is the drag offset in SCREEN pixels
-                  // Divide by scale to convert to virtual canvas pixels
-                  const dragOffsetX = e.target.x() / scale;
-                  const dragOffsetY = e.target.y() / scale;
-                  const origX = s.gx * CELL;
-                  const origY = s.gy * CELL;
-                  const rawNewX = origX + dragOffsetX;
-                  const rawNewY = origY + dragOffsetY;
-                  const newGX = Math.max(0, Math.round(rawNewX / CELL));
-                  const newGY = Math.max(0, Math.round(rawNewY / CELL));
-                  e.target.position({ x: 0, y: 0 });
-                  if (onMove) onMove(s.id, newGX, newGY);
-                }}
-              >
+              <Group key={s.id}>
                 <Rect
                   x={px + 2} y={py + 2} width={pw - 4} height={ph - 4}
                   fill={sel ? hexToRgba(selectedColor, 0.9) : hexToRgba(selectedColor, 0.65)}
                   stroke={sel ? '#EEF1FA' : 'rgba(238,241,250,0.4)'}
                   strokeWidth={sel ? 2 : 1}
                   cornerRadius={4}
-                  onMouseDown={(e) => { e.cancelBubble = true; onSelect(s.id) }}
+                  onMouseDown={(e) => {
+                    e.cancelBubble = true
+                    onSelect(s.id)
+                    if (!onMove) return
+                    const stage = e.target.getStage()
+                    if (!stage) return
+                    const startGX = s.gx, startGY = s.gy
+                    const scale = stage.scaleX()
+                    const startPtr = stage.getPointerPosition()
+                    if (!startPtr) return
+                    const container = stage.container()
+                    container.style.cursor = 'grabbing'
+                    function onMM(ev: MouseEvent) {
+                      const containerRect = container.getBoundingClientRect()
+                      const stageX = stage?.x() ?? 0; const stageY = stage?.y() ?? 0; const px = (ev.clientX - containerRect.left - stageX) / scale
+                      const py = (ev.clientY - containerRect.top - stageY) / scale
+                      const startPxX = (startPtr!.x - (stage?.x() ?? 0)) / scale
+                      const startPyY = (startPtr!.y - (stage?.y() ?? 0)) / scale  
+                      const dGX = Math.round((px - startPxX) / CELL)
+                      const dGY = Math.round((py - startPyY) / CELL)
+                      const newGX = Math.max(0, startGX + dGX)
+                      const newGY = Math.max(0, startGY + dGY)
+                      if (onMove) onMove(s.id, newGX, newGY)
+                    }
+                    function onMU() {
+                      container.style.cursor = 'crosshair'
+                      window.removeEventListener('mousemove', onMM)
+                      window.removeEventListener('mouseup', onMU)
+                    }
+                    window.addEventListener('mousemove', onMM)
+                    window.addEventListener('mouseup', onMU)
+                  }}
+                  onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab'; }}
+                  onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'crosshair'; }}
                   onTouchStart={(e) => { e.cancelBubble = true; onSelect(s.id) }}
                 />
                 <Text x={px + 10} y={py + 10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
