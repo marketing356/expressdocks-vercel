@@ -6,12 +6,14 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const images = [
-    'residential-docks.webp',
-    'gallery-real-1.webp',
-    'gallery-real-4.webp',
-    'gallery-real-5.webp',
-    'gallery-b5847537.webp',
-    'gallery-dca566d8.webp',
+    'res-1.jpg',
+    'res-2.jpg',
+    'res-3.jpg',
+    'res-4.jpg',
+    'res-5.jpg',
+    'res-6.jpg',
+    'res-7.jpg',
+    'res-8.jpg',
   ]
 
   return (
