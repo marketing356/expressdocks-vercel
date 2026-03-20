@@ -120,7 +120,7 @@ export default function Home() {
                 style={{
                   background: tier.featured ? '#3B4A8F' : 'rgba(59,74,143,0.15)',
                   border: tier.featured ? 'none' : '1px solid rgba(138,149,201,0.2)',
-                  ringColor: tier.featured ? '#8A95C9' : 'transparent',
+                  
                   boxShadow: tier.featured ? '0 8px 40px rgba(59,74,143,0.4)' : 'none',
                 }}>
                 <h3 className="text-xl font-bold mb-2" style={{ color: tier.featured ? '#EEF1FA' : '#8A95C9' }}>{tier.title}</h3>

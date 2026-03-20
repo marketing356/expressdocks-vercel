@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/contact" className="hover:text-blue-300 transition">Contact</a>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/contact" className="hidden md:block px-4 py-2 rounded font-semibold text-sm transition hover:scale-105" style="background:#3B4A8F;color:#EEF1FA">
+            <a href="/contact" className="hidden md:block px-4 py-2 rounded font-semibold text-sm transition hover:scale-105" style={{ background: "#3B4A8F", color: "#EEF1FA" }}>
               Get Free Quote
             </a>
             <MobileNav />
