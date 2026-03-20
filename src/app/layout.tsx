@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import MobileNav from '@/components/MobileNav'
 import DesktopNav from '@/components/DesktopNav'
+import ChatWidget from '@/components/ChatWidget'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </nav>
         {children}
+        <ChatWidget />
         <footer className="text-white py-12 px-6 mt-16" style={{ background: '#080d26', borderTop: '1px solid rgba(138,149,201,0.15)' }}>
           <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
             <div>
