@@ -552,7 +552,32 @@ export default function ConfiguratorCanvas({
             const price = sqft * priceRate
             const sel = selectedId === s.id
             return (
-              <Group key={s.id}>
+              <Group
+                key={s.id}
+                draggable={true}
+                onDragStart={(e) => { e.cancelBubble = true; draggingIdRef.current = s.id; onSelect(s.id) }}
+                onDragEnd={(e) => {
+                  e.cancelBubble = true
+                  draggingIdRef.current = null
+                  if (!onMove) return
+                  const node = e.target
+                  const stage = node.getStage()
+                  if (!stage) return
+                  const scale = stage.scaleX()
+                  const stageX = stage.x()
+                  const stageY = stage.y()
+                  // Group position offset from original (px px)
+                  const groupX = node.x()
+                  const groupY = node.y()
+                  const origX = s.gx * CELL
+                  const origY = s.gy * CELL
+                  const newGX = Math.max(0, Math.round((origX + groupX) / CELL))
+                  const newGY = Math.max(0, Math.round((origY + groupY) / CELL))
+                  node.position({ x: 0, y: 0 })
+                  onDeselect()
+                  onMove(s.id, newGX, newGY)
+                }}
+              >
                 <Rect
                   x={px + 2} y={py + 2} width={pw - 4} height={ph - 4}
                   fill={sel ? hexToRgba(selectedColor, 0.9) : hexToRgba(selectedColor, 0.65)}
