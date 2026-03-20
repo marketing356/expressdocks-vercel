@@ -5,7 +5,7 @@ export default function Home() {
       <section
         className="relative text-white py-32 px-6 text-center"
         style={{
-          backgroundImage: 'linear-gradient(rgba(10,22,40,0.82), rgba(10,22,40,0.82)), url(https://images.unsplash.com/photo-1562155618-e1a8bc2eb04f?w=1600&q=80)',
+          backgroundImage: 'linear-gradient(rgba(10,22,40,0.82), rgba(10,22,40,0.82)), url('/images/hero.webp')',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
