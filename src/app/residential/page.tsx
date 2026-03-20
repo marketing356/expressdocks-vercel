@@ -50,9 +50,24 @@ export default function Page() {
           ))}
         </div>
 
-        <p className="text-lg mb-6 text-center" style={{ color: 'rgba(238,241,250,0.75)' }}>
-          Perfect for: Private lakefront docks · River or canal access · Backyard pond setups · Bulkhead docks
-        </p>
+        <p className="text-lg mb-4 text-center font-semibold" style={{ color: '#8A95C9' }}>Perfect for any waterfront setting:</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12 max-w-4xl mx-auto">
+          {[
+            { icon: '🏖️', label: 'Lakefront Homes' },
+            { icon: '🌊', label: 'Ocean & Coastal' },
+            { icon: '🌿', label: 'Rivers & Canals' },
+            { icon: '🏝️', label: 'Large Estuaries' },
+            { icon: '🏡', label: 'Backyard Ponds' },
+            { icon: '⚓', label: 'Tidal Areas' },
+            { icon: '🛥️', label: 'Boat Slips' },
+            { icon: '🌁', label: 'Bulkhead Docks' },
+          ].map(item => (
+            <div key={item.label} className="flex items-center gap-2 p-3 rounded-xl" style={{ background: 'rgba(59,74,143,0.2)', border: '1px solid rgba(138,149,201,0.2)' }}>
+              <span className="text-xl">{item.icon}</span>
+              <span className="text-sm font-medium" style={{ color: '#EEF1FA' }}>{item.label}</span>
+            </div>
+          ))}
+        </div>
 
         {images.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
