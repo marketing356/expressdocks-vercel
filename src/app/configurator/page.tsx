@@ -7,16 +7,25 @@ const ConfiguratorCanvas = dynamic(() => import('@/components/ConfiguratorCanvas
 
 export type DockSection = {
   id: string
-  gx: number  // x in feet
-  gy: number  // y in feet
-  gw: number  // width in feet
-  gh: number  // height in feet
+  gx: number
+  gy: number
+  gw: number
+  gh: number
 }
 
 const DOCK_TYPES = [
-  { label: 'Residential', detail: '$50/sqft', rate: 50 },
-  { label: 'Commercial',  detail: '$75/sqft', rate: 75 },
+  { label: 'Residential',        detail: '$50/sqft', rate: 50 },
+  { label: 'Commercial',         detail: '$75/sqft', rate: 75 },
   { label: 'Fingers / Gangways', detail: '$85/sqft', rate: 85 },
+]
+
+const WPC_COLORS = [
+  { name: 'Teak',      hex: '#8B6914' },
+  { name: 'Grey',      hex: '#7A7A7A' },
+  { name: 'Walnut',    hex: '#5C3D1E' },
+  { name: 'Black',     hex: '#1A1A1A' },
+  { name: 'Cedar',     hex: '#A0522D' },
+  { name: 'Driftwood', hex: '#9E8B6B' },
 ]
 
 export default function ConfiguratorPage() {
@@ -24,26 +33,61 @@ export default function ConfiguratorPage() {
   const [rateIdx, setRateIdx] = useState(0)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hintVisible, setHintVisible] = useState(true)
-  const [showQuote, setShowQuote] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', zip: '', notes: '' })
+  const [selectedColor, setSelectedColor] = useState(WPC_COLORS[0].hex)
+
+  // Render flow
+  const [isRendering, setIsRendering] = useState(false)
+  const [renderUrl, setRenderUrl] = useState<string | null>(null)
+  const [showWow, setShowWow] = useState(false)
+
+  // Lead capture
+  const [form, setForm] = useState({ name: '', email: '', phone: '', zip: '' })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
   const priceRate = DOCK_TYPES[rateIdx].rate
   const totalSqft = sections.reduce((sum, s) => sum + s.gw * s.gh, 0)
   const totalPrice = totalSqft * priceRate
+  const colorName = WPC_COLORS.find(c => c.hex === selectedColor)?.name ?? 'Teak'
 
   function addSection(s: DockSection) { setSections(p => [...p, s]) }
-  function updateSection(id: string, c: Partial<DockSection>) { setSections(p => p.map(s => s.id === id ? { ...s, ...c } : s)) }
-  function deleteSection(id: string) { setSections(p => p.filter(s => s.id !== id)); setSelectedId(null) }
+  function updateSection(id: string, c: Partial<DockSection>) {
+    setSections(p => p.map(s => s.id === id ? { ...s, ...c } : s))
+  }
+  function deleteSection(id: string) {
+    setSections(p => p.filter(s => s.id !== id))
+    setSelectedId(null)
+  }
 
-  async function submitQuote(e: React.FormEvent) {
+  async function renderDock() {
+    if (!sections.length || isRendering) return
+    setIsRendering(true)
+    try {
+      const res = await fetch('/api/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sections: sections.map(s => ({ x: s.gx, y: s.gy, width: s.gw, height: s.gh })),
+          totalSqft,
+          dockType: DOCK_TYPES[rateIdx].label,
+          color: selectedColor,
+        }),
+      })
+      const data = await res.json()
+      if (data.imageUrl) {
+        setRenderUrl(data.imageUrl)
+        setShowWow(true)
+      }
+    } catch (e) {
+      console.error('Render error:', e)
+    } finally {
+      setIsRendering(false)
+    }
+  }
+
+  async function submitLead(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
-    const dockSections = sections.map(s => ({
-      x: s.gx, y: s.gy, width: s.gw, height: s.gh,
-      sqft: s.gw * s.gh, price: s.gw * s.gh * priceRate,
-    }))
     try {
       await fetch('/api/contact', {
         method: 'POST',
@@ -52,8 +96,8 @@ export default function ConfiguratorPage() {
           ...form,
           dockType: DOCK_TYPES[rateIdx].label,
           sqft: totalSqft,
-          dockSections,
-          details: `CONFIGURATOR QUOTE\n\nType: ${DOCK_TYPES[rateIdx].label} (${DOCK_TYPES[rateIdx].detail})\nTotal: ${totalSqft} sqft — $${totalPrice.toLocaleString()}\n\nSections: ${JSON.stringify(dockSections, null, 2)}\n\nNotes: ${form.notes}`,
+          renderUrl,
+          details: `DOCK BUILDER RENDER LEAD\n\nType: ${DOCK_TYPES[rateIdx].label}\nColor: ${colorName}\nTotal: ${totalSqft} sqft — $${totalPrice.toLocaleString()}\nRender: ${renderUrl}`,
         }),
       })
       setSubmitted(true)
@@ -73,13 +117,11 @@ export default function ConfiguratorPage() {
         padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap',
         position: 'sticky', top: 0, zIndex: 10,
       }}>
-        {/* Left: title */}
         <div style={{ minWidth: '140px' }}>
           <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Configurator</div>
           <div style={{ color: '#4B5A90', fontSize: '11px', marginTop: '1px' }}>Free design tool</div>
         </div>
 
-        {/* Center: live price */}
         <div style={{ flex: 1, textAlign: 'center' }}>
           {sections.length > 0 ? (
             <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '6px' }}>
@@ -91,7 +133,6 @@ export default function ConfiguratorPage() {
           )}
         </div>
 
-        {/* Right: dock type dropdown */}
         <select
           value={rateIdx}
           onChange={(e) => setRateIdx(Number(e.target.value))}
@@ -115,6 +156,7 @@ export default function ConfiguratorPage() {
           sections={sections}
           priceRate={priceRate}
           selectedId={selectedId}
+          selectedColor={selectedColor}
           onAdd={addSection}
           onUpdate={updateSection}
           onDelete={deleteSection}
@@ -123,10 +165,9 @@ export default function ConfiguratorPage() {
           onFirstDraw={() => setTimeout(() => setHintVisible(false), 2500)}
         />
 
-        {/* Hint bar */}
         {hintVisible && (
           <div style={{
-            position: 'absolute', bottom: sections.length > 0 ? '80px' : '32px',
+            position: 'absolute', bottom: '32px',
             left: '50%', transform: 'translateX(-50%)',
             background: 'rgba(14,20,51,0.92)', border: '1px solid rgba(138,149,201,0.2)',
             borderRadius: '10px', padding: '10px 20px',
@@ -136,109 +177,212 @@ export default function ConfiguratorPage() {
             Click and drag to draw a dock section · Click a section to select &amp; resize
           </div>
         )}
-
-        {/* Get Quote button */}
-        {sections.length > 0 && (
-          <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 5 }}>
-            <button
-              onClick={() => setShowQuote(true)}
-              style={{
-                padding: '14px 40px', borderRadius: '8px',
-                background: '#3B4A8F', border: '1px solid rgba(138,149,201,0.3)',
-                color: '#EEF1FA', fontSize: '15px', fontWeight: 700, cursor: 'pointer',
-                boxShadow: '0 4px 24px rgba(59,74,143,0.55)', transition: 'transform 0.15s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-            >
-              See Your Dock Come to Life →
-            </button>
-            <div style={{ textAlign: 'center', color: '#4B5A90', fontSize: '11px', marginTop: '6px' }}>
-              Free 3D design in 48 hrs · No commitment
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Quote modal */}
-      {showQuote && (
+      {/* Color picker + CTA bar — shown after first section drawn */}
+      {sections.length > 0 && (
+        <div style={{
+          background: '#0E1433',
+          borderTop: '1px solid rgba(138,149,201,0.15)',
+          padding: '16px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '16px',
+        }}>
+          {/* Decking color swatches */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '11px', color: '#8A95C9', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              WPC Decking
+            </span>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+              {WPC_COLORS.map(c => (
+                <button
+                  key={c.hex}
+                  title={c.name}
+                  onClick={() => setSelectedColor(c.hex)}
+                  style={{
+                    width: '30px', height: '30px',
+                    borderRadius: '50%',
+                    background: c.hex,
+                    border: selectedColor === c.hex
+                      ? '3px solid #EEF1FA'
+                      : '2px solid rgba(138,149,201,0.2)',
+                    cursor: 'pointer',
+                    boxShadow: selectedColor === c.hex ? `0 0 0 2px ${c.hex}88` : 'none',
+                    transform: selectedColor === c.hex ? 'scale(1.18)' : 'scale(1)',
+                    transition: 'transform 0.15s, box-shadow 0.15s',
+                    outline: 'none',
+                  }}
+                />
+              ))}
+            </div>
+            <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 600 }}>{colorName}</span>
+          </div>
+
+          {/* Render CTA */}
+          <button
+            onClick={renderDock}
+            disabled={isRendering}
+            style={{
+              padding: '13px 32px', borderRadius: '8px',
+              background: isRendering
+                ? 'rgba(59,74,143,0.4)'
+                : 'linear-gradient(135deg, #3B4A8F 0%, #5B6FBF 100%)',
+              border: '1px solid rgba(138,149,201,0.3)',
+              color: '#EEF1FA', fontSize: '15px', fontWeight: 700,
+              cursor: isRendering ? 'default' : 'pointer',
+              boxShadow: isRendering ? 'none' : '0 4px 24px rgba(59,74,143,0.55)',
+              transition: 'transform 0.15s',
+              display: 'flex', alignItems: 'center', gap: '10px',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={(e) => { if (!isRendering) e.currentTarget.style.transform = 'scale(1.04)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            {isRendering ? (
+              <>
+                <span style={{
+                  display: 'inline-block', width: '15px', height: '15px',
+                  border: '2px solid rgba(255,255,255,0.25)', borderTopColor: '#EEF1FA',
+                  borderRadius: '50%', animation: 'cfgSpin 0.75s linear infinite',
+                  flexShrink: 0,
+                }} />
+                Designing your dock...
+              </>
+            ) : (
+              'See Your Dock Come to Life \u2192'
+            )}
+          </button>
+
+          <style>{`@keyframes cfgSpin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
+
+      {/* Wow moment full-screen modal */}
+      {showWow && (
         <div
           style={{
             position: 'fixed', inset: 0, zIndex: 1000,
-            background: 'rgba(8,13,38,0.88)', backdropFilter: 'blur(4px)',
-            display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+            background: 'rgba(4,7,22,0.97)', backdropFilter: 'blur(10px)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            overflowY: 'auto',
           }}
-          onClick={(e) => { if (e.target === e.currentTarget) setShowQuote(false) }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowWow(false) }}
         >
-          <div style={{
-            background: '#0E1433', border: '1px solid rgba(138,149,201,0.2)',
-            borderRadius: '20px 20px 0 0', padding: '32px 32px 48px',
-            width: '100%', maxWidth: '560px', animation: 'slideUp 0.3s ease',
-          }}>
-            <style>{`@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+          <div style={{ width: '100%', maxWidth: '880px', padding: '0 0 80px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            {submitted ? (
-              <div style={{ textAlign: 'center', padding: '32px 0' }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
-                <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Quote Sent!</h2>
-                <p style={{ color: '#8A95C9' }}>We'll follow up within 24 hours with your free 3D dock design.</p>
-                <button
-                  onClick={() => { setShowQuote(false); setSubmitted(false) }}
-                  style={{ marginTop: '24px', padding: '10px 28px', borderRadius: '8px', background: '#3B4A8F', border: 'none', color: '#EEF1FA', cursor: 'pointer', fontWeight: 600 }}
-                >
-                  Keep Designing
-                </button>
+            {/* Close */}
+            <button
+              onClick={() => setShowWow(false)}
+              style={{
+                alignSelf: 'flex-end', margin: '16px 20px 0',
+                background: 'transparent', border: 'none',
+                color: '#8A95C9', fontSize: '28px', cursor: 'pointer', lineHeight: 1, padding: '4px 8px',
+              }}
+            >×</button>
+
+            {/* Render image */}
+            {renderUrl && (
+              <div style={{ width: '100%', padding: '0 20px', boxSizing: 'border-box' }}>
+                <img
+                  src={renderUrl}
+                  alt={`${colorName} dock render`}
+                  style={{
+                    width: '100%', borderRadius: '16px', display: 'block',
+                    boxShadow: '0 8px 60px rgba(59,74,143,0.45)',
+                  }}
+                />
               </div>
-            ) : (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-                  <div>
-                    <h2 style={{ fontSize: '22px', fontWeight: 800 }}>Get Your Free Quote</h2>
-                    <p style={{ color: '#8A95C9', fontSize: '13px', marginTop: '4px' }}>
-                      {sections.length} section{sections.length !== 1 ? 's' : ''} · {totalSqft} sqft · Est. <strong style={{ color: '#4ade80' }}>${totalPrice.toLocaleString()}</strong>
-                    </p>
-                  </div>
-                  <button onClick={() => setShowQuote(false)} style={{ background: 'transparent', border: 'none', color: '#8A95C9', cursor: 'pointer', fontSize: '22px', lineHeight: 1 }}>×</button>
-                </div>
-
-                <form onSubmit={submitQuote} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                    {([
-                      { label: 'Full Name *', key: 'name', type: 'text', required: true },
-                      { label: 'Email *',     key: 'email', type: 'email', required: true },
-                      { label: 'Phone',       key: 'phone', type: 'tel',   required: false },
-                      { label: 'ZIP Code',    key: 'zip',   type: 'text',  required: false },
-                    ] as { label: string; key: keyof typeof form; type: string; required: boolean }[]).map(({ label, key, type, required }) => (
-                      <div key={key}>
-                        <label style={{ display: 'block', fontSize: '12px', color: '#8A95C9', marginBottom: '6px', fontWeight: 600 }}>{label}</label>
-                        <input
-                          required={required} type={type}
-                          value={form[key]}
-                          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                          style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'rgba(138,149,201,0.1)', border: '1px solid rgba(138,149,201,0.2)', color: '#EEF1FA', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '12px', color: '#8A95C9', marginBottom: '6px', fontWeight: 600 }}>Notes / Waterfront type</label>
-                    <textarea
-                      value={form.notes}
-                      onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                      rows={3} placeholder="Lake, river, ocean? Any special requirements?"
-                      style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'rgba(138,149,201,0.1)', border: '1px solid rgba(138,149,201,0.2)', color: '#EEF1FA', fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <button
-                    type="submit" disabled={submitting}
-                    style={{ padding: '14px', borderRadius: '8px', background: submitting ? 'rgba(59,74,143,0.5)' : '#3B4A8F', border: 'none', color: '#EEF1FA', fontSize: '15px', fontWeight: 700, cursor: submitting ? 'default' : 'pointer', marginTop: '4px' }}
-                  >
-                    {submitting ? 'Sending…' : 'Send My Quote Request →'}
-                  </button>
-                  <p style={{ textAlign: 'center', color: '#4B5A90', fontSize: '11px' }}>Free 3D design in 48 hours · 800-370-2285</p>
-                </form>
-              </>
             )}
+
+            {/* Dock details + pricing reveal */}
+            <div style={{ textAlign: 'center', padding: '28px 24px 0' }}>
+              <div style={{ fontSize: '12px', color: '#8A95C9', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                Your {colorName} WPC Dock &nbsp;&middot;&nbsp; {DOCK_TYPES[rateIdx].label}
+              </div>
+              <div style={{ fontSize: '26px', fontWeight: 800, marginBottom: '20px' }}>
+                {totalSqft} sq ft of premium composite decking
+              </div>
+
+              <div style={{
+                display: 'inline-block',
+                background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)',
+                borderRadius: '14px', padding: '14px 40px',
+              }}>
+                <div style={{ fontSize: '11px', color: '#6B7280', marginBottom: '4px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Starting at</div>
+                <div style={{ fontSize: '42px', fontWeight: 900, color: '#4ade80', lineHeight: 1 }}>
+                  ${totalPrice.toLocaleString()}
+                </div>
+                <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
+                  Installed &nbsp;&middot;&nbsp; Financing available &nbsp;&middot;&nbsp; Free design consult
+                </div>
+              </div>
+            </div>
+
+            {/* Lead capture */}
+            <div style={{
+              width: '100%', maxWidth: '480px',
+              background: '#0E1433', border: '1px solid rgba(138,149,201,0.18)',
+              borderRadius: '16px', padding: '28px 28px 32px',
+              margin: '28px 20px 0', boxSizing: 'border-box',
+            }}>
+              {submitted ? (
+                <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                  <div style={{ fontSize: '44px', marginBottom: '12px' }}>&#x2705;</div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '0 0 8px' }}>You&apos;re all set!</h3>
+                  <p style={{ color: '#8A95C9', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
+                    A dock specialist will reach out within 24 hours with your personalized quote.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 4px' }}>
+                    Lock in this design &mdash; get your free quote
+                  </h3>
+                  <p style={{ color: '#8A95C9', fontSize: '13px', lineHeight: 1.5, margin: '4px 0 20px' }}>
+                    No commitment. A specialist will reach out within 24 hours.
+                  </p>
+                  <form onSubmit={submitLead} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      {([
+                        { label: 'Full Name *', key: 'name',  type: 'text',  required: true  },
+                        { label: 'Email *',     key: 'email', type: 'email', required: true  },
+                        { label: 'Phone',       key: 'phone', type: 'tel',   required: false },
+                        { label: 'ZIP Code',    key: 'zip',   type: 'text',  required: false },
+                      ] as { label: string; key: keyof typeof form; type: string; required: boolean }[]).map(({ label, key, type, required }) => (
+                        <div key={key}>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#8A95C9', marginBottom: '5px', fontWeight: 600 }}>{label}</label>
+                          <input
+                            required={required} type={type}
+                            value={form[key]}
+                            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                            style={{
+                              width: '100%', padding: '10px 12px', borderRadius: '8px',
+                              background: 'rgba(138,149,201,0.08)', border: '1px solid rgba(138,149,201,0.2)',
+                              color: '#EEF1FA', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="submit" disabled={submitting}
+                      style={{
+                        padding: '14px', borderRadius: '8px',
+                        background: submitting ? 'rgba(59,74,143,0.4)' : 'linear-gradient(135deg, #3B4A8F, #5B6FBF)',
+                        border: 'none', color: '#EEF1FA', fontSize: '15px', fontWeight: 700,
+                        cursor: submitting ? 'default' : 'pointer', marginTop: '4px',
+                      }}
+                    >
+                      {submitting ? 'Sending\u2026' : 'Get My Free Quote \u2192'}
+                    </button>
+                    <p style={{ textAlign: 'center', color: '#4B5A90', fontSize: '11px', margin: 0 }}>
+                      No spam, ever. By Express Docks.
+                    </p>
+                  </form>
+                </>
+              )}
+            </div>
+
           </div>
         </div>
       )}
