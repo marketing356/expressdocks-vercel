@@ -1,16 +1,21 @@
 import type { Metadata } from 'next'
-import fs from 'fs'
-import path from 'path'
-
 export const metadata: Metadata = {
   title: 'Commercial Dock Systems | Express Docks',
   description: 'Durable, low-maintenance commercial dock systems designed for marinas, resorts, municipalities, and waterfront developments. No heavy equipment required.',
 }
 
 export default function Page() {
-  const imgDir = path.join(process.cwd(), 'public/images')
-  const allFiles = fs.readdirSync(imgDir)
-  const images = allFiles.filter(f => f.startsWith('commercial-') && (f.endsWith('.webp') || f.endsWith('.jpg')))
+  const images = [
+    'commercial-drone.webp',
+    'commercial-b141f742.webp',
+    'commercial-93b4a6d2.webp',
+    'commercial-577417a3.webp',
+    'commercial-17f40073.webp',
+    'commercial-a0d86c43.webp',
+    'commercial-0e5dfc13.webp',
+    'commercial-5cfce446.webp',
+    'commercial-547eadfe.webp',
+  ]
 
   return (
     <main style={{ background: '#0E1433', color: '#EEF1FA' }}>

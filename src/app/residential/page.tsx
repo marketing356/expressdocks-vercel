@@ -1,16 +1,16 @@
 import type { Metadata } from 'next'
-import fs from 'fs'
-import path from 'path'
-
 export const metadata: Metadata = {
   title: 'Residential Dock Kits | Express Docks',
   description: 'DIY-friendly residential dock systems. Marine-grade aluminum, maintenance-free, ships nationwide. Most docks install in a weekend.',
 }
 
 export default function Page() {
-  const imgDir = path.join(process.cwd(), 'public/images')
-  const allFiles = fs.readdirSync(imgDir)
-  const images = allFiles.filter(f => f.startsWith('residential-') && (f.endsWith('.webp') || f.endsWith('.jpg')))
+  const images = [
+    'residential-docks.webp',
+    'residential-5cf0c598.webp',
+    'residential-5adbf4e8.webp',
+    'residential-ead8edeb.webp',
+  ]
 
   return (
     <main style={{ background: '#0E1433', color: '#EEF1FA' }}>

@@ -1,24 +1,12 @@
 import type { Metadata } from 'next'
-import fs from 'fs'
-import path from 'path'
 
 export const metadata: Metadata = {
   title: 'Non-Modular Dock Systems | ExpressDocks',
   description: 'Custom-engineered aluminum dock systems built to your exact specifications. Ideal for permanent installations with specific structural requirements.',
 }
 
-function getImages(prefix: string): string[] {
-  const dir = path.join(process.cwd(), 'public', 'images')
-  try {
-    return fs.readdirSync(dir)
-      .filter(f => f.startsWith(prefix) && (f.endsWith('.webp') || f.endsWith('.jpg') || f.endsWith('.png')))
-      .sort()
-      .map(f => `/images/${f}`)
-  } catch { return [] }
-}
-
 export default function Page() {
-  const images = getImages('non_modular_docks')
+  const images = ['/images/non_modular_docks-6075e38c.webp', '/images/non_modular_docks-cc761daf.webp', '/images/non_modular_docks-ba9dfa27.webp', '/images/non_modular_docks-ea4930f8.webp']
 
   return (
     <main style={{ background: '#0E1433', color: '#EEF1FA' }}>
