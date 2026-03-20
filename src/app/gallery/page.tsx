@@ -6,20 +6,25 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
+  // Real project photos from ExpressDocks installations
   const images = [
-    { src: '/images/gallery-1.jpg', alt: 'Aluminum Dock with Superyacht', label: 'Premium Marina Dock' },
-    { src: '/images/gallery-2.jpg', alt: 'Aluminum Floating Dock System', label: 'Commercial Floating Dock' },
-    { src: '/images/gallery-3.jpg', alt: 'Marina Dock with Yacht', label: 'Marina Installation' },
-    { src: '/images/gallery-4.jpg', alt: 'Marina with WPC Decking', label: 'Full Marina System — WPC Decking' },
-    { src: '/images/gallery-5.jpg', alt: 'European Marina Dock', label: 'European Marina — Aluminum Frame' },
-    { src: '/images/gallery-6.jpg', alt: 'Commercial Marina Walkway', label: 'Commercial Marina Walkway' },
-    { src: '/images/gallery-7.jpg', alt: 'Premium Aluminum Dock', label: 'Premium Dock Installation' },
-    { src: '/images/gallery-8.jpg', alt: 'Aluminum Dock System', label: 'Custom Dock Configuration' },
+    { src: '/images/gallery-real-1.webp', alt: 'Completed dock installation', label: 'Residential Installation' },
+    { src: '/images/gallery-real-2.webp', alt: 'Aluminum dock project', label: 'Aluminum Dock Project' },
+    { src: '/images/gallery-real-3.webp', alt: 'Custom dock configuration', label: 'Custom Configuration' },
+    { src: '/images/gallery-real-4.webp', alt: 'Completed dock project', label: 'Waterfront Installation' },
+    { src: '/images/gallery-real-5.webp', alt: 'ExpressDocks installation', label: 'Residential Dock System' },
+    { src: '/images/commercial-drone.webp', alt: 'Commercial marina aerial view', label: 'Commercial Marina — Aerial' },
+    { src: '/images/residential-docks.webp', alt: 'Residential dock kit', label: 'Residential Dock Kit' },
+    { src: '/images/modular-hero.webp', alt: 'Modular dock system', label: 'Modular System' },
+    { src: '/images/welding-frame.webp', alt: 'Aluminum dock frame construction', label: 'Aluminum Frame Construction' },
+    { src: '/images/pricing-drone.webp', alt: 'Dock aerial view', label: 'Aerial — Full Dock System' },
+    { src: '/images/gallery-4.jpg', alt: 'Marina with WPC decking', label: 'Marina — Brown WPC Decking' },
+    { src: '/images/gallery-1.jpg', alt: 'Premium aluminum dock', label: 'Premium Dock System' },
   ]
   return (
     <main className="max-w-6xl mx-auto py-16 px-6">
       <h1 className="text-4xl font-bold text-[#0a1628] mb-4">Project Gallery</h1>
-      <p className="text-gray-600 mb-12">Completed aluminum dock installations across the US, Canada, and Caribbean. Every project is custom-engineered to your waterfront.</p>
+      <p className="text-gray-600 mb-12">Every dock we build is custom-engineered to your waterfront. Browse completed installations across the US, Canada, and Caribbean.</p>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
         {images.map((img) => (
           <div key={img.src} className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition group">

@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <main>
       <section className="relative text-white py-32 px-6 text-center"
-        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/premium-aluminum.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/modular-hero.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <h1 className="text-4xl md:text-6xl font-bold mb-6">Modular Dock Systems</h1>
         <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Flexible aluminum dock systems that snap together, reconfigure easily, and last a lifetime. From <strong>$60/sqft</strong>.</p>
         <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition">Get Free Quote →</a>
@@ -27,7 +27,7 @@ export default function Page() {
               <li>✓ From <strong>$60/sqft</strong> factory-direct</li>
             </ul>
           </div>
-          <img src="/images/premium-aluminum.webp" alt="Modular Aluminum Dock System" className="rounded-xl shadow-lg w-full" />
+          <img src="/images/modular-hero.webp" alt="Modular Aluminum Dock System" className="rounded-xl shadow-lg w-full" />
         </div>
         <div className="bg-[#0a1628] text-white rounded-xl p-10 text-center">
           <h2 className="text-3xl font-bold mb-4">Design Your Modular Dock</h2>

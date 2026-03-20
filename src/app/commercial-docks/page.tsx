@@ -9,14 +9,14 @@ export default function Page() {
   return (
     <main>
       <section className="relative text-white py-32 px-6 text-center"
-        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/commercial-docks.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/commercial-drone.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <h1 className="text-4xl md:text-6xl font-bold mb-6">Commercial & Marina Dock Systems</h1>
         <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Heavy-duty aluminum systems built for marinas, resorts, and commercial waterfront operations. From <strong>$75/sqft</strong>.</p>
         <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition">Get Commercial Quote →</a>
       </section>
       <section className="max-w-5xl mx-auto py-16 px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <img src="/images/commercial-docks.webp" alt="Commercial Marina Dock Systems" className="rounded-xl shadow-lg w-full" />
+          <img src="/images/commercial-hero.webp" alt="Commercial Marina Dock Systems" className="rounded-xl shadow-lg w-full" />
           <div>
             <h2 className="text-3xl font-bold text-[#0a1628] mb-4">Marina-Grade Aluminum Systems</h2>
             <p className="text-gray-600 mb-4">Built for high-traffic environments, our commercial systems are engineered to handle heavy loads, constant vessel traffic, and demanding marine conditions.</p>
