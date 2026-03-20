@@ -1,47 +1,62 @@
 import type { Metadata } from 'next'
+import fs from 'fs'
+import path from 'path'
 
 export const metadata: Metadata = {
   title: 'Project Gallery | ExpressDocks',
-  description: 'Browse completed aluminum dock installations — residential, commercial, modular and custom configurations across the US, Canada and Caribbean.',
+  description: 'Browse completed aluminum dock installations — residential, commercial, modular and custom across the US, Canada and Caribbean.',
 }
 
 export default function Page() {
-  // Real project photos from ExpressDocks installations
   const images = [
-    { src: '/images/gallery-real-1.webp', alt: 'Completed dock installation', label: 'Residential Installation' },
-    { src: '/images/gallery-real-2.webp', alt: 'Aluminum dock project', label: 'Aluminum Dock Project' },
-    { src: '/images/gallery-real-3.webp', alt: 'Custom dock configuration', label: 'Custom Configuration' },
-    { src: '/images/gallery-real-4.webp', alt: 'Completed dock project', label: 'Waterfront Installation' },
-    { src: '/images/gallery-real-5.webp', alt: 'ExpressDocks installation', label: 'Residential Dock System' },
-    { src: '/images/commercial-drone.webp', alt: 'Commercial marina aerial view', label: 'Commercial Marina — Aerial' },
-    { src: '/images/residential-docks.webp', alt: 'Residential dock kit', label: 'Residential Dock Kit' },
-    { src: '/images/modular-hero.webp', alt: 'Modular dock system', label: 'Modular System' },
-    { src: '/images/welding-frame.webp', alt: 'Aluminum dock frame construction', label: 'Aluminum Frame Construction' },
-    { src: '/images/pricing-drone.webp', alt: 'Dock aerial view', label: 'Aerial — Full Dock System' },
-    { src: '/images/gallery-4.jpg', alt: 'Marina with WPC decking', label: 'Marina — Brown WPC Decking' },
-    { src: '/images/gallery-1.jpg', alt: 'Premium aluminum dock', label: 'Premium Dock System' },
+    '/images/gallery-real-1.webp', '/images/gallery-real-2.webp',
+    '/images/gallery-real-3.webp', '/images/gallery-real-4.webp',
+    '/images/gallery-real-5.webp',
+    '/images/gallery-4ff2b111.webp', '/images/gallery-e233462c.webp',
+    '/images/gallery-8b6e4db2.webp', '/images/gallery-ad8b918a.webp',
+    '/images/gallery-5531645d.webp', '/images/gallery-df7e8e73.webp',
+    '/images/gallery-b141f742.webp', '/images/gallery-4179414f.webp',
+    '/images/gallery-4533669f.webp', '/images/gallery-555dfea0.webp',
+    '/images/gallery-da364ddf.webp', '/images/gallery-7242ae5d.webp',
+    '/images/gallery-70df0255.webp', '/images/gallery-90d78826.webp',
+    '/images/gallery-1fff9523.webp', '/images/gallery-7fd54a04.webp',
+    '/images/gallery-dca566d8.webp', '/images/gallery-b5847537.webp',
+    '/images/gallery-3aa0de19.webp', '/images/gallery-a269cf2b.webp',
+    '/images/gallery-00249e99.webp', '/images/gallery-0b2ccc43.webp',
+    '/images/gallery-29448bf6.webp', '/images/gallery-c7ebe3f4.webp',
+    '/images/gallery-f66f26e5.webp', '/images/gallery-9f0dab2f.webp',
+    '/images/gallery-a1868b5a.webp',
+    '/images/gallery-4.jpg', '/images/gallery-1.jpg', '/images/gallery-2.jpg',
   ]
+
   return (
-    <main className="max-w-6xl mx-auto py-16 px-6">
-      <h1 className="text-4xl font-bold text-[#0a1628] mb-4">Project Gallery</h1>
-      <p className="text-gray-600 mb-12">Every dock we build is custom-engineered to your waterfront. Browse completed installations across the US, Canada, and Caribbean.</p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-        {images.map((img) => (
-          <div key={img.src} className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition group">
-            <div className="overflow-hidden h-64">
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+    <main style={{ background: '#0E1433', color: '#EEF1FA' }}>
+      <section className="py-20 px-6 text-center" style={{ borderBottom: '1px solid rgba(138,149,201,0.15)' }}>
+        <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Our Work</p>
+        <h1 className="text-5xl md:text-6xl font-bold mb-6">Project Gallery</h1>
+        <p className="text-xl max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.7)' }}>
+          Every dock is custom-engineered to your waterfront. Browse completed installations across the US, Canada, and Caribbean.
+        </p>
+      </section>
+
+      <section className="max-w-7xl mx-auto py-12 px-6">
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+          {images.map((src, i) => (
+            <div key={i} className="break-inside-avoid rounded-xl overflow-hidden hover:scale-105 transition duration-300 shadow-lg">
+              <img src={src} alt={`ExpressDocks project ${i + 1}`} className="w-full object-cover" loading="lazy" />
             </div>
-            <div className="p-4 bg-white border-t border-gray-100">
-              <p className="font-semibold text-[#0a1628] text-sm">{img.label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="bg-[#0a1628] text-white rounded-xl p-10 text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to Build Yours?</h2>
-        <p className="text-gray-300 mb-6">Get a free custom 3D design in 48 hours — starting at $50/sqft factory-direct.</p>
-        <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold transition inline-block">Get Free Quote →</a>
-      </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-20 px-6 text-center">
+        <h2 className="text-4xl font-bold mb-6" style={{ color: '#EEF1FA' }}>Ready to Build Yours?</h2>
+        <p className="mb-8 text-xl" style={{ color: 'rgba(238,241,250,0.7)' }}>Free custom 3D design in 48 hours. Starting at $50/sqft.</p>
+        <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105"
+          style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
+          Get Free Quote →
+        </a>
+      </section>
     </main>
   )
 }
