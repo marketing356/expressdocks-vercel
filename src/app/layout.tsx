@@ -1,6 +1,14 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import MobileNav from '@/components/MobileNav'
+import DesktopNav from '@/components/DesktopNav'
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'ExpressDocks | Factory-Direct Aluminum Floating Docks',
@@ -16,22 +24,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="bg-white text-gray-900">
+    <html lang="en" className={inter.variable}>
+      <body className="bg-white text-gray-900" style={{ fontFamily: 'var(--font-inter), sans-serif' }}>
         <nav className="text-white py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-lg relative" style={{ background: '#0E1433', borderBottom: '1px solid rgba(138,149,201,0.15)' }}>
           <a href="/" className="flex items-center gap-3">
-            <img src="/logo.png" alt="ExpressDocks" className="h-10 w-auto"  />
+            <img src="/logo.png" alt="ExpressDocks" className="h-10 w-auto" />
           </a>
-          <div className="hidden md:flex gap-6 text-sm font-medium">
-            <a href="/residential" className="hover:text-blue-300 transition">Residential</a>
-            <a href="/commercial-docks" className="hover:text-blue-300 transition">Commercial</a>
-            <a href="/modular-docks" className="hover:text-blue-300 transition">Modular</a>
-            <a href="/pricing" className="hover:text-blue-300 transition">Pricing</a>
-            <a href="/gallery" className="hover:text-blue-300 transition">Gallery</a>
-            <a href="/about" className="hover:text-blue-300 transition">About</a>
-            <a href="/blog" className="hover:text-blue-300 transition">Blog</a>
-            <a href="/contact" className="hover:text-blue-300 transition">Contact</a>
-          </div>
+          <DesktopNav />
           <div className="flex items-center gap-3">
             <a href="/contact" className="hidden md:block px-4 py-2 rounded font-semibold text-sm transition hover:scale-105" style={{ background: "#3B4A8F", color: "#EEF1FA" }}>
               Get Free Quote
@@ -43,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="text-white py-12 px-6 mt-16" style={{ background: '#080d26', borderTop: '1px solid rgba(138,149,201,0.15)' }}>
           <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
             <div>
-              <img src="/logo.png" alt="ExpressDocks" className="h-12 w-auto mb-3"  />
+              <img src="/logo.png" alt="ExpressDocks" className="h-12 w-auto mb-3" />
               <p className="text-gray-400 text-sm">Factory-direct aluminum floating dock systems. Assembled in America. Ships to US, Canada & Caribbean.</p>
             </div>
             <div>
@@ -54,7 +53,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <li><a href="/modular-docks" className="hover:text-white">Modular Docks</a></li>
                 <li><a href="/non-modular-docks" className="hover:text-white">Non-Modular Docks</a></li>
                 <li><a href="/pilebuddy" className="hover:text-white">PileBuddy</a></li>
-                <li><a href="/store" className="hover:text-white">Store</a></li>
+                <li><a href="/dockhouses" className="hover:text-white">Dock Houses</a></li>
+                <li><a href="/cement-docks" className="hover:text-white">Cement Docks</a></li>
               </ul>
             </div>
             <div>
