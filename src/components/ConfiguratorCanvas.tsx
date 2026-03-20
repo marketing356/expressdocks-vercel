@@ -502,13 +502,21 @@ export default function ConfiguratorCanvas({
                 onDragEnd={(e) => {
                   e.cancelBubble = true;
                   const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab';
-                  // Snap dragged position to grid
-                  const newX = Math.round(e.target.x() / CELL) * CELL;
-                  const newY = Math.round(e.target.y() / CELL) * CELL;
-                  e.target.position({ x: 0, y: 0 }); // reset group position
-                  // Update section position
-                  const newGX = Math.round(newX / CELL);
-                  const newGY = Math.round(newY / CELL);
+                  // The group was dragged — its absolute position in virtual canvas coords
+                  // e.target.x() and y() are the GROUP offset from its original position
+                  const dragOffsetX = e.target.x();
+                  const dragOffsetY = e.target.y();
+                  // Original position in virtual canvas
+                  const origX = s.gx * CELL;
+                  const origY = s.gy * CELL;
+                  // New absolute position
+                  const rawNewX = origX + dragOffsetX;
+                  const rawNewY = origY + dragOffsetY;
+                  // Snap to grid
+                  const newGX = Math.max(0, Math.round(rawNewX / CELL));
+                  const newGY = Math.max(0, Math.round(rawNewY / CELL));
+                  // Reset group offset (section will re-render at new grid position)
+                  e.target.position({ x: 0, y: 0 });
                   if (onMove) onMove(s.id, newGX, newGY);
                 }}
               >
