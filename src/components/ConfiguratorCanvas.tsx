@@ -226,7 +226,8 @@ export default function ConfiguratorCanvas({
 
         const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2
         const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2
-        const rect = container.getBoundingClientRect()
+        const rect = container?.getBoundingClientRect()
+        if (!rect) return
         const px = cx - rect.left
         const py = cy - rect.top
 
