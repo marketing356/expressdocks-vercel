@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <main>
       <section className="relative text-white py-32 px-6 text-center"
-        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/welding-frame.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.55), rgba(10,22,40,0.55)), url("/images/welding-frame.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <h1 className="text-4xl md:text-6xl font-bold mb-6">About ExpressDocks</h1>
         <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">Factory-direct aluminum dock manufacturer. Built in America. Shipped worldwide.</p>
       </section>

@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <main>
       <section className="relative text-white py-32 px-6 text-center"
-        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/pilebuddy-cover.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.55), rgba(10,22,40,0.55)), url("/images/pilebuddy-cover.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <h1 className="text-4xl md:text-6xl font-bold mb-6">PileBuddy</h1>
         <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">The patent-pending floating mooring system that protects your boat and dock — automatically, at every tide.</p>
         <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition mt-6 inline-block">Get a Quote →</a>
