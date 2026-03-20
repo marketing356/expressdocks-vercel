@@ -534,7 +534,39 @@ export default function ConfiguratorCanvas({
                   }}
                   onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab'; }}
                   onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'crosshair'; }}
-                  onTouchStart={(e) => { e.cancelBubble = true; onSelect(s.id) }}
+                  onTouchStart={(e) => {
+                    e.cancelBubble = true
+                    onSelect(s.id)
+                    if (!onMove) return
+                    const stage = e.target.getStage()
+                    if (!stage) return
+                    const startGX = s.gx, startGY = s.gy
+                    const scale = stage.scaleX()
+                    const touch = e.evt.touches[0]
+                    if (!touch) return
+                    const container = stage.container()
+                    const startClientX = touch.clientX
+                    const startClientY = touch.clientY
+                    function onTM(ev: TouchEvent) {
+                      ev.preventDefault()
+                      const t = ev.touches[0]
+                      if (!t) return
+                      const containerRect = container.getBoundingClientRect()
+                      const dPxX = (t.clientX - startClientX) / scale
+                      const dPxY = (t.clientY - startClientY) / scale
+                      const dGX = Math.round(dPxX / CELL)
+                      const dGY = Math.round(dPxY / CELL)
+                      const newGX = Math.max(0, startGX + dGX)
+                      const newGY = Math.max(0, startGY + dGY)
+                      if (onMove) onMove(s.id, newGX, newGY)
+                    }
+                    function onTE() {
+                      window.removeEventListener('touchmove', onTM)
+                      window.removeEventListener('touchend', onTE)
+                    }
+                    window.addEventListener('touchmove', onTM, { passive: false })
+                    window.addEventListener('touchend', onTE)
+                  }}
                 />
                 <Text x={px + 10} y={py + 10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
                 <Text x={px + 10} y={py + 27} text={`${sqft} sqft — $${price.toLocaleString()}`} fill="#8A95C9" fontSize={10} listening={false} />
