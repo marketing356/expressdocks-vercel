@@ -16,7 +16,7 @@ export default function Page() {
       </section>
       <section className="max-w-5xl mx-auto py-16 px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <img src="/images/commercial-hero.webp" alt="Commercial Marina Dock Systems" className="rounded-xl shadow-lg w-full" />
+          <img src="/images/gallery-2.jpg" alt="Commercial Marina Dock Systems" className="rounded-xl shadow-lg w-full" />
           <div>
             <h2 className="text-3xl font-bold text-[#0a1628] mb-4">Marina-Grade Aluminum Systems</h2>
             <p className="text-gray-600 mb-4">Built for high-traffic environments, our commercial systems are engineered to handle heavy loads, constant vessel traffic, and demanding marine conditions.</p>
