@@ -555,9 +555,10 @@ export default function ConfiguratorCanvas({
                 key={s.id}
                 x={px} y={py}
                 draggable={true}
-                onDragStart={(e) => { e.cancelBubble = true }}
+                onDragStart={(e) => { e.cancelBubble = true; isSectionDragRef.current = true }}
                 onDragEnd={(e) => {
                   e.cancelBubble = true
+                  isSectionDragRef.current = false
                   if (!onMove) return
                   // Group offset from its origin after drag
                   // After drag, node.x()/y() = new absolute position of group
@@ -578,10 +579,6 @@ export default function ConfiguratorCanvas({
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
-                    // In draw mode, just select — don't drag
-                    if (mode === 'draw') return
-                    if (!onMove) return
-                    isSectionDragRef.current = true
                     const stage = e.target.getStage()
                     if (!stage) return
                     const startGX = s.gx, startGY = s.gy
