@@ -373,12 +373,55 @@ export default function ConfiguratorCanvas({
 
   // Touch wrappers (single-touch drawing; multi-touch pinch handled natively)
   function onTouchStart(e: any) {
-    if (e.evt?.touches?.length === 1 && !isSectionDragRef.current) { e.evt?.preventDefault(); handleMouseDown(e) }
+    if (e.evt?.touches?.length !== 1) return
+    e.evt?.preventDefault()
+    // Check if touch hit a section (name !== 'bg')
+    const name: string = e.target?.name?.() ?? ''
+    const hitSection = name !== 'bg' && e.target !== stageRef.current
+    if (hitSection) {
+      // Find which section was hit and start drag
+      const sectionId = e.target?.attrs?.sectionId
+      if (sectionId && onMove) {
+        const sec = sections.find(s => s.id === sectionId)
+        if (sec) {
+          isSectionDragRef.current = true
+          onSelect(sectionId)
+          const stage = stageRef.current
+          if (!stage) return
+          const startGX = sec.gx, startGY = sec.gy
+          const scale = stage.scaleX()
+          const touch = e.evt.touches[0]
+          if (!touch) return
+          const startClientX = touch.clientX
+          const startClientY = touch.clientY
+          const onTM = (ev: TouchEvent) => {
+            ev.preventDefault()
+            const t = ev.touches[0]
+            if (!t) return
+            const dPxX = (t.clientX - startClientX) / scale
+            const dPxY = (t.clientY - startClientY) / scale
+            const dGX = Math.round(dPxX / CELL)
+            const dGY = Math.round(dPxY / CELL)
+            onMove(sectionId, Math.max(0, startGX + dGX), Math.max(0, startGY + dGY))
+          }
+          const onTE = () => {
+            isSectionDragRef.current = false
+            window.removeEventListener('touchmove', onTM)
+            window.removeEventListener('touchend', onTE)
+          }
+          window.addEventListener('touchmove', onTM, { passive: false })
+          window.addEventListener('touchend', onTE)
+          return
+        }
+      }
+    }
+    // No section hit — draw
+    if (!isSectionDragRef.current) handleMouseDown(e)
   }
   function onTouchMove(e: any) {
-    if (e.evt?.touches?.length === 1) { e.evt?.preventDefault(); handleMouseMove(e) }
+    if (e.evt?.touches?.length === 1 && !isSectionDragRef.current) { e.evt?.preventDefault(); handleMouseMove(e) }
   }
-  function onTouchEnd() { handleMouseUp() }
+  function onTouchEnd() { if (!isSectionDragRef.current) handleMouseUp() }
 
   // Zoom button helpers
   function adjustZoom(factor: number) {
@@ -509,6 +552,8 @@ export default function ConfiguratorCanvas({
                   stroke={sel ? '#EEF1FA' : 'rgba(238,241,250,0.4)'}
                   strokeWidth={sel ? 2 : 1}
                   cornerRadius={4}
+                  id={s.id}
+                  attrs={{ sectionId: s.id }}
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
