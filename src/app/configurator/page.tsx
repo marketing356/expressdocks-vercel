@@ -151,35 +151,6 @@ export default function ConfiguratorPage() {
         </select>
       </div>
 
-      {/* Canvas area */}
-      <div style={{ flex: 1, position: 'relative' }}>
-        <ConfiguratorCanvas
-          sections={sections}
-          priceRate={priceRate}
-          selectedId={selectedId}
-          selectedColor={selectedColor}
-          onAdd={addSection}
-          onUpdate={updateSection}
-          onDelete={deleteSection}
-          onSelect={setSelectedId}
-          onDeselect={() => setSelectedId(null)}
-          onFirstDraw={() => setTimeout(() => setHintVisible(false), 2500)}
-        />
-
-        {hintVisible && (
-          <div style={{
-            position: 'absolute', bottom: '32px',
-            left: '50%', transform: 'translateX(-50%)',
-            background: 'rgba(14,20,51,0.92)', border: '1px solid rgba(138,149,201,0.2)',
-            borderRadius: '10px', padding: '10px 20px',
-            color: '#8A95C9', fontSize: '13px', whiteSpace: 'nowrap',
-            pointerEvents: 'none', transition: 'opacity 0.6s, bottom 0.3s',
-          }}>
-            Click and drag to draw a dock section · Click a section to select &amp; resize
-          </div>
-        )}
-      </div>
-
       {/* Color picker — always visible below header */}
       <div style={{
         background: '#0d1535',
@@ -239,6 +210,36 @@ export default function ConfiguratorPage() {
             }}
           >👋 Move</button>
         </div>
+      </div>
+
+
+            {/* Canvas area */}
+      <div style={{ flex: 1, position: 'relative' }}>
+        <ConfiguratorCanvas
+          sections={sections}
+          priceRate={priceRate}
+          selectedId={selectedId}
+          selectedColor={selectedColor}
+          onAdd={addSection}
+          onUpdate={updateSection}
+          onDelete={deleteSection}
+          onSelect={setSelectedId}
+          onDeselect={() => setSelectedId(null)}
+          onFirstDraw={() => setTimeout(() => setHintVisible(false), 2500)}
+        />
+
+        {hintVisible && (
+          <div style={{
+            position: 'absolute', bottom: '32px',
+            left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(14,20,51,0.92)', border: '1px solid rgba(138,149,201,0.2)',
+            borderRadius: '10px', padding: '10px 20px',
+            color: '#8A95C9', fontSize: '13px', whiteSpace: 'nowrap',
+            pointerEvents: 'none', transition: 'opacity 0.6s, bottom 0.3s',
+          }}>
+            Click and drag to draw a dock section · Click a section to select &amp; resize
+          </div>
+        )}
       </div>
 
       {/* OLD bottom bar start placeholder */}
