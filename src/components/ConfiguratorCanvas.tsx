@@ -566,8 +566,6 @@ export default function ConfiguratorCanvas({
                     const node = e.target
                     const stage = node.getStage()
                     if (!stage) return
-                    // getAbsolutePosition returns position in screen coords
-                    // We need position in virtual canvas coords
                     const scale = stage.scaleX()
                     const stageX = stage.x()
                     const stageY = stage.y()
@@ -576,9 +574,7 @@ export default function ConfiguratorCanvas({
                     const virtualY = (absPos.y - stageY) / scale - 2
                     const newGX = Math.max(0, Math.round(virtualX / CELL))
                     const newGY = Math.max(0, Math.round(virtualY / CELL))
-                    // Reset visual position so React controls it
-                    node.x(s.gx * CELL + 2)
-                    node.y(s.gy * CELL + 2)
+                    onDeselect()  // Hide handles immediately
                     onMove(s.id, newGX, newGY)
                   }}
                   onMouseDown={(e) => {
