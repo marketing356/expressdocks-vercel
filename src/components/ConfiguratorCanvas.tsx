@@ -559,6 +559,28 @@ export default function ConfiguratorCanvas({
                   strokeWidth={sel ? 2 : 1}
                   cornerRadius={4}
                   id={s.id}
+                  draggable={true}
+                  onDragEnd={(e) => {
+                    e.cancelBubble = true
+                    if (!onMove) return
+                    const node = e.target
+                    const stage = node.getStage()
+                    if (!stage) return
+                    // getAbsolutePosition returns position in screen coords
+                    // We need position in virtual canvas coords
+                    const scale = stage.scaleX()
+                    const stageX = stage.x()
+                    const stageY = stage.y()
+                    const absPos = node.absolutePosition()
+                    const virtualX = (absPos.x - stageX) / scale - 2
+                    const virtualY = (absPos.y - stageY) / scale - 2
+                    const newGX = Math.max(0, Math.round(virtualX / CELL))
+                    const newGY = Math.max(0, Math.round(virtualY / CELL))
+                    // Reset visual position so React controls it
+                    node.x(s.gx * CELL + 2)
+                    node.y(s.gy * CELL + 2)
+                    onMove(s.id, newGX, newGY)
+                  }}
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
