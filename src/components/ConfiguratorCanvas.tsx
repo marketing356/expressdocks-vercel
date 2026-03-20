@@ -401,6 +401,11 @@ export default function ConfiguratorCanvas({
     stagePosRef.current = { x: 0, y: 0 }
     setScale(DEFAULT_SCALE)
     setStagePos({ x: 0, y: 0 })
+    if (stageRef.current) {
+      stageRef.current.scale({ x: DEFAULT_SCALE, y: DEFAULT_SCALE })
+      stageRef.current.position({ x: 0, y: 0 })
+      stageRef.current.batchDraw()
+    }
   }
 
   // Draw preview
@@ -536,22 +541,27 @@ export default function ConfiguratorCanvas({
                   onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'crosshair'; }}
                   onTouchStart={(e) => {
                     e.cancelBubble = true
+                    e.evt.preventDefault()
+                    e.evt.stopPropagation()
                     onSelect(s.id)
                     if (!onMove) return
                     const stage = e.target.getStage()
                     if (!stage) return
                     const startGX = s.gx, startGY = s.gy
                     const scale = stage.scaleX()
+                    const stageX = stage.x()
+                    const stageY = stage.y()
                     const touch = e.evt.touches[0]
                     if (!touch) return
                     const container = stage.container()
+                    const containerRect = container.getBoundingClientRect()
                     const startClientX = touch.clientX
                     const startClientY = touch.clientY
                     function onTM(ev: TouchEvent) {
                       ev.preventDefault()
+                      ev.stopPropagation()
                       const t = ev.touches[0]
                       if (!t) return
-                      const containerRect = container.getBoundingClientRect()
                       const dPxX = (t.clientX - startClientX) / scale
                       const dPxY = (t.clientY - startClientY) / scale
                       const dGX = Math.round(dPxX / CELL)

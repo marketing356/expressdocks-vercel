@@ -23,9 +23,9 @@ const WPC_COLORS = [
   { name: 'Teak',      hex: '#8B6914' },
   { name: 'Grey',      hex: '#7A7A7A' },
   { name: 'Walnut',    hex: '#5C3D1E' },
-  { name: 'Black',     hex: '#1A1A1A' },
   { name: 'Cedar',     hex: '#A0522D' },
   { name: 'Driftwood', hex: '#9E8B6B' },
+  { name: 'Redwood',   hex: '#8B3A3A' },
 ]
 
 export default function ConfiguratorPage() {
