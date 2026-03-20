@@ -168,7 +168,7 @@ export default function ChatWidget() {
           {/* Online indicator */}
           <div style={{
             position: 'absolute', bottom: '2px', right: '2px',
-            width: '12px', height: '12px', borderRadius: '50%',
+            width: '14px', height: '14px', borderRadius: '50%',
             background: '#4ade80', border: '2px solid #0E1433',
           }} />
         </div>
@@ -179,8 +179,8 @@ export default function ChatWidget() {
         <div
           style={{
             position: 'fixed', bottom: '96px', right: '24px', zIndex: 9998,
-            width: '360px', maxWidth: 'calc(100vw - 48px)',
-            height: '540px', maxHeight: 'calc(100vh - 120px)',
+            width: '380px', maxWidth: 'calc(100vw - 48px)',
+            height: '520px', maxHeight: 'calc(100vh - 120px)',
             background: '#0E1433', border: '1px solid rgba(138,149,201,0.25)',
             borderRadius: '16px', display: 'flex', flexDirection: 'column',
             boxShadow: '0 8px 40px rgba(14,20,51,0.7)',
