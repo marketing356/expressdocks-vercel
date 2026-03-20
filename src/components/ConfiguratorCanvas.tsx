@@ -88,7 +88,6 @@ export default function ConfiguratorCanvas({
 
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<any>(null)
-  const draggingIdRef = useRef<string | null>(null)
   const isSectionDragRef = useRef(false)
   const drawingRef = useRef<DrawState | null>(null)
   const resizingRef = useRef<ResizeState | null>(null)
@@ -554,26 +553,18 @@ export default function ConfiguratorCanvas({
             return (
               <Group
                 key={s.id}
+                x={0} y={0}
                 draggable={true}
-                onDragStart={(e) => { e.cancelBubble = true; draggingIdRef.current = s.id; onSelect(s.id) }}
+                onDragStart={(e) => { e.cancelBubble = true }}
                 onDragEnd={(e) => {
                   e.cancelBubble = true
-                  draggingIdRef.current = null
                   if (!onMove) return
-                  const node = e.target
-                  const stage = node.getStage()
-                  if (!stage) return
-                  const scale = stage.scaleX()
-                  const stageX = stage.x()
-                  const stageY = stage.y()
-                  // Group position offset from original (px px)
-                  const groupX = node.x()
-                  const groupY = node.y()
-                  const origX = s.gx * CELL
-                  const origY = s.gy * CELL
-                  const newGX = Math.max(0, Math.round((origX + groupX) / CELL))
-                  const newGY = Math.max(0, Math.round((origY + groupY) / CELL))
-                  node.position({ x: 0, y: 0 })
+                  // Group offset from its origin after drag
+                  const dx = e.target.x()
+                  const dy = e.target.y()
+                  e.target.position({ x: 0, y: 0 })
+                  const newGX = Math.max(0, Math.round((s.gx * CELL + dx) / CELL))
+                  const newGY = Math.max(0, Math.round((s.gy * CELL + dy) / CELL))
                   onDeselect()
                   onMove(s.id, newGX, newGY)
                 }}
@@ -585,26 +576,6 @@ export default function ConfiguratorCanvas({
                   strokeWidth={sel ? 2 : 1}
                   cornerRadius={4}
                   id={s.id}
-                  draggable={true}
-                  onDragStart={(e) => { e.cancelBubble = true; draggingIdRef.current = s.id }}
-                  onDragEnd={(e) => {
-                    e.cancelBubble = true
-                    draggingIdRef.current = null
-                    if (!onMove) return
-                    const node = e.target
-                    const stage = node.getStage()
-                    if (!stage) return
-                    const scale = stage.scaleX()
-                    const stageX = stage.x()
-                    const stageY = stage.y()
-                    const absPos = node.absolutePosition()
-                    const virtualX = (absPos.x - stageX) / scale - 2
-                    const virtualY = (absPos.y - stageY) / scale - 2
-                    const newGX = Math.max(0, Math.round(virtualX / CELL))
-                    const newGY = Math.max(0, Math.round(virtualY / CELL))
-                    onDeselect()  // Hide handles immediately
-                    onMove(s.id, newGX, newGY)
-                  }}
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
@@ -693,7 +664,7 @@ export default function ConfiguratorCanvas({
                 <Text x={px + 10} y={py + 10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
                 <Text x={px + 10} y={py + 27} text={`${sqft} sqft — $${price.toLocaleString()}`} fill="#8A95C9" fontSize={10} listening={false} />
 
-                {sel && draggingIdRef.current !== s.id && (
+                {sel && (
                   <>
                     <Group
                       onMouseDown={(e) => { e.cancelBubble = true; onDelete(s.id) }}
