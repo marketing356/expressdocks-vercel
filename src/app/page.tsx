@@ -12,11 +12,11 @@ export default function Home() {
           backgroundImage: 'url("/images/gallery-4.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'brightness(0.65)',
+          filter: 'brightness(0.85)',
         }} />
         {/* Indigo gradient overlay */}
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, rgba(14,20,51,0.55) 0%, rgba(59,74,143,0.4) 50%, rgba(14,20,51,0.6) 100%)'
+          background: 'linear-gradient(135deg, rgba(14,20,51,0.30) 0%, rgba(59,74,143,0.15) 50%, rgba(14,20,51,0.6) 100%)'
         }} />
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
@@ -121,7 +121,7 @@ export default function Home() {
                   background: tier.featured ? '#3B4A8F' : 'rgba(59,74,143,0.15)',
                   border: tier.featured ? 'none' : '1px solid rgba(138,149,201,0.2)',
                   
-                  boxShadow: tier.featured ? '0 8px 40px rgba(59,74,143,0.4)' : 'none',
+                  boxShadow: tier.featured ? '0 8px 40px rgba(59,74,143,0.15)' : 'none',
                 }}>
                 <h3 className="text-xl font-bold mb-2" style={{ color: tier.featured ? '#EEF1FA' : '#8A95C9' }}>{tier.title}</h3>
                 <div className="text-5xl font-extrabold my-4" style={{ color: '#EEF1FA' }}>{tier.price}<span className="text-2xl font-normal">{tier.unit}</span></div>
