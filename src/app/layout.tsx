@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-white text-gray-900">
-        <nav className="bg-[#0a1628] text-white py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-lg relative">
+        <nav className="text-white py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-lg relative" style={{ background: '#0E1433', borderBottom: '1px solid rgba(138,149,201,0.15)' }}>
           <a href="/" className="text-xl font-bold tracking-wide">
             <span className="text-blue-400">Express</span>Docks
           </a>
@@ -33,14 +33,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/contact" className="hover:text-blue-300 transition">Contact</a>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/contact" className="hidden md:block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold text-sm transition">
+            <a href="/contact" className="hidden md:block px-4 py-2 rounded font-semibold text-sm transition hover:scale-105" style="background:#3B4A8F;color:#EEF1FA">
               Get Free Quote
             </a>
             <MobileNav />
           </div>
         </nav>
         {children}
-        <footer className="bg-[#0a1628] text-white py-12 px-6 mt-16">
+        <footer className="text-white py-12 px-6 mt-16" style={{ background: '#080d26', borderTop: '1px solid rgba(138,149,201,0.15)' }}>
           <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-lg font-bold mb-3"><span className="text-blue-400">Express</span>Docks</h3>

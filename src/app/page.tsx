@@ -1,37 +1,63 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
 export default function Home() {
   return (
-    <main>
-      {/* Hero with background image */}
-      <section
-        className="relative text-white py-32 px-6 text-center"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(10,22,40,0.35), rgba(10,22,40,0.35)), url("/images/gallery-4.jpg")',
+    <main style={{ background: '#0E1433', color: '#EEF1FA' }}>
+
+      {/* HERO */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background image with Night Indigo overlay */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'url("/images/gallery-4.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-        }}
-      >
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-          Factory-Direct Aluminum<br/>
-          <span className="text-blue-400">Floating Dock Systems</span>
-        </h1>
-        <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-          Docks <strong className="text-white">starting at $50/sqft</strong>. Ships to US, Canada & Caribbean.
-          50-year residential guarantee.
-        </p>
-        <p className="text-blue-300 mb-10 font-medium">✓ Free Custom 3D Design in 48 Hours — No Obligation</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition shadow-lg">
-            Get Your Free Quote
-          </a>
-          <a href="/gallery" className="border border-white text-white hover:bg-white hover:text-[#0a1628] px-8 py-4 rounded-lg font-bold text-lg transition">
-            View Gallery
-          </a>
+          filter: 'brightness(0.4)',
+        }} />
+        {/* Indigo gradient overlay */}
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(135deg, rgba(14,20,51,0.85) 0%, rgba(59,74,143,0.4) 50%, rgba(14,20,51,0.9) 100%)'
+        }} />
+        {/* Content */}
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+          <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-6" style={{ color: '#8A95C9' }}>
+            Factory-Direct · Middletown, Delaware
+          </p>
+          <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight" style={{ color: '#EEF1FA' }}>
+            Aluminum Docks<br/>
+            <span style={{ color: '#8A95C9' }}>Built to Last a Lifetime</span>
+          </h1>
+          <p className="text-xl md:text-2xl mb-4 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.8)' }}>
+            Starting at <strong style={{ color: '#EEF1FA' }}>$50/sqft</strong>. Ships to US, Canada & Caribbean.
+            50-year residential guarantee.
+          </p>
+          <p className="mb-12 font-medium" style={{ color: '#8A95C9' }}>
+            ✓ Free Custom 3D Design in 48 Hours — No Obligation
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/contact" className="px-10 py-4 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105"
+              style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
+              Get Your Free Quote
+            </a>
+            <a href="/gallery" className="px-10 py-4 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105"
+              style={{ border: '1px solid rgba(138,149,201,0.5)', color: '#EEF1FA', background: 'rgba(138,149,201,0.08)' }}>
+              View Gallery
+            </a>
+          </div>
+        </div>
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+          <span className="text-xs tracking-widest uppercase" style={{ color: '#8A95C9' }}>Scroll</span>
+          <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+            <rect x="1" y="1" width="14" height="22" rx="7" stroke="#8A95C9" strokeWidth="1.5"/>
+            <circle cx="8" cy="7" r="2" fill="#8A95C9"/>
+          </svg>
         </div>
       </section>
 
-      {/* Trust bar */}
-      <section className="bg-blue-600 text-white py-4 px-6">
-        <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8 text-sm font-semibold text-center">
+      {/* TRUST BAR */}
+      <section className="py-5 px-6" style={{ background: '#3B4A8F' }}>
+        <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8 text-sm font-semibold text-center" style={{ color: '#EEF1FA' }}>
           <span>✓ 50-Year Residential Guarantee</span>
           <span>✓ Factory-Direct Pricing</span>
           <span>✓ Ships US, Canada & Caribbean</span>
@@ -40,46 +66,70 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="py-20 px-6 bg-gray-50">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0a1628]">Transparent Factory-Direct Pricing</h2>
-          <p className="text-gray-600 mb-12 max-w-xl mx-auto">No middlemen. No markups. You buy direct from the manufacturer.</p>
+      {/* FEATURE STRIP */}
+      <section className="py-24 px-6" style={{ background: '#0E1433' }}>
+        <div className="max-w-6xl mx-auto">
+          <p className="text-center text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Why ExpressDocks</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16" style={{ color: '#EEF1FA' }}>
+            The Premium Dock at a<br/>Factory-Direct Price
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                title: 'Residential',
-                price: 'From $50',
-                unit: '/sqft',
-                desc: 'Perfect for home docks, boat lifts, and personal waterfront access.',
-                example: 'Example: 20×8 ft dock starting around $8,000',
-                guarantee: '50-Year Guarantee',
-              },
-              {
-                title: 'Commercial / Marina',
-                price: 'From $75',
-                unit: '/sqft',
-                desc: 'Heavy-duty systems built for marinas, resorts, and commercial properties.',
-                example: 'Example: 10-slip marina ≈ $75,000+',
-                guarantee: '40-Year Guarantee',
-                featured: true,
-              },
-              {
-                title: 'Fingers & Gangways',
-                price: 'From $85',
-                unit: '/sqft',
-                desc: 'Specialty dock fingers, gangways, and transition pieces.',
-                example: 'Example: 4 dock fingers ≈ $12,000',
-                guarantee: 'Custom Engineering',
-              },
+              { icon: '🏭', title: 'Factory Direct', desc: 'No dealers, no middlemen, no markups. You buy from the manufacturer. That\'s how we deliver 50-year quality at $50/sqft.' },
+              { icon: '⚡', title: 'Solid Aluminum', desc: 'Never rots. Never rusts. Never splinters. Our aluminum frames outperform wood and steel in every marine environment.' },
+              { icon: '🎨', title: 'Free 3D Design', desc: 'Send us any sketch or description. We return a full custom 3D dock design in 48 hours — completely free, zero obligation.' },
+              { icon: '🚢', title: 'Ships Anywhere', desc: 'All 50 US states, Canada, and the Caribbean. No job is too remote.' },
+              { icon: '🛡️', title: '50-Year Guarantee', desc: 'The longest guarantee in the industry. 50 years residential, 40 years commercial. We stand behind every dock we build.' },
+              { icon: '📐', title: 'Custom Built', desc: 'Every dock engineered to your exact waterfront — shape, depth, tidal range, and use case.' },
+            ].map((item) => (
+              <div key={item.title} className="p-8 rounded-2xl transition-all duration-300 hover:scale-105"
+                style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="font-bold text-xl mb-3" style={{ color: '#EEF1FA' }}>{item.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(238,241,250,0.65)' }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* GALLERY STRIP */}
+      <section className="py-4 overflow-hidden" style={{ background: '#080d26' }}>
+        <div className="flex gap-4 px-4">
+          {['/images/gallery-real-1.webp','/images/gallery-real-2.webp','/images/gallery-4.jpg','/images/gallery-real-4.webp','/images/commercial-drone.webp'].map((src, i) => (
+            <div key={i} className="flex-shrink-0 w-80 h-52 rounded-xl overflow-hidden">
+              <img src={src} alt="ExpressDocks project" className="w-full h-full object-cover hover:scale-110 transition duration-500" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section className="py-24 px-6" style={{ background: '#0a1030' }}>
+        <div className="max-w-5xl mx-auto text-center">
+          <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Transparent Pricing</p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#EEF1FA' }}>No Guesswork. No Markups.</h2>
+          <p className="mb-16 max-w-xl mx-auto" style={{ color: 'rgba(238,241,250,0.6)' }}>You buy directly from the manufacturer. What you see is what you pay.</p>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { title: 'Residential', price: 'From $50', unit: '/sqft', desc: 'Perfect for home docks, boat lifts, and personal waterfront access.', example: 'Example: 20×8 ft dock starting around $8,000', guarantee: '50-Year Guarantee' },
+              { title: 'Commercial / Marina', price: 'From $75', unit: '/sqft', desc: 'Heavy-duty systems for marinas, resorts, and commercial properties.', example: 'Example: 10-slip marina starting around $75,000', guarantee: '40-Year Guarantee', featured: true },
+              { title: 'Fingers & Gangways', price: 'From $85', unit: '/sqft', desc: 'Specialty dock fingers, gangways, and transition pieces.', example: 'Example: 4 dock fingers starting around $12,000', guarantee: 'Custom Engineering' },
             ].map((tier) => (
-              <div key={tier.title} className={`rounded-xl p-8 shadow-md ${tier.featured ? 'bg-[#0a1628] text-white scale-105' : 'bg-white'}`}>
-                <h3 className={`text-xl font-bold mb-2 ${tier.featured ? 'text-blue-300' : 'text-[#0a1628]'}`}>{tier.title}</h3>
-                <div className="text-5xl font-extrabold my-4">{tier.price}<span className="text-2xl font-normal">{tier.unit}</span></div>
-                <p className={`text-sm mb-2 ${tier.featured ? 'text-gray-300' : 'text-gray-600'}`}>{tier.desc}</p>
-                <p className={`text-xs italic mb-4 ${tier.featured ? 'text-blue-300' : 'text-blue-600'}`}>{tier.example}</p>
-                <p className={`text-xs font-semibold ${tier.featured ? 'text-blue-300' : 'text-blue-600'}`}>{tier.guarantee}</p>
-                <a href="/contact" className={`mt-6 block text-center py-3 rounded-lg font-bold transition ${tier.featured ? 'bg-blue-500 hover:bg-blue-400 text-white' : 'bg-[#0a1628] hover:bg-blue-800 text-white'}`}>
+              <div key={tier.title} className={`rounded-2xl p-8 transition-all duration-300 hover:scale-105 ${tier.featured ? 'ring-2' : ''}`}
+                style={{
+                  background: tier.featured ? '#3B4A8F' : 'rgba(59,74,143,0.15)',
+                  border: tier.featured ? 'none' : '1px solid rgba(138,149,201,0.2)',
+                  ringColor: tier.featured ? '#8A95C9' : 'transparent',
+                  boxShadow: tier.featured ? '0 8px 40px rgba(59,74,143,0.4)' : 'none',
+                }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: tier.featured ? '#EEF1FA' : '#8A95C9' }}>{tier.title}</h3>
+                <div className="text-5xl font-extrabold my-4" style={{ color: '#EEF1FA' }}>{tier.price}<span className="text-2xl font-normal">{tier.unit}</span></div>
+                <p className="text-sm mb-2" style={{ color: tier.featured ? 'rgba(238,241,250,0.85)' : 'rgba(238,241,250,0.6)' }}>{tier.desc}</p>
+                <p className="text-xs italic mb-4" style={{ color: '#8A95C9' }}>{tier.example}</p>
+                <p className="text-xs font-semibold mb-6" style={{ color: tier.featured ? '#EEF1FA' : '#8A95C9' }}>{tier.guarantee}</p>
+                <a href="/contact" className="block text-center py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105"
+                  style={{ background: tier.featured ? '#EEF1FA' : '#3B4A8F', color: tier.featured ? '#0E1433' : '#EEF1FA' }}>
                   Get Quote
                 </a>
               </div>
@@ -88,39 +138,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 px-6">
+      {/* TESTIMONIALS */}
+      <section className="py-24 px-6" style={{ background: '#0E1433' }}>
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0a1628]">What Our Customers Say</h2>
-          <p className="text-gray-500 text-center mb-12">Hundreds of docks installed across the US, Canada & Caribbean</p>
+          <p className="text-center text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Customer Stories</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16" style={{ color: '#EEF1FA' }}>What Our Customers Say</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                quote: "We got three quotes for our lake dock and ExpressDocks came in $12,000 under the competition. The quality is outstanding — way better than what the local guys were offering. The free 3D design sealed the deal.",
-                name: "Tom R.",
-                location: "Lake Norman, NC",
-                dock: "Residential Floating Dock — 24×10 ft",
-              },
-              {
-                quote: "We expanded our marina from 20 to 48 slips using ExpressDocks commercial systems. The price was right, delivery was on schedule, and the product has held up perfectly through two hurricane seasons.",
-                name: "Marina Manager, Gulf Coast",
-                location: "Fort Myers, FL",
-                dock: "Commercial Marina Expansion",
-              },
-              {
-                quote: "Best decision we made for our lake house. The aluminum looks sharp, it doesn't rot like our old wood dock, and the 50-year guarantee gives real peace of mind. Setup was straightforward with their instructions.",
-                name: "Linda & Dave M.",
-                location: "Lake Champlain, VT",
-                dock: "Residential Modular System — 32×8 ft",
-              },
+              { quote: "We got three quotes and ExpressDocks came in $12,000 under the competition. The quality is outstanding. The free 3D design sealed the deal.", name: "Tom R.", location: "Lake Norman, NC", dock: "Residential — 24×10 ft" },
+              { quote: "We expanded our marina from 20 to 48 slips using ExpressDocks. The price was right, delivery on schedule, and the product has held up through two hurricane seasons.", name: "Marina Manager", location: "Fort Myers, FL", dock: "Commercial Marina Expansion" },
+              { quote: "The aluminum looks sharp, doesn't rot like our old wood dock, and the 50-year guarantee gives real peace of mind. Best decision we made for our lake house.", name: "Linda & Dave M.", location: "Lake Champlain, VT", dock: "Residential Modular — 32×8 ft" },
             ].map((t) => (
-              <div key={t.name} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition">
-                <div className="text-yellow-400 text-lg mb-3">★★★★★</div>
-                <p className="text-gray-700 text-sm leading-relaxed mb-4 italic">&ldquo;{t.quote}&rdquo;</p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#0a1628] text-sm">{t.name}</p>
-                  <p className="text-gray-500 text-xs">{t.location}</p>
-                  <p className="text-blue-600 text-xs mt-1">{t.dock}</p>
+              <div key={t.name} className="p-8 rounded-2xl" style={{ background: 'rgba(59,74,143,0.12)', border: '1px solid rgba(138,149,201,0.15)' }}>
+                <div className="text-yellow-400 text-lg mb-4">★★★★★</div>
+                <p className="text-sm leading-relaxed mb-6 italic" style={{ color: 'rgba(238,241,250,0.75)' }}>&ldquo;{t.quote}&rdquo;</p>
+                <div style={{ borderTop: '1px solid rgba(138,149,201,0.2)', paddingTop: '1rem' }}>
+                  <p className="font-bold text-sm" style={{ color: '#EEF1FA' }}>{t.name}</p>
+                  <p className="text-xs mt-1" style={{ color: 'rgba(238,241,250,0.5)' }}>{t.location}</p>
+                  <p className="text-xs mt-1" style={{ color: '#8A95C9' }}>{t.dock}</p>
                 </div>
               </div>
             ))}
@@ -128,67 +163,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why ExpressDocks */}
-      <section className="py-20 px-6 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#0a1628]">Why Choose ExpressDocks?</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { icon: '🏭', title: 'Factory Direct', desc: 'Buy straight from the manufacturer. No dealers, no markups. That\'s how we offer 50-year-quality at $60/sqft.' },
-              { icon: '⚡', title: 'Solid Aluminum', desc: 'Never rots, never rusts, never splinters. Our aluminum frames outperform wood and steel in every marine environment.' },
-              { icon: '🎨', title: 'Free 3D Design', desc: 'Send us a sketch, photo, or description. We return a full custom 3D dock design in 48 hours — free, no obligation.' },
-              { icon: '🚢', title: 'Ships Anywhere', desc: 'We ship to all 50 US states, Canada, and the Caribbean. No job is too remote.' },
-              { icon: '🛡️', title: '50-Year Guarantee', desc: 'The longest guarantee in the industry. 50 years residential, 40 years commercial. We stand behind every dock we build.' },
-              { icon: '📐', title: 'Custom Built', desc: 'Every dock is engineered to your exact waterfront — shape, depth, tidal range, and use case. No off-the-shelf guessing.' },
-            ].map((item) => (
-              <div key={item.title} className="p-6 rounded-xl border border-gray-200 bg-white hover:shadow-md transition">
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <h3 className="font-bold text-lg mb-2 text-[#0a1628]">{item.title}</h3>
-                <p className="text-gray-600 text-sm">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
-      <section className="py-20 px-6">
+      <section className="py-24 px-6" style={{ background: '#080d26' }}>
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0a1628]">Frequently Asked Questions</h2>
-          <p className="text-gray-500 text-center mb-12">Everything you need to know before you buy</p>
+          <p className="text-center text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>FAQ</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16" style={{ color: '#EEF1FA' }}>Everything You Need to Know</h2>
           <div className="space-y-4">
             {[
-              {
-                q: "Do you install the docks or just ship them?",
-                a: "We manufacture and ship — we do not provide installation services. Our docks are engineered for straightforward assembly and come with complete installation documentation. Most customers install with a small crew in a weekend. We also have a dealer network that can provide local installation."
-              },
-              {
-                q: "How long does shipping take?",
-                a: "Standard lead time is 4–6 weeks from order confirmation to delivery. Larger commercial orders may require 8–10 weeks. We ship via flatbed freight to your nearest accessible location. Rush orders are available — contact us to discuss your timeline."
-              },
-              {
-                q: "What does the warranty actually cover?",
-                a: "Our 50-year residential and 40-year commercial guarantees cover structural defects in the aluminum frame. We stand behind every dock we manufacture. The warranty is non-transferable and covers material and manufacturing defects under normal use conditions."
-              },
-              {
-                q: "Can you ship to my state / location?",
-                a: "Yes. We ship to all 50 US states, all Canadian provinces, and throughout the Caribbean. International shipping is available — contact us for a freight quote to your specific location."
-              },
-              {
-                q: "Do I need permits to install a dock?",
-                a: "Permit requirements vary by state, county, and waterfront type. Most residential dock installations require a local or state permit. We recommend contacting your state's Department of Environmental Protection or equivalent agency before purchasing. We can provide documentation and engineering specs to support your permit application."
-              },
-              {
-                q: "What does 'factory-direct' actually mean?",
-                a: "It means you buy directly from the company that manufactures your dock — us. No distributors, no dealers, no middlemen adding margins. The price you pay is our manufacturing cost plus our margin, not a chain of markups. This is how we offer industry-leading quality at $60/sqft when comparable products cost $90–$120/sqft through retail channels."
-              },
+              { q: "Do you install the docks or just ship them?", a: "We manufacture and ship only — no installation services. Our docks are engineered for straightforward assembly and come with complete documentation. Most customers install with a small crew in a weekend." },
+              { q: "How long does shipping take?", a: "Standard lead time is 4–6 weeks from order confirmation to delivery. Larger commercial orders may require 8–10 weeks. We ship via flatbed freight to your nearest accessible location." },
+              { q: "What does the warranty actually cover?", a: "Our 50-year residential and 40-year commercial guarantees cover structural defects in the aluminum frame under normal use conditions." },
+              { q: "Can you ship to my location?", a: "Yes. We ship to all 50 US states, all Canadian provinces, and throughout the Caribbean. Contact us for international freight quotes." },
+              { q: "Do I need permits?", a: "Permit requirements vary by state and waterfront type. We recommend contacting your state's Department of Environmental Protection. We can provide documentation to support your permit application." },
+              { q: "What does factory-direct mean?", a: "You buy directly from us — the manufacturer. No dealers, no distributors, no markups. That's how we deliver $90–$120/sqft quality at $50/sqft." },
             ].map((item, i) => (
-              <details key={i} className="border border-gray-200 rounded-xl overflow-hidden group">
-                <summary className="px-6 py-4 font-semibold text-[#0a1628] cursor-pointer hover:bg-gray-50 transition flex justify-between items-center list-none">
+              <details key={i} className="rounded-xl overflow-hidden group" style={{ border: '1px solid rgba(138,149,201,0.2)' }}>
+                <summary className="px-6 py-5 font-semibold cursor-pointer flex justify-between items-center list-none transition-all"
+                  style={{ color: '#EEF1FA', background: 'rgba(59,74,143,0.1)' }}>
                   {item.q}
-                  <span className="text-blue-500 ml-4 text-xl">+</span>
+                  <span style={{ color: '#8A95C9' }} className="ml-4 text-xl">+</span>
                 </summary>
-                <div className="px-6 py-4 text-gray-600 text-sm leading-relaxed border-t border-gray-100 bg-gray-50">
+                <div className="px-6 py-5 text-sm leading-relaxed" style={{ color: 'rgba(238,241,250,0.65)', background: 'rgba(14,20,51,0.5)', borderTop: '1px solid rgba(138,149,201,0.1)' }}>
                   {item.a}
                 </div>
               </details>
@@ -197,15 +192,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-[#0a1628] text-white py-20 px-6 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Build Your Dream Dock?</h2>
-        <p className="text-gray-300 mb-8 max-w-xl mx-auto">Get a free custom 3D design and quote within 48 hours. No obligation, no pressure.</p>
-        <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-4 rounded-lg font-bold text-lg transition inline-block">
-          Start My Free Design →
-        </a>
-        <p className="mt-4 text-gray-400 text-sm">Or call us: <a href="tel:8003702285" className="text-blue-300 hover:text-white">800-370-2285</a></p>
+      {/* FINAL CTA */}
+      <section className="py-32 px-6 text-center relative overflow-hidden" style={{ background: '#3B4A8F' }}>
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: 'url("/images/gallery-real-2.webp")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }} />
+        <div className="relative z-10">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6" style={{ color: '#EEF1FA' }}>Ready to Build<br/>Your Dream Dock?</h2>
+          <p className="text-xl mb-10 max-w-xl mx-auto" style={{ color: 'rgba(238,241,250,0.8)' }}>Free custom 3D design in 48 hours. Starting at $50/sqft. No obligation.</p>
+          <a href="/contact" className="inline-block px-12 py-5 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105"
+            style={{ background: '#EEF1FA', color: '#0E1433', boxShadow: '0 8px 40px rgba(238,241,250,0.2)' }}>
+            Start My Free Design →
+          </a>
+          <p className="mt-6 text-sm" style={{ color: 'rgba(238,241,250,0.6)' }}>
+            Or call: <a href="tel:8003702285" className="hover:text-white" style={{ color: '#EEF1FA' }}>800-370-2285</a>
+          </p>
+        </div>
       </section>
+
     </main>
   )
 }
