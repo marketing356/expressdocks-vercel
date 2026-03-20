@@ -88,6 +88,7 @@ export default function ConfiguratorCanvas({
 
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<any>(null)
+  const isSectionDragRef = useRef(false)
   const drawingRef = useRef<DrawState | null>(null)
   const resizingRef = useRef<ResizeState | null>(null)
   const hasDrawnRef = useRef(false)
@@ -299,7 +300,8 @@ export default function ConfiguratorCanvas({
   // Konva Stage events — drawing & resizing only (panning handled by native above)
   function handleMouseDown(e: any) {
     if (isPanningRef.current) return
-    if (mode === 'move') return  // Don't draw in move mode
+    if (mode === 'move') return
+    if (isSectionDragRef.current) return  // Don't draw when dragging a section
     const name: string = e.target?.name?.() ?? ''
     if (name !== 'bg' && e.target !== stageRef.current) return
     onDeselect()
@@ -371,7 +373,7 @@ export default function ConfiguratorCanvas({
 
   // Touch wrappers (single-touch drawing; multi-touch pinch handled natively)
   function onTouchStart(e: any) {
-    if (e.evt?.touches?.length === 1) { e.evt?.preventDefault(); handleMouseDown(e) }
+    if (e.evt?.touches?.length === 1 && !isSectionDragRef.current) { e.evt?.preventDefault(); handleMouseDown(e) }
   }
   function onTouchMove(e: any) {
     if (e.evt?.touches?.length === 1) { e.evt?.preventDefault(); handleMouseMove(e) }
@@ -510,7 +512,10 @@ export default function ConfiguratorCanvas({
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
-                    if (!onMove || mode !== 'move') return
+                    // In draw mode, just select — don't drag
+                    if (mode === 'draw') return
+                    if (!onMove) return
+                    isSectionDragRef.current = true
                     const stage = e.target.getStage()
                     if (!stage) return
                     const startGX = s.gx, startGY = s.gy
@@ -532,6 +537,7 @@ export default function ConfiguratorCanvas({
                       if (onMove) onMove(s.id, newGX, newGY)
                     }
                     function onMU() {
+                      isSectionDragRef.current = false
                       container.style.cursor = 'crosshair'
                       window.removeEventListener('mousemove', onMM)
                       window.removeEventListener('mouseup', onMU)
@@ -548,7 +554,10 @@ export default function ConfiguratorCanvas({
                       e.evt.stopPropagation()
                     }
                     onSelect(s.id)
-                    if (!onMove || mode !== 'move') return
+                    // In draw mode, just select — don't drag
+                    if (mode === 'draw') return
+                    if (!onMove) return
+                    isSectionDragRef.current = true
                     const stage = e.target.getStage()
                     if (!stage) return
                     const startGX = s.gx, startGY = s.gy
@@ -575,6 +584,7 @@ export default function ConfiguratorCanvas({
                       if (onMove) onMove(s.id, newGX, newGY)
                     }
                     function onTE() {
+                      isSectionDragRef.current = false
                       window.removeEventListener('touchmove', onTM)
                       window.removeEventListener('touchend', onTE)
                     }
