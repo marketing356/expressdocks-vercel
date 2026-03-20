@@ -374,55 +374,13 @@ export default function ConfiguratorCanvas({
   // Touch wrappers (single-touch drawing; multi-touch pinch handled natively)
   function onTouchStart(e: any) {
     if (e.evt?.touches?.length !== 1) return
-    e.evt?.preventDefault()
-    // Check if touch hit a section by checking if target has an id
+    // If touching a section (has id), let Konva draggable handle it — don't draw
     const targetId: string = e.target?.id ? e.target.id() : ''
     const hitSection = targetId && targetId !== '' && e.target !== stageRef.current
-    if (hitSection) {
-      // Find which section was hit and start drag
-      const sectionId = e.target?.id ? e.target.id() : null
-      if (sectionId && onMove) {
-        const sec = sections.find(s => s.id === sectionId)
-        if (sec) {
-          isSectionDragRef.current = true
-          onSelect(sectionId)
-          const stage = stageRef.current
-          if (!stage) return
-          const startGX = sec.gx, startGY = sec.gy
-          const scale = stage.scaleX()
-          const touch = e.evt.touches[0]
-          if (!touch) return
-          const startClientX = touch.clientX
-          const startClientY = touch.clientY
-          let lastGX = startGX
-          let lastGY = startGY
-          const onTM = (ev: TouchEvent) => {
-            ev.preventDefault()
-            const t = ev.touches[0]
-            if (!t) return
-            const dPxX = (t.clientX - startClientX) / scale
-            const dPxY = (t.clientY - startClientY) / scale
-            const newGX = Math.max(0, startGX + Math.round(dPxX / CELL))
-            const newGY = Math.max(0, startGY + Math.round(dPxY / CELL))
-            if (newGX !== lastGX || newGY !== lastGY) {
-              lastGX = newGX
-              lastGY = newGY
-              onMove(sectionId, newGX, newGY)
-            }
-          }
-          const onTE = () => {
-            isSectionDragRef.current = false
-            window.removeEventListener('touchmove', onTM)
-            window.removeEventListener('touchend', onTE)
-          }
-          window.addEventListener('touchmove', onTM, { passive: false })
-          window.addEventListener('touchend', onTE)
-          return
-        }
-      }
-    }
-    // No section hit — draw
-    if (!isSectionDragRef.current) handleMouseDown(e)
+    if (hitSection) return  // Konva Group draggable takes over
+    // Touching empty canvas — draw
+    e.evt?.preventDefault()
+    handleMouseDown(e)
   }
   function onTouchMove(e: any) {
     if (e.evt?.touches?.length === 1 && !isSectionDragRef.current) { e.evt?.preventDefault(); handleMouseMove(e) }
