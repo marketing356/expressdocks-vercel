@@ -6,6 +6,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const images = [
+    'res-lifestyle-1.jpg',
+    'res-lifestyle-2.jpg',
+    'res-lifestyle-3.jpg',
     'res-1.jpg',
     'res-2.jpg',
     'res-3.jpg',
