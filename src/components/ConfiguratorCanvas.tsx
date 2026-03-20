@@ -375,12 +375,12 @@ export default function ConfiguratorCanvas({
   function onTouchStart(e: any) {
     if (e.evt?.touches?.length !== 1) return
     e.evt?.preventDefault()
-    // Check if touch hit a section (name !== 'bg')
-    const name: string = e.target?.name?.() ?? ''
-    const hitSection = name !== 'bg' && e.target !== stageRef.current
+    // Check if touch hit a section by checking if target has an id
+    const targetId: string = e.target?.id ? e.target.id() : ''
+    const hitSection = targetId && targetId !== '' && e.target !== stageRef.current
     if (hitSection) {
       // Find which section was hit and start drag
-      const sectionId = e.target?.attrs?.sectionId
+      const sectionId = e.target?.id ? e.target.id() : null
       if (sectionId && onMove) {
         const sec = sections.find(s => s.id === sectionId)
         if (sec) {
@@ -553,7 +553,6 @@ export default function ConfiguratorCanvas({
                   strokeWidth={sel ? 2 : 1}
                   cornerRadius={4}
                   id={s.id}
-                  attrs={{ sectionId: s.id }}
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
