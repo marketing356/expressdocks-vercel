@@ -42,6 +42,7 @@ interface Props {
   onUpdate: (id: string, changes: Partial<DockSection>) => void
   onDelete: (id: string) => void
   onSelect: (id: string) => void
+  onMove?: (id: string, newGX: number, newGY: number) => void
   onDeselect: () => void
   onFirstDraw?: () => void
 }
@@ -74,7 +75,7 @@ const btnBase: React.CSSProperties = {
 }
 
 export default function ConfiguratorCanvas({
-  sections, priceRate, selectedId, selectedColor = '#8B6914', onAdd, onUpdate, onDelete, onSelect, onDeselect, onFirstDraw,
+  sections, priceRate, selectedId, selectedColor = '#8B6914', onAdd, onUpdate, onDelete, onSelect, onMove, onDeselect, onFirstDraw,
 }: Props) {
   const [drawing, setDrawing] = useState<DrawState | null>(null)
   const [resizing, setResizing] = useState<ResizeState | null>(null)
@@ -492,7 +493,25 @@ export default function ConfiguratorCanvas({
             const price = sqft * priceRate
             const sel = selectedId === s.id
             return (
-              <Group key={s.id}>
+              <Group
+                key={s.id}
+                draggable
+                onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab'; }}
+                onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'crosshair'; }}
+                onDragStart={(e) => { e.cancelBubble = true; onSelect(s.id); const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grabbing'; }}
+                onDragEnd={(e) => {
+                  e.cancelBubble = true;
+                  const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab';
+                  // Snap dragged position to grid
+                  const newX = Math.round(e.target.x() / CELL) * CELL;
+                  const newY = Math.round(e.target.y() / CELL) * CELL;
+                  e.target.position({ x: 0, y: 0 }); // reset group position
+                  // Update section position
+                  const newGX = Math.round(newX / CELL);
+                  const newGY = Math.round(newY / CELL);
+                  if (onMove) onMove(s.id, newGX, newGY);
+                }}
+              >
                 <Rect
                   x={px + 2} y={py + 2} width={pw - 4} height={ph - 4}
                   fill={sel ? hexToRgba(selectedColor, 0.9) : hexToRgba(selectedColor, 0.65)}
