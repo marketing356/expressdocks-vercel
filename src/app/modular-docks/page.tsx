@@ -10,10 +10,10 @@ export default function Page() {
     '/images/modular-hero.webp',
     '/images/modular-0f04c029.webp',
     '/images/modular-35fa1d2a.webp',
-    '/images/modular-e6b98de4.webp',
-    '/images/modular-532289da.webp',
-    '/images/modular-72041b1c.webp',
     '/images/modular-88bb4207.webp',
+    '/images/modular-0bb40a89.webp',
+    '/images/gallery-real-1.webp',
+    '/images/gallery-real-4.webp',
   ]
 
   return (

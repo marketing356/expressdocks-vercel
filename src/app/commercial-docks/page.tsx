@@ -10,11 +10,10 @@ export default function Page() {
     'commercial-b141f742.webp',
     'commercial-93b4a6d2.webp',
     'commercial-577417a3.webp',
-    'commercial-17f40073.webp',
     'commercial-a0d86c43.webp',
-    'commercial-0e5dfc13.webp',
-    'commercial-5cfce446.webp',
     'commercial-547eadfe.webp',
+    'gallery-real-2.webp',
+    'gallery-real-3.webp',
   ]
 
   return (
