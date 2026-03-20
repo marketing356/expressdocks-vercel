@@ -2,46 +2,39 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Commercial & Marina Dock Systems | ExpressDocks',
-  description: 'Heavy-duty aluminum dock systems built for commercial marinas, resorts, and waterfront businesses. Starting at $75/sqft with a 40-year guarantee.',
+  description: 'Heavy-duty aluminum dock systems for marinas, resorts, and waterfront businesses. From $75/sqft with a 40-year guarantee.',
 }
 
 export default function Page() {
   return (
-    <main className="max-w-4xl mx-auto py-16 px-6">
-      <div className="text-6xl mb-6">🏗️</div>
-      <h1 className="text-4xl font-bold text-[#0a1628] mb-6">Commercial & Marina Dock Systems</h1>
-      <p className="text-xl text-gray-600 mb-10 leading-relaxed">Heavy-duty aluminum dock systems built for commercial marinas, resorts, and waterfront businesses. Starting at $75/sqft with a 40-year guarantee.</p>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-10">
-        <h2 className="text-2xl font-bold text-[#0a1628] mb-4">Get Your Free Custom 3D Design</h2>
-        <p className="text-gray-600 mb-6">Send us your waterfront sketch or project details. We deliver a complete 3D dock design within 48 hours — no obligation, no cost.</p>
-        <a href="/contact" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold transition text-lg">
-          Request Free Quote →
-        </a>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">📞</div>
-          <div className="font-bold text-[#0a1628]">Call Us</div>
-          <a href="tel:8003702285" className="text-blue-600 hover:underline">800-370-2285</a>
+    <main>
+      <section className="relative text-white py-32 px-6 text-center"
+        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.80), rgba(10,22,40,0.80)), url("/images/commercial-docks.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <h1 className="text-4xl md:text-6xl font-bold mb-6">Commercial & Marina Dock Systems</h1>
+        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Heavy-duty aluminum systems built for marinas, resorts, and commercial waterfront operations. From <strong>$75/sqft</strong>.</p>
+        <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition">Get Commercial Quote →</a>
+      </section>
+      <section className="max-w-5xl mx-auto py-16 px-6">
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+          <img src="/images/commercial-docks.webp" alt="Commercial Marina Dock Systems" className="rounded-xl shadow-lg w-full" />
+          <div>
+            <h2 className="text-3xl font-bold text-[#0a1628] mb-4">Marina-Grade Aluminum Systems</h2>
+            <p className="text-gray-600 mb-4">Built for high-traffic environments, our commercial systems are engineered to handle heavy loads, constant vessel traffic, and demanding marine conditions.</p>
+            <ul className="space-y-2 text-gray-700">
+              <li>✓ From <strong>$75/sqft</strong> — factory-direct</li>
+              <li>✓ 40-year commercial guarantee</li>
+              <li>✓ Custom configurations for any marina layout</li>
+              <li>✓ Scalable — from 10 slips to 500+</li>
+              <li>✓ Ships anywhere in US, Canada & Caribbean</li>
+            </ul>
+          </div>
         </div>
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">✉️</div>
-          <div className="font-bold text-[#0a1628]">Email Us</div>
-          <a href="mailto:info@expressdocks.com" className="text-blue-600 hover:underline text-sm">info@expressdocks.com</a>
+        <div className="bg-[#0a1628] text-white rounded-xl p-10 text-center">
+          <h2 className="text-3xl font-bold mb-4">Commercial Project? Let&apos;s Talk.</h2>
+          <p className="text-gray-300 mb-6">Large commercial projects are reviewed directly by our President. Contact us for a custom engineering consultation and quote.</p>
+          <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold transition inline-block">Request Commercial Quote →</a>
         </div>
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">🎨</div>
-          <div className="font-bold text-[#0a1628]">Free 3D Design</div>
-          <div className="text-sm text-gray-500">In 48 hours</div>
-        </div>
-      </div>
-
-      <div className="text-center">
-        <a href="/blog" className="text-blue-600 hover:text-blue-800 font-medium mr-6">Read Our Blog →</a>
-        <a href="/pricing" className="text-blue-600 hover:text-blue-800 font-medium">View Pricing →</a>
-      </div>
+      </section>
     </main>
   )
 }

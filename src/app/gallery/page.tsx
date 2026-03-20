@@ -2,45 +2,36 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Project Gallery | ExpressDocks',
-  description: 'Browse our portfolio of completed aluminum dock installations across the US, Canada, and Caribbean. From private lakefront docks to full commercial marina systems.',
+  description: 'Browse completed aluminum dock installations — residential, commercial, modular and custom configurations across the US, Canada and Caribbean.',
 }
 
 export default function Page() {
+  const images = [
+    { src: '/images/hero.webp', alt: 'Aluminum Floating Dock', label: 'Residential Floating Dock' },
+    { src: '/images/residential-docks.webp', alt: 'Residential Dock Kits', label: 'Residential Dock Kit' },
+    { src: '/images/commercial-docks.webp', alt: 'Commercial Dock Systems', label: 'Commercial Marina System' },
+    { src: '/images/premium-aluminum.webp', alt: 'Premium Aluminum Dock', label: 'Premium Aluminum Construction' },
+    { src: '/images/custom-configurations.webp', alt: 'Custom Dock Configuration', label: 'Custom Configuration' },
+    { src: '/images/video-bg.webp', alt: 'ExpressDocks Installation', label: 'Professional Installation' },
+  ]
   return (
-    <main className="max-w-4xl mx-auto py-16 px-6">
-      <div className="text-6xl mb-6">📸</div>
-      <h1 className="text-4xl font-bold text-[#0a1628] mb-6">Project Gallery</h1>
-      <p className="text-xl text-gray-600 mb-10 leading-relaxed">Browse our portfolio of completed aluminum dock installations across the US, Canada, and Caribbean. From private lakefront docks to full commercial marina systems.</p>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-10">
-        <h2 className="text-2xl font-bold text-[#0a1628] mb-4">Get Your Free Custom 3D Design</h2>
-        <p className="text-gray-600 mb-6">Send us your waterfront sketch or project details. We deliver a complete 3D dock design within 48 hours — no obligation, no cost.</p>
-        <a href="/contact" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold transition text-lg">
-          Request Free Quote →
-        </a>
+    <main className="max-w-6xl mx-auto py-16 px-6">
+      <h1 className="text-4xl font-bold text-[#0a1628] mb-4">Project Gallery</h1>
+      <p className="text-gray-600 mb-12">Completed aluminum dock installations across the US, Canada, and Caribbean.</p>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        {images.map((img) => (
+          <div key={img.src} className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+            <img src={img.src} alt={img.alt} className="w-full h-56 object-cover" />
+            <div className="p-4 bg-white">
+              <p className="font-semibold text-[#0a1628] text-sm">{img.label}</p>
+            </div>
+          </div>
+        ))}
       </div>
-
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">📞</div>
-          <div className="font-bold text-[#0a1628]">Call Us</div>
-          <a href="tel:8003702285" className="text-blue-600 hover:underline">800-370-2285</a>
-        </div>
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">✉️</div>
-          <div className="font-bold text-[#0a1628]">Email Us</div>
-          <a href="mailto:info@expressdocks.com" className="text-blue-600 hover:underline text-sm">info@expressdocks.com</a>
-        </div>
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">🎨</div>
-          <div className="font-bold text-[#0a1628]">Free 3D Design</div>
-          <div className="text-sm text-gray-500">In 48 hours</div>
-        </div>
-      </div>
-
-      <div className="text-center">
-        <a href="/blog" className="text-blue-600 hover:text-blue-800 font-medium mr-6">Read Our Blog →</a>
-        <a href="/pricing" className="text-blue-600 hover:text-blue-800 font-medium">View Pricing →</a>
+      <div className="bg-[#0a1628] text-white rounded-xl p-10 text-center">
+        <h2 className="text-3xl font-bold mb-4">Ready to Build Yours?</h2>
+        <p className="text-gray-300 mb-6">Get a free custom 3D design in 48 hours.</p>
+        <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold transition inline-block">Get Free Quote →</a>
       </div>
     </main>
   )
