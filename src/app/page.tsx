@@ -5,7 +5,7 @@ export default function Home() {
       <section
         className="relative text-white py-32 px-6 text-center"
         style={{
-          backgroundImage: 'linear-gradient(rgba(10,22,40,0.55), rgba(10,22,40,0.55)), url("/images/gallery-4.jpg")',
+          backgroundImage: 'linear-gradient(rgba(10,22,40,0.35), rgba(10,22,40,0.35)), url("/images/gallery-4.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -15,7 +15,7 @@ export default function Home() {
           <span className="text-blue-400">Floating Dock Systems</span>
         </h1>
         <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-          Premium docks <strong className="text-white">starting at $50/sqft</strong>. Ships to US, Canada & Caribbean.
+          Docks <strong className="text-white">starting at $50/sqft</strong>. Ships to US, Canada & Caribbean.
           50-year residential guarantee.
         </p>
         <p className="text-blue-300 mb-10 font-medium">✓ Free Custom 3D Design in 48 Hours — No Obligation</p>
@@ -49,7 +49,7 @@ export default function Home() {
             {[
               {
                 title: 'Residential',
-                price: '$60',
+                price: 'From $50',
                 unit: '/sqft',
                 desc: 'Perfect for home docks, boat lifts, and personal waterfront access.',
                 example: 'Example: 20×8 ft dock starting around $8,000',
@@ -57,7 +57,7 @@ export default function Home() {
               },
               {
                 title: 'Commercial / Marina',
-                price: '$75',
+                price: 'From $75',
                 unit: '/sqft',
                 desc: 'Heavy-duty systems built for marinas, resorts, and commercial properties.',
                 example: 'Example: 10-slip marina ≈ $75,000+',
@@ -66,7 +66,7 @@ export default function Home() {
               },
               {
                 title: 'Fingers & Gangways',
-                price: '$85',
+                price: 'From $85',
                 unit: '/sqft',
                 desc: 'Specialty dock fingers, gangways, and transition pieces.',
                 example: 'Example: 4 dock fingers ≈ $12,000',
