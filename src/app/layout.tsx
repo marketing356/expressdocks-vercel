@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-gray-900">
         <nav className="text-white py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-lg relative" style={{ background: '#0E1433', borderBottom: '1px solid rgba(138,149,201,0.15)' }}>
           <a href="/" className="flex items-center gap-3">
-            <img src="/logo.jpg" alt="ExpressDocks" className="h-10 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
+            <img src="/logo.jpg" alt="ExpressDocks" className="h-10 w-auto"  />
           </a>
           <div className="hidden md:flex gap-6 text-sm font-medium">
             <a href="/residential" className="hover:text-blue-300 transition">Residential</a>
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="text-white py-12 px-6 mt-16" style={{ background: '#080d26', borderTop: '1px solid rgba(138,149,201,0.15)' }}>
           <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
             <div>
-              <img src="/logo.jpg" alt="ExpressDocks" className="h-12 w-auto mb-3" style={{ filter: 'brightness(0) invert(1)' }} />
+              <img src="/logo.jpg" alt="ExpressDocks" className="h-12 w-auto mb-3"  />
               <p className="text-gray-400 text-sm">Factory-direct aluminum floating dock systems. Assembled in America. Ships to US, Canada & Caribbean.</p>
             </div>
             <div>
