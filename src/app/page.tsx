@@ -5,7 +5,7 @@ export default function Home() {
       <section
         className="relative text-white py-32 px-6 text-center"
         style={{
-          backgroundImage: 'linear-gradient(rgba(10,22,40,0.82), rgba(10,22,40,0.82)), url("/images/hero.webp")',
+          backgroundImage: 'linear-gradient(rgba(10,22,40,0.82), rgba(10,22,40,0.82)), url("/images/gallery-4.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -15,7 +15,7 @@ export default function Home() {
           <span className="text-blue-400">Floating Dock Systems</span>
         </h1>
         <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-          Premium docks starting at <strong className="text-white">$60/sqft</strong>. Ships to US, Canada & Caribbean.
+          Premium docks <strong className="text-white">starting at $50/sqft</strong>. Ships to US, Canada & Caribbean.
           50-year residential guarantee.
         </p>
         <p className="text-blue-300 mb-10 font-medium">✓ Free Custom 3D Design in 48 Hours — No Obligation</p>
@@ -52,7 +52,7 @@ export default function Home() {
                 price: '$60',
                 unit: '/sqft',
                 desc: 'Perfect for home docks, boat lifts, and personal waterfront access.',
-                example: 'Example: 20×8 ft dock ≈ $9,600',
+                example: 'Example: 20×8 ft dock starting around $8,000',
                 guarantee: '50-Year Guarantee',
               },
               {
