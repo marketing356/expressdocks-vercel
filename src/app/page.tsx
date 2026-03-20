@@ -58,7 +58,7 @@ export default function Home() {
         </video>
         {/* Dark overlay */}
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, rgba(14,20,51,0.75) 0%, rgba(59,74,143,0.25) 50%, rgba(14,20,51,0.85) 100%)',
+          background: 'linear-gradient(135deg, rgba(14,20,51,0.45) 0%, rgba(59,74,143,0.25) 50%, rgba(14,20,51,0.55) 100%)',
           zIndex: 1,
         }} />
         {/* Content */}
