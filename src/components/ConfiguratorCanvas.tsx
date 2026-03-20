@@ -39,6 +39,9 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
   const containerRef = useRef<HTMLDivElement>(null)
   const [canvasSize, setCanvasSize] = useState({ w: 800, h: 500 })
   
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const selectedIdRef = useRef<string | null>(null)
+
   // State refs (avoid re-render on every mouse move)
   const stateRef = useRef({
     drawing: false,
@@ -56,6 +59,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     panning: false,
     panStart: { x: 0, y: 0, panX: 0, panY: 0 },
     lastTouchDist: 0,
+    wasDragging: false,
     sections: sections,
     selectedColor: selectedColor,
     priceRate: priceRate,
@@ -65,6 +69,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
   stateRef.current.sections = sections
   stateRef.current.selectedColor = selectedColor
   stateRef.current.priceRate = priceRate
+  selectedIdRef.current = selectedId
 
   // Draw everything to canvas
   const draw = useCallback(() => {
@@ -103,23 +108,25 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     }
     
     // Sections
+    const selId = selectedIdRef.current
     sections.forEach(s => {
       const x = s.gx * CELL
       const y = s.gy * CELL
       const pw = s.gw * CELL
       const ph = s.gh * CELL
       const sqft = s.gw * s.gh
+      const sel = s.id === selId
       
       // Fill
-      ctx.fillStyle = hexToRgba(selectedColor, 0.75)
+      ctx.fillStyle = hexToRgba(selectedColor, sel ? 0.95 : 0.75)
       ctx.beginPath()
       const r = 3 / scale
       ctx.roundRect(x + 2, y + 2, pw - 4, ph - 4, r)
       ctx.fill()
       
       // Border
-      ctx.strokeStyle = 'rgba(238,241,250,0.6)'
-      ctx.lineWidth = 1 / scale
+      ctx.strokeStyle = sel ? '#EEF1FA' : 'rgba(238,241,250,0.45)'
+      ctx.lineWidth = (sel ? 2 : 1) / scale
       ctx.stroke()
       
       // Label
@@ -132,6 +139,22 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
       ctx.font = `${fontSize * 0.85}px Inter, sans-serif`
       ctx.fillStyle = '#8A95C9'
       ctx.fillText(`$${(sqft * priceRate).toLocaleString()}`, x + pw/2, y + ph/2 + fontSize*0.7)
+      
+      // Delete button on selected section
+      if (sel) {
+        const btnSize = Math.max(16, 20 / scale)
+        const btnX = x + pw - btnSize - 4/scale
+        const btnY = y + 4/scale
+        ctx.fillStyle = 'rgba(239,68,68,0.9)'
+        ctx.beginPath()
+        ctx.roundRect(btnX, btnY, btnSize, btnSize, 4/scale)
+        ctx.fill()
+        ctx.fillStyle = '#fff'
+        ctx.font = `bold ${btnSize * 0.65}px Inter, sans-serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('×', btnX + btnSize/2, btnY + btnSize/2)
+      }
     })
     
     // Draw preview
@@ -192,14 +215,35 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     return null
   }
 
+  // Check if tap hit delete button
+  const hitDeleteBtn = (pos: {x:number,y:number}, s: DockSection) => {
+    const { scale } = stateRef.current
+    const x = s.gx * CELL; const y = s.gy * CELL
+    const pw = s.gw * CELL
+    const btnSize = Math.max(16, 20 / scale)
+    const btnX = x + pw - btnSize - 4/scale
+    const btnY = y + 4/scale
+    return pos.x >= btnX && pos.x <= btnX + btnSize && pos.y >= btnY && pos.y <= btnY + btnSize
+  }
+
   // Pointer down
   const onPointerDown = (cx: number, cy: number) => {
     const pos = screenToCanvas(cx, cy)
     const hit = hitTest(pos.x, pos.y)
+    stateRef.current.wasDragging = false
     
     if (hit) {
-      // Start drag
       const s = stateRef.current.sections.find(sec => sec.id === hit)!
+      // Check delete button first (only if selected)
+      if (hit === selectedIdRef.current && hitDeleteBtn(pos, s)) {
+        onDelete(hit)
+        setSelectedId(null)
+        draw()
+        return
+      }
+      // Select and prepare drag
+      setSelectedId(hit)
+      selectedIdRef.current = hit
       stateRef.current.dragging = true
       stateRef.current.dragId = hit
       stateRef.current.dragOffsetX = pos.x - s.gx * CELL
@@ -207,7 +251,9 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
       stateRef.current.dragStartGX = s.gx
       stateRef.current.dragStartGY = s.gy
     } else {
-      // Start draw
+      // Deselect and start draw
+      setSelectedId(null)
+      selectedIdRef.current = null
       const snap = { x: snapToGrid(pos.x), y: snapToGrid(pos.y) }
       stateRef.current.drawing = true
       stateRef.current.drawStart = snap
@@ -223,13 +269,12 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     if (st.dragging && st.dragId) {
       const newGX = Math.max(0, Math.round((pos.x - st.dragOffsetX) / CELL))
       const newGY = Math.max(0, Math.round((pos.y - st.dragOffsetY) / CELL))
-      // Update locally for smooth preview
       const sec = st.sections.find(s => s.id === st.dragId)
-      if (sec) {
-        sec.gx = newGX
-        sec.gy = newGY
+      if (sec && (sec.gx !== newGX || sec.gy !== newGY)) {
+        st.wasDragging = true
+        sec.gx = newGX; sec.gy = newGY
+        draw()
       }
-      draw()
     } else if (st.drawing) {
       st.drawCurrent = { x: snapToGrid(pos.x), y: snapToGrid(pos.y) }
       draw()
@@ -249,9 +294,10 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     } else if (st.drawing) {
       const x = Math.min(st.drawStart.x, st.drawCurrent.x)
       const y = Math.min(st.drawStart.y, st.drawCurrent.y)
-      const gw = Math.max(1, Math.round(Math.abs(st.drawCurrent.x - st.drawStart.x) / CELL))
-      const gh = Math.max(1, Math.round(Math.abs(st.drawCurrent.y - st.drawStart.y) / CELL))
-      if (gw > 0 && gh > 0) {
+      const gw = Math.round(Math.abs(st.drawCurrent.x - st.drawStart.x) / CELL)
+      const gh = Math.round(Math.abs(st.drawCurrent.y - st.drawStart.y) / CELL)
+      // Minimum 2ft in each direction to prevent accidental tiny sections from taps
+      if (gw >= 2 && gh >= 2) {
         onAdd({
           id: `s${Date.now()}`,
           gx: Math.round(x / CELL),
@@ -280,7 +326,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
   }, [])
 
   // Draw on every change
-  useEffect(() => { draw() }, [draw, sections, selectedColor, canvasSize])
+  useEffect(() => { draw() }, [draw, sections, selectedColor, canvasSize, selectedId])
 
   // Mouse events
   useEffect(() => {
