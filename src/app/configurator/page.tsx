@@ -187,8 +187,8 @@ export default function ConfiguratorPage() {
         padding: '10px 20px',
         display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap',
       }}>
-        <span style={{ fontSize: '11px', color: '#8A95C9', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0 }}>
-          Decking Color
+        <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 800, letterSpacing: '0.05em', flexShrink: 0 }}>
+          🎨 Decking Color:
         </span>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {WPC_COLORS.map(c => (
@@ -250,9 +250,16 @@ export default function ConfiguratorPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexWrap: 'wrap', gap: '16px',
         }}>
-          {/* Render button only - color picker moved to top */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '13px', color: '#8A95C9' }}>{colorName} decking selected</span>
+            <span style={{ fontSize: '13px', color: '#8A95C9' }}>{colorName} decking · {sections.length} section{sections.length !== 1 ? 's' : ''}</span>
+            <button
+              onClick={() => { setSections([]); setSelectedId(null) }}
+              style={{
+                padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                background: 'rgba(239,68,68,0.15)', color: '#f87171',
+                border: '1px solid rgba(239,68,68,0.3)', transition: 'all 0.15s',
+              }}
+            >🗑 Clear All</button>
           </div>
 
           {/* Render CTA */}

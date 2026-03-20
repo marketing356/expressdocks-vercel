@@ -158,13 +158,8 @@ export default function ChatWidget() {
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
-        <div style={{ position: 'relative', width: '60px', height: '60px' }}>
-          <img
-            src="/chat-avatar.jpg"
-            alt="ExpressDocks Consultant"
-            className="w-14 h-14 rounded-full object-cover shadow-xl border-2"
-            style={{ borderColor: '#8A95C9', width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', display: 'block' }}
-          />
+        <div style={{ position: 'relative', width: '60px', height: '60px', background: 'linear-gradient(135deg, #3B4A8F, #8A95C9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '30px', border: '2px solid #8A95C9' }}>
+          <span role="img" aria-label="dock expert">👷</span>
           {/* Online indicator */}
           <div style={{
             position: 'absolute', bottom: '2px', right: '2px',
