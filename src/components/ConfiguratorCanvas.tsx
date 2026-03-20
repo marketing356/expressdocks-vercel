@@ -37,6 +37,7 @@ interface Props {
   sections: DockSection[]
   priceRate: number
   selectedId: string | null
+  selectedColor?: string
   onAdd: (s: DockSection) => void
   onUpdate: (id: string, changes: Partial<DockSection>) => void
   onDelete: (id: string) => void
@@ -46,6 +47,14 @@ interface Props {
 }
 
 function snapPx(px: number): number { return Math.round(px / CELL) * CELL }
+
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
 function snapFt(px: number): number { return Math.round(px / CELL) }
 
 const btnBase: React.CSSProperties = {
@@ -65,7 +74,7 @@ const btnBase: React.CSSProperties = {
 }
 
 export default function ConfiguratorCanvas({
-  sections, priceRate, selectedId, onAdd, onUpdate, onDelete, onSelect, onDeselect, onFirstDraw,
+  sections, priceRate, selectedId, selectedColor = '#8B6914', onAdd, onUpdate, onDelete, onSelect, onDeselect, onFirstDraw,
 }: Props) {
   const [drawing, setDrawing] = useState<DrawState | null>(null)
   const [resizing, setResizing] = useState<ResizeState | null>(null)
@@ -404,7 +413,7 @@ export default function ConfiguratorCanvas({
     const hFt = Math.max(MIN_FT, Math.abs(snapFt(drawing.y1) - snapFt(drawing.y0)))
     preview = (
       <Group listening={false}>
-        <Rect x={px} y={py} width={pw} height={ph} fill="rgba(59,74,143,0.28)" stroke="#8A95C9" strokeWidth={1.5} dash={[6, 3]} cornerRadius={3} />
+        <Rect x={px} y={py} width={pw} height={ph} fill={hexToRgba(selectedColor, 0.28)} stroke={selectedColor} strokeWidth={1.5} dash={[6, 3]} cornerRadius={3} />
         <Text x={px + 8} y={py + 8} text={`${wFt} × ${hFt} ft`} fill="#EEF1FA" fontSize={13} fontStyle="bold" />
         <Text x={px + 8} y={py + 26} text={`$${(wFt * hFt * priceRate).toLocaleString()}`} fill="#4ade80" fontSize={11} />
       </Group>
@@ -486,8 +495,8 @@ export default function ConfiguratorCanvas({
               <Group key={s.id}>
                 <Rect
                   x={px + 2} y={py + 2} width={pw - 4} height={ph - 4}
-                  fill={sel ? 'rgba(59,74,143,0.88)' : 'rgba(59,74,143,0.6)'}
-                  stroke={sel ? '#8A95C9' : 'rgba(138,149,201,0.32)'}
+                  fill={sel ? hexToRgba(selectedColor, 0.9) : hexToRgba(selectedColor, 0.65)}
+                  stroke={sel ? '#EEF1FA' : 'rgba(238,241,250,0.4)'}
                   strokeWidth={sel ? 2 : 1}
                   cornerRadius={4}
                   onMouseDown={(e) => { e.cancelBubble = true; onSelect(s.id) }}

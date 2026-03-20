@@ -130,7 +130,7 @@ export default function Home() {
             <span>✓ 50-Year Residential Guarantee</span>
             <span>✓ Factory-Direct Pricing</span>
             <span>✓ Ships US, Canada & Caribbean</span>
-            <span>✓ Free 3D Design in 48hrs</span>
+            <span>✓ Free Dock Builder Tool</span>
             <span>✓ 800-370-2285</span>
           </div>
         </FadeIn>
@@ -316,7 +316,7 @@ export default function Home() {
         }} />
         <FadeIn className="relative z-10">
           <h2 className="text-4xl md:text-6xl font-black mb-6" style={{ color: '#EEF1FA' }}>Ready to Build<br/>Your Dream Dock?</h2>
-          <p className="text-xl mb-10 max-w-xl mx-auto" style={{ color: 'rgba(238,241,250,0.8)' }}>Free custom 3D design in 48 hours. Starting at $50/sqft. No obligation.</p>
+          <p className="text-xl mb-10 max-w-xl mx-auto" style={{ color: 'rgba(238,241,250,0.8)' }}>Use our Dock Builder to design your dock instantly. Starting at $50/sqft. No obligation.</p>
           <a href="/contact" className="inline-block px-12 py-5 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105"
             style={{ background: '#EEF1FA', color: '#0E1433', boxShadow: '0 8px 40px rgba(238,241,250,0.2)' }}>
             Start My Free Design →

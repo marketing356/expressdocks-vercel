@@ -56,7 +56,7 @@ export default function Page() {
           </div>
           <div className="rounded-2xl p-8" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
             <h3 className="text-2xl font-bold mb-4" style={{ color: '#EEF1FA' }}>Design Your Modular Dock</h3>
-            <p className="mb-6" style={{ color: 'rgba(238,241,250,0.7)' }}>Get a free custom 3D design in 48 hours — no obligation.</p>
+            <p className="mb-6" style={{ color: 'rgba(238,241,250,0.7)' }}>Get a Use our Dock Builder to design your dock instantly.</p>
             <a href="/contact" className="block text-center py-3 rounded-lg font-bold transition hover:scale-105"
               style={{ background: '#3B4A8F', color: '#EEF1FA' }}>
               Start Free Design →

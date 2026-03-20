@@ -25,7 +25,7 @@ export default async function BlogPost({ params }: { params: { slug: string } })
       </div>
       <div className="mt-16 bg-[#0a1628] text-white rounded-xl p-8 text-center">
         <h3 className="text-2xl font-bold mb-3">Ready to Build Your Dock?</h3>
-        <p className="text-gray-300 mb-6">Get a free custom 3D design in 48 hours. No obligation.</p>
+        <p className="text-gray-300 mb-6">Get a Use our Dock Builder to design your dock instantly. No obligation.</p>
         <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-bold transition inline-block">
           Get Free Quote →
         </a>

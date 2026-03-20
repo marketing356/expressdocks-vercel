@@ -32,7 +32,7 @@ export default function Page() {
         </div>
         <div className="bg-[#0a1628] text-white rounded-xl p-10 text-center">
           <h2 className="text-3xl font-bold mb-4">Let&apos;s Build Your Dock</h2>
-          <p className="text-gray-300 mb-6">Free custom 3D design in 48 hours. Starting at $50/sqft. No obligation.</p>
+          <p className="text-gray-300 mb-6">Use our Dock Builder to design your dock instantly. Starting at $50/sqft. No obligation.</p>
           <a href="/contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-bold transition inline-block">Get Free Quote →</a>
         </div>
       </section>

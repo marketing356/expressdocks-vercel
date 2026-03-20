@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: 'Premium aluminum floating dock systems. Factory-direct pricing from $60/sqft. Ships US, Canada & Caribbean. 50-year residential guarantee.',
   openGraph: {
     title: 'ExpressDocks | Factory-Direct Aluminum Floating Docks',
-    description: 'Premium aluminum floating dock systems starting at $60/sqft. Free 3D design in 48 hours.',
+    description: 'Premium aluminum floating dock systems starting at $60/sqft. Free 3D Dock Builder.',
     url: 'https://www.expressdocks.com',
     siteName: 'ExpressDocks',
     type: 'website',

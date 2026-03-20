@@ -57,7 +57,7 @@ export default function Page() {
             <div className="rounded-2xl p-6" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
               <div className="text-3xl mb-2">🎨</div>
               <div className="font-bold mb-1" style={{ color: '#EEF1FA' }}>Free 3D Design</div>
-              <p className="text-sm" style={{ color: 'rgba(238,241,250,0.6)' }}>Custom 3D dock design in 48 hours, no obligation.</p>
+              <p className="text-sm" style={{ color: 'rgba(238,241,250,0.6)' }}>Use our free Dock Builder tool to design your dock now.</p>
               <a href="/contact" className="mt-3 inline-block px-6 py-2 rounded-lg font-semibold text-sm transition hover:scale-105"
                 style={{ background: '#3B4A8F', color: '#EEF1FA' }}>
                 Start My Design →
