@@ -150,23 +150,28 @@ export default function ChatWidget() {
         style={{
           position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
           width: '60px', height: '60px', borderRadius: '50%',
-          background: '#3B4A8F', border: '2px solid #8A95C9',
+          background: 'transparent', border: 'none', padding: 0,
           boxShadow: '0 4px 24px rgba(14,20,51,0.5)',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer',
           transition: 'transform 0.2s',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
-        {open ? (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EEF1FA" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        ) : (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EEF1FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        )}
+        <div style={{ position: 'relative', width: '60px', height: '60px' }}>
+          <img
+            src="/chat-avatar.jpg"
+            alt="ExpressDocks Consultant"
+            className="w-14 h-14 rounded-full object-cover shadow-xl border-2"
+            style={{ borderColor: '#8A95C9', width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+          />
+          {/* Online indicator */}
+          <div style={{
+            position: 'absolute', bottom: '2px', right: '2px',
+            width: '12px', height: '12px', borderRadius: '50%',
+            background: '#4ade80', border: '2px solid #0E1433',
+          }} />
+        </div>
       </button>
 
       {/* Chat window */}
@@ -192,15 +197,20 @@ export default function ChatWidget() {
             display: 'flex', alignItems: 'center', gap: '10px',
             borderRadius: '16px 16px 0 0', background: 'rgba(59,74,143,0.3)',
           }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#3B4A8F', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EEF1FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" />
-                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                <line x1="12" y1="12" x2="12" y2="16" /><line x1="10" y1="14" x2="14" y2="14" />
-              </svg>
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <img
+                src="/chat-avatar.jpg"
+                alt="ExpressDocks Consultant"
+                style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #8A95C9', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute', bottom: '0px', right: '0px',
+                width: '10px', height: '10px', borderRadius: '50%',
+                background: '#4ade80', border: '2px solid #0E1433',
+              }} />
             </div>
             <div>
-              <div style={{ color: '#EEF1FA', fontWeight: 600, fontSize: '14px' }}>ExpressDocks Expert</div>
+              <div style={{ color: '#EEF1FA', fontWeight: 600, fontSize: '14px' }}>ExpressDocks Consultant</div>
               <div style={{ color: '#8A95C9', fontSize: '11px' }}>Dock specialist · Powered by AI</div>
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}>
