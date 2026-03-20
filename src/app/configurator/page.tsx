@@ -179,7 +179,43 @@ export default function ConfiguratorPage() {
         )}
       </div>
 
-      {/* Color picker + CTA bar — shown after first section drawn */}
+      {/* Color picker — always visible below header */}
+      <div style={{
+        background: '#0d1535',
+        borderBottom: '1px solid rgba(138,149,201,0.2)',
+        padding: '10px 20px',
+        display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap',
+      }}>
+        <span style={{ fontSize: '11px', color: '#8A95C9', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0 }}>
+          Decking Color
+        </span>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {WPC_COLORS.map(c => (
+            <button
+              key={c.hex}
+              title={c.name}
+              onClick={() => setSelectedColor(c.hex)}
+              style={{
+                width: '28px', height: '28px',
+                borderRadius: '50%',
+                background: c.hex,
+                border: selectedColor === c.hex ? '3px solid #EEF1FA' : '2px solid rgba(138,149,201,0.25)',
+                cursor: 'pointer',
+                boxShadow: selectedColor === c.hex ? `0 0 0 2px ${c.hex}88` : 'none',
+                transform: selectedColor === c.hex ? 'scale(1.2)' : 'scale(1)',
+                transition: 'all 0.15s',
+                outline: 'none', flexShrink: 0,
+              }}
+            />
+          ))}
+        </div>
+        <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 600 }}>{colorName}</span>
+        {sections.length === 0 && (
+          <span style={{ fontSize: '11px', color: '#4B5A90', marginLeft: '8px' }}>Draw your dock below to see it in this color</span>
+        )}
+      </div>
+
+      {/* OLD bottom bar start placeholder */}
       {sections.length > 0 && (
         <div style={{
           background: '#0E1433',
@@ -188,34 +224,9 @@ export default function ConfiguratorPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexWrap: 'wrap', gap: '16px',
         }}>
-          {/* Decking color swatches */}
+          {/* Render button only - color picker moved to top */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '11px', color: '#8A95C9', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              WPC Decking
-            </span>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {WPC_COLORS.map(c => (
-                <button
-                  key={c.hex}
-                  title={c.name}
-                  onClick={() => setSelectedColor(c.hex)}
-                  style={{
-                    width: '30px', height: '30px',
-                    borderRadius: '50%',
-                    background: c.hex,
-                    border: selectedColor === c.hex
-                      ? '3px solid #EEF1FA'
-                      : '2px solid rgba(138,149,201,0.2)',
-                    cursor: 'pointer',
-                    boxShadow: selectedColor === c.hex ? `0 0 0 2px ${c.hex}88` : 'none',
-                    transform: selectedColor === c.hex ? 'scale(1.18)' : 'scale(1)',
-                    transition: 'transform 0.15s, box-shadow 0.15s',
-                    outline: 'none',
-                  }}
-                />
-              ))}
-            </div>
-            <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 600 }}>{colorName}</span>
+            <span style={{ fontSize: '13px', color: '#8A95C9' }}>{colorName} decking selected</span>
           </div>
 
           {/* Render CTA */}
