@@ -43,6 +43,7 @@ interface Props {
   onDelete: (id: string) => void
   onSelect: (id: string) => void
   onMove?: (id: string, newGX: number, newGY: number) => void
+  mode?: 'draw' | 'move'
   onDeselect: () => void
   onFirstDraw?: () => void
 }
@@ -75,7 +76,7 @@ const btnBase: React.CSSProperties = {
 }
 
 export default function ConfiguratorCanvas({
-  sections, priceRate, selectedId, selectedColor = '#8B6914', onAdd, onUpdate, onDelete, onSelect, onMove, onDeselect, onFirstDraw,
+  sections, priceRate, selectedId, selectedColor = '#8B6914', onAdd, onUpdate, onDelete, onSelect, onMove, onDeselect, onFirstDraw, mode = 'draw',
 }: Props) {
   const [drawing, setDrawing] = useState<DrawState | null>(null)
   const [resizing, setResizing] = useState<ResizeState | null>(null)
@@ -298,6 +299,7 @@ export default function ConfiguratorCanvas({
   // Konva Stage events — drawing & resizing only (panning handled by native above)
   function handleMouseDown(e: any) {
     if (isPanningRef.current) return
+    if (mode === 'move') return  // Don't draw in move mode
     const name: string = e.target?.name?.() ?? ''
     if (name !== 'bg' && e.target !== stageRef.current) return
     onDeselect()
@@ -508,7 +510,7 @@ export default function ConfiguratorCanvas({
                   onMouseDown={(e) => {
                     e.cancelBubble = true
                     onSelect(s.id)
-                    if (!onMove) return
+                    if (!onMove || mode !== 'move') return
                     const stage = e.target.getStage()
                     if (!stage) return
                     const startGX = s.gx, startGY = s.gy
@@ -537,14 +539,16 @@ export default function ConfiguratorCanvas({
                     window.addEventListener('mousemove', onMM)
                     window.addEventListener('mouseup', onMU)
                   }}
-                  onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'grab'; }}
-                  onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = 'crosshair'; }}
+                  onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = mode === 'move' ? 'grab' : 'pointer'; }}
+                  onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = mode === 'move' ? 'grab' : 'crosshair'; }}
                   onTouchStart={(e) => {
                     e.cancelBubble = true
-                    e.evt.preventDefault()
-                    e.evt.stopPropagation()
+                    if (mode === 'move') {
+                      e.evt.preventDefault()
+                      e.evt.stopPropagation()
+                    }
                     onSelect(s.id)
-                    if (!onMove) return
+                    if (!onMove || mode !== 'move') return
                     const stage = e.target.getStage()
                     if (!stage) return
                     const startGX = s.gx, startGY = s.gy

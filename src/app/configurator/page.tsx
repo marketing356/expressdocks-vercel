@@ -34,6 +34,7 @@ export default function ConfiguratorPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hintVisible, setHintVisible] = useState(true)
   const [selectedColor, setSelectedColor] = useState(WPC_COLORS[0].hex)
+  const [mode, setMode] = useState<'draw' | 'move'>('draw')
 
   // Render flow
   const [isRendering, setIsRendering] = useState(false)
@@ -211,8 +212,33 @@ export default function ConfiguratorPage() {
         </div>
         <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 600 }}>{colorName}</span>
         {sections.length === 0 && (
-          <span style={{ fontSize: '11px', color: '#4B5A90', marginLeft: '8px' }}>Draw your dock below to see it in this color</span>
+          <span style={{ fontSize: '11px', color: '#4B5A90', marginLeft: '8px' }}>Draw your dock below</span>
         )}
+        {/* Mode toggle */}
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', flexShrink: 0 }}>
+          <button
+            onClick={() => setMode('draw')}
+            title="Draw Mode — click and drag to draw dock sections"
+            style={{
+              padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+              background: mode === 'draw' ? '#3B4A8F' : 'transparent',
+              color: mode === 'draw' ? '#EEF1FA' : '#8A95C9',
+              border: mode === 'draw' ? '1px solid #3B4A8F' : '1px solid rgba(138,149,201,0.3)',
+              transition: 'all 0.15s',
+            }}
+          >✏️ Draw</button>
+          <button
+            onClick={() => setMode('move')}
+            title="Move Mode — drag sections to reposition them"
+            style={{
+              padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+              background: mode === 'move' ? '#3B4A8F' : 'transparent',
+              color: mode === 'move' ? '#EEF1FA' : '#8A95C9',
+              border: mode === 'move' ? '1px solid #3B4A8F' : '1px solid rgba(138,149,201,0.3)',
+              transition: 'all 0.15s',
+            }}
+          >👋 Move</button>
+        </div>
       </div>
 
       {/* OLD bottom bar start placeholder */}
