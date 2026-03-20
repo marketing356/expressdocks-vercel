@@ -88,6 +88,7 @@ export default function ConfiguratorCanvas({
 
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<any>(null)
+  const draggingIdRef = useRef<string | null>(null)
   const isSectionDragRef = useRef(false)
   const drawingRef = useRef<DrawState | null>(null)
   const resizingRef = useRef<ResizeState | null>(null)
@@ -560,8 +561,10 @@ export default function ConfiguratorCanvas({
                   cornerRadius={4}
                   id={s.id}
                   draggable={true}
+                  onDragStart={(e) => { e.cancelBubble = true; draggingIdRef.current = s.id }}
                   onDragEnd={(e) => {
                     e.cancelBubble = true
+                    draggingIdRef.current = null
                     if (!onMove) return
                     const node = e.target
                     const stage = node.getStage()
@@ -665,7 +668,7 @@ export default function ConfiguratorCanvas({
                 <Text x={px + 10} y={py + 10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
                 <Text x={px + 10} y={py + 27} text={`${sqft} sqft — $${price.toLocaleString()}`} fill="#8A95C9" fontSize={10} listening={false} />
 
-                {sel && (
+                {sel && draggingIdRef.current !== s.id && (
                   <>
                     <Group
                       onMouseDown={(e) => { e.cancelBubble = true; onDelete(s.id) }}
