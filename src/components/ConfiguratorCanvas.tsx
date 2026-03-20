@@ -394,15 +394,21 @@ export default function ConfiguratorCanvas({
           if (!touch) return
           const startClientX = touch.clientX
           const startClientY = touch.clientY
+          let lastGX = startGX
+          let lastGY = startGY
           const onTM = (ev: TouchEvent) => {
             ev.preventDefault()
             const t = ev.touches[0]
             if (!t) return
             const dPxX = (t.clientX - startClientX) / scale
             const dPxY = (t.clientY - startClientY) / scale
-            const dGX = Math.round(dPxX / CELL)
-            const dGY = Math.round(dPxY / CELL)
-            onMove(sectionId, Math.max(0, startGX + dGX), Math.max(0, startGY + dGY))
+            const newGX = Math.max(0, startGX + Math.round(dPxX / CELL))
+            const newGY = Math.max(0, startGY + Math.round(dPxY / CELL))
+            if (newGX !== lastGX || newGY !== lastGY) {
+              lastGX = newGX
+              lastGY = newGY
+              onMove(sectionId, newGX, newGY)
+            }
           }
           const onTE = () => {
             isSectionDragRef.current = false
@@ -568,17 +574,19 @@ export default function ConfiguratorCanvas({
                     if (!startPtr) return
                     const container = stage.container()
                     container.style.cursor = 'grabbing'
+                    let lastGX = startGX, lastGY = startGY
                     function onMM(ev: MouseEvent) {
                       const containerRect = container.getBoundingClientRect()
                       const stageX = stage?.x() ?? 0; const stageY = stage?.y() ?? 0; const px = (ev.clientX - containerRect.left - stageX) / scale
                       const py = (ev.clientY - containerRect.top - stageY) / scale
                       const startPxX = (startPtr!.x - (stage?.x() ?? 0)) / scale
                       const startPyY = (startPtr!.y - (stage?.y() ?? 0)) / scale  
-                      const dGX = Math.round((px - startPxX) / CELL)
-                      const dGY = Math.round((py - startPyY) / CELL)
-                      const newGX = Math.max(0, startGX + dGX)
-                      const newGY = Math.max(0, startGY + dGY)
-                      if (onMove) onMove(s.id, newGX, newGY)
+                      const newGX = Math.max(0, startGX + Math.round((px - startPxX) / CELL))
+                      const newGY = Math.max(0, startGY + Math.round((py - startPyY) / CELL))
+                      if ((newGX !== lastGX || newGY !== lastGY) && onMove) {
+                        lastGX = newGX; lastGY = newGY
+                        onMove(s.id, newGX, newGY)
+                      }
                     }
                     function onMU() {
                       isSectionDragRef.current = false
