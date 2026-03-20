@@ -553,24 +553,23 @@ export default function ConfiguratorCanvas({
             return (
               <Group
                 key={s.id}
-                x={0} y={0}
+                x={px} y={py}
                 draggable={true}
                 onDragStart={(e) => { e.cancelBubble = true }}
                 onDragEnd={(e) => {
                   e.cancelBubble = true
                   if (!onMove) return
                   // Group offset from its origin after drag
-                  const dx = e.target.x()
-                  const dy = e.target.y()
-                  e.target.position({ x: 0, y: 0 })
-                  const newGX = Math.max(0, Math.round((s.gx * CELL + dx) / CELL))
-                  const newGY = Math.max(0, Math.round((s.gy * CELL + dy) / CELL))
+                  // After drag, node.x()/y() = new absolute position of group
+                  const newGX = Math.max(0, Math.round(e.target.x() / CELL))
+                  const newGY = Math.max(0, Math.round(e.target.y() / CELL))
+                  e.target.position({ x: s.gx * CELL, y: s.gy * CELL })
                   onDeselect()
                   onMove(s.id, newGX, newGY)
                 }}
               >
                 <Rect
-                  x={px + 2} y={py + 2} width={pw - 4} height={ph - 4}
+                  x={2} y={2} width={pw - 4} height={ph - 4}
                   fill={sel ? hexToRgba(selectedColor, 0.9) : hexToRgba(selectedColor, 0.65)}
                   stroke={sel ? '#EEF1FA' : 'rgba(238,241,250,0.4)'}
                   strokeWidth={sel ? 2 : 1}
@@ -661,8 +660,8 @@ export default function ConfiguratorCanvas({
                     window.addEventListener('touchend', onTE)
                   }}
                 />
-                <Text x={px + 10} y={py + 10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
-                <Text x={px + 10} y={py + 27} text={`${sqft} sqft — $${price.toLocaleString()}`} fill="#8A95C9" fontSize={10} listening={false} />
+                <Text x={10} y={10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
+                <Text x={10} y={27} text={`${sqft} sqft — $${price.toLocaleString()}`} fill="#8A95C9" fontSize={10} listening={false} />
 
                 {sel && (
                   <>
@@ -670,15 +669,15 @@ export default function ConfiguratorCanvas({
                       onMouseDown={(e) => { e.cancelBubble = true; onDelete(s.id) }}
                       onTouchStart={(e) => { e.cancelBubble = true; onDelete(s.id) }}
                     >
-                      <Rect x={px + pw - 26} y={py + 4} width={22} height={22} fill="rgba(239,68,68,0.85)" cornerRadius={4} />
-                      <Text x={px + pw - 26 + 5} y={py + 7} text="×" fill="#fff" fontSize={14} fontStyle="bold" listening={false} />
+                      <Rect x={pw - 26} y={4} width={22} height={22} fill="rgba(239,68,68,0.85)" cornerRadius={4} />
+                      <Text x={pw - 26 + 5} y={7} text="×" fill="#fff" fontSize={14} fontStyle="bold" listening={false} />
                     </Group>
 
                     {([
-                      { corner: 'tl' as Corner, cx: px, cy: py },
-                      { corner: 'tr' as Corner, cx: px + pw, cy: py },
-                      { corner: 'bl' as Corner, cx: px, cy: py + ph },
-                      { corner: 'br' as Corner, cx: px + pw, cy: py + ph },
+                      { corner: 'tl' as Corner, cx: 0, cy: 0 },
+                      { corner: 'tr' as Corner, cx: pw, cy: 0 },
+                      { corner: 'bl' as Corner, cx: 0, cy: 0 + ph },
+                      { corner: 'br' as Corner, cx: pw, cy: 0 + ph },
                     ]).map(({ corner, cx, cy }) => (
                       <Circle
                         key={corner}
