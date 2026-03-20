@@ -1,666 +1,383 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
-import { Stage, Layer, Rect, Text, Circle, Line, Group } from 'react-konva'
-import type { DockSection } from '@/app/configurator/page'
+import { useRef, useState, useEffect, useCallback } from 'react'
+import dynamic from 'next/dynamic'
 
-const CELL = 32         // px per foot at scale 1
-const MIN_FT = 2
-const VIRTUAL_CELLS = 125
-const VIRTUAL_SIZE = VIRTUAL_CELLS * CELL  // 4000px = 125 ft canvas
-const MIN_SCALE = 0.25
-const MAX_SCALE = 3.0
-const DEFAULT_SCALE = 1.0
-
-type Corner = 'tl' | 'tr' | 'bl' | 'br'
-
-interface DrawState {
-  x0: number; y0: number; x1: number; y1: number
-}
-
-interface ResizeState {
-  sectionId: string
-  corner: Corner
-  startX: number
-  startY: number
-  orig: { gx: number; gy: number; gw: number; gh: number }
-}
-
-interface PanStart {
-  clientX: number
-  clientY: number
-  stageX: number
-  stageY: number
+// Types
+export interface DockSection {
+  id: string
+  gx: number  // grid x
+  gy: number  // grid y
+  gw: number  // grid width
+  gh: number  // grid height
 }
 
 interface Props {
   sections: DockSection[]
+  selectedColor: string
   priceRate: number
-  selectedId: string | null
-  selectedColor?: string
   onAdd: (s: DockSection) => void
-  onUpdate: (id: string, changes: Partial<DockSection>) => void
+  onMove: (id: string, gx: number, gy: number) => void
   onDelete: (id: string) => void
-  onSelect: (id: string) => void
-  onMove?: (id: string, newGX: number, newGY: number) => void
-  mode?: 'draw' | 'move'
-  onDeselect: () => void
-  onFirstDraw?: () => void
 }
 
-function snapPx(px: number): number { return Math.round(px / CELL) * CELL }
+const CELL = 20  // pixels per foot at 1x zoom
 
-function hexToRgba(hex: string, alpha: number): string {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
   return `rgba(${r},${g},${b},${alpha})`
 }
-function snapFt(px: number): number { return Math.round(px / CELL) }
 
-const btnBase: React.CSSProperties = {
-  width: '32px', height: '32px',
-  background: 'rgba(14,20,51,0.92)',
-  border: '1px solid rgba(138,149,201,0.35)',
-  borderRadius: '6px',
-  color: '#EEF1FA',
-  fontSize: '20px',
-  lineHeight: '1',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  userSelect: 'none' as const,
-  flexShrink: 0,
+function snapToGrid(val: number) {
+  return Math.round(val / CELL) * CELL
 }
 
-export default function ConfiguratorCanvas({
-  sections, priceRate, selectedId, selectedColor = '#8B6914', onAdd, onUpdate, onDelete, onSelect, onMove, onDeselect, onFirstDraw, mode = 'draw',
-}: Props) {
-  const [drawing, setDrawing] = useState<DrawState | null>(null)
-  const [resizing, setResizing] = useState<ResizeState | null>(null)
-  const [stageSize, setStageSize] = useState({ width: 800, height: 520 })
-  const [scale, setScale] = useState(DEFAULT_SCALE)
-  const [stagePos, setStagePos] = useState({ x: 0, y: 0 })
-  const [isPanning, setIsPanning] = useState(false)
-  const [spacePressed, setSpacePressed] = useState(false)
-
+export default function ConfiguratorCanvas({ sections, selectedColor, priceRate, onAdd, onMove, onDelete }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const stageRef = useRef<any>(null)
-  const isSectionDragRef = useRef(false)
-  const drawingRef = useRef<DrawState | null>(null)
-  const resizingRef = useRef<ResizeState | null>(null)
-  const hasDrawnRef = useRef(false)
+  const [canvasSize, setCanvasSize] = useState({ w: 800, h: 500 })
+  
+  // State refs (avoid re-render on every mouse move)
+  const stateRef = useRef({
+    drawing: false,
+    drawStart: { x: 0, y: 0 },
+    drawCurrent: { x: 0, y: 0 },
+    dragging: false,
+    dragId: null as string | null,
+    dragOffsetX: 0,
+    dragOffsetY: 0,
+    dragStartGX: 0,
+    dragStartGY: 0,
+    scale: 1,
+    panX: 0,
+    panY: 0,
+    panning: false,
+    panStart: { x: 0, y: 0, panX: 0, panY: 0 },
+    lastTouchDist: 0,
+    sections: sections,
+    selectedColor: selectedColor,
+    priceRate: priceRate,
+  })
+  
+  // Keep stateRef in sync
+  stateRef.current.sections = sections
+  stateRef.current.selectedColor = selectedColor
+  stateRef.current.priceRate = priceRate
 
-  // Refs for use inside event handlers (avoid stale closures)
-  const scaleRef = useRef(DEFAULT_SCALE)
-  const stagePosRef = useRef({ x: 0, y: 0 })
-  const isPanningRef = useRef(false)
-  const panStartRef = useRef<PanStart | null>(null)
-  const spacePressedRef = useRef(false)
-  const lastTouchDistRef = useRef<number | null>(null)
+  // Draw everything to canvas
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const { w, h } = canvasSize
+    const { scale, panX, panY, drawing, drawStart, drawCurrent, sections, selectedColor, priceRate } = stateRef.current
 
-  // Keep refs in sync with state
-  useEffect(() => { scaleRef.current = scale }, [scale])
-  useEffect(() => { stagePosRef.current = stagePos }, [stagePos])
+    ctx.clearRect(0, 0, w, h)
+    
+    // Background
+    ctx.fillStyle = '#070c22'
+    ctx.fillRect(0, 0, w, h)
+    
+    // Apply transform
+    ctx.save()
+    ctx.translate(panX, panY)
+    ctx.scale(scale, scale)
+    
+    // Grid
+    ctx.strokeStyle = 'rgba(138,149,201,0.08)'
+    ctx.lineWidth = 0.5 / scale
+    const gridW = Math.ceil(w / scale / CELL) + 2
+    const gridH = Math.ceil(h / scale / CELL) + 2
+    const startX = Math.floor(-panX / scale / CELL) * CELL
+    const startY = Math.floor(-panY / scale / CELL) * CELL
+    for (let i = 0; i <= gridW; i++) {
+      const x = startX + i * CELL
+      ctx.beginPath(); ctx.moveTo(x, startY); ctx.lineTo(x, startY + (gridH + 1) * CELL); ctx.stroke()
+    }
+    for (let i = 0; i <= gridH; i++) {
+      const y = startY + i * CELL
+      ctx.beginPath(); ctx.moveTo(startX, y); ctx.lineTo(startX + (gridW + 1) * CELL, y); ctx.stroke()
+    }
+    
+    // Sections
+    sections.forEach(s => {
+      const x = s.gx * CELL
+      const y = s.gy * CELL
+      const pw = s.gw * CELL
+      const ph = s.gh * CELL
+      const sqft = s.gw * s.gh
+      
+      // Fill
+      ctx.fillStyle = hexToRgba(selectedColor, 0.75)
+      ctx.beginPath()
+      const r = 3 / scale
+      ctx.roundRect(x + 2, y + 2, pw - 4, ph - 4, r)
+      ctx.fill()
+      
+      // Border
+      ctx.strokeStyle = 'rgba(238,241,250,0.6)'
+      ctx.lineWidth = 1 / scale
+      ctx.stroke()
+      
+      // Label
+      const fontSize = Math.max(8, Math.min(12, (pw / 4) / scale))
+      ctx.font = `bold ${fontSize}px Inter, sans-serif`
+      ctx.fillStyle = '#EEF1FA'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(`${s.gw} × ${s.gh} ft`, x + pw/2, y + ph/2 - fontSize*0.6)
+      ctx.font = `${fontSize * 0.85}px Inter, sans-serif`
+      ctx.fillStyle = '#8A95C9'
+      ctx.fillText(`$${(sqft * priceRate).toLocaleString()}`, x + pw/2, y + ph/2 + fontSize*0.7)
+    })
+    
+    // Draw preview
+    if (drawing) {
+      const x = Math.min(drawStart.x, drawCurrent.x)
+      const y = Math.min(drawStart.y, drawCurrent.y)
+      const pw = Math.abs(drawCurrent.x - drawStart.x)
+      const ph = Math.abs(drawCurrent.y - drawStart.y)
+      if (pw > 0 && ph > 0) {
+        ctx.fillStyle = hexToRgba(selectedColor, 0.35)
+        ctx.strokeStyle = selectedColor
+        ctx.lineWidth = 1.5 / scale
+        ctx.setLineDash([5/scale, 3/scale])
+        ctx.beginPath(); ctx.roundRect(x, y, pw, ph, 3/scale); ctx.fill(); ctx.stroke()
+        ctx.setLineDash([])
+        const wFt = Math.round(pw / CELL)
+        const hFt = Math.round(ph / CELL)
+        if (wFt > 0 && hFt > 0) {
+          ctx.font = `bold ${12/scale}px Inter, sans-serif`
+          ctx.fillStyle = '#EEF1FA'
+          ctx.textAlign = 'left'
+          ctx.textBaseline = 'top'
+          ctx.fillText(`${wFt} × ${hFt} ft`, x + 4/scale, y + 4/scale)
+        }
+      }
+    }
+    
+    ctx.restore()
+  }, [canvasSize])
+
+  // Convert screen coords to canvas/grid coords
+  const screenToCanvas = (cx: number, cy: number) => {
+    const { scale, panX, panY } = stateRef.current
+    return {
+      x: (cx - panX) / scale,
+      y: (cy - panY) / scale,
+    }
+  }
+
+  const getCanvasXY = (e: MouseEvent | Touch) => {
+    const canvas = canvasRef.current
+    if (!canvas) return { x: 0, y: 0 }
+    const rect = canvas.getBoundingClientRect()
+    return screenToCanvas(e.clientX - rect.left, e.clientY - rect.top)
+  }
+
+  // Hit test — returns section id or null
+  const hitTest = (cx: number, cy: number) => {
+    const { sections } = stateRef.current
+    // Check in reverse order (top sections first)
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const s = sections[i]
+      if (cx >= s.gx * CELL && cx <= (s.gx + s.gw) * CELL &&
+          cy >= s.gy * CELL && cy <= (s.gy + s.gh) * CELL) {
+        return s.id
+      }
+    }
+    return null
+  }
+
+  // Pointer down
+  const onPointerDown = (cx: number, cy: number) => {
+    const pos = screenToCanvas(cx, cy)
+    const hit = hitTest(pos.x, pos.y)
+    
+    if (hit) {
+      // Start drag
+      const s = stateRef.current.sections.find(sec => sec.id === hit)!
+      stateRef.current.dragging = true
+      stateRef.current.dragId = hit
+      stateRef.current.dragOffsetX = pos.x - s.gx * CELL
+      stateRef.current.dragOffsetY = pos.y - s.gy * CELL
+      stateRef.current.dragStartGX = s.gx
+      stateRef.current.dragStartGY = s.gy
+    } else {
+      // Start draw
+      const snap = { x: snapToGrid(pos.x), y: snapToGrid(pos.y) }
+      stateRef.current.drawing = true
+      stateRef.current.drawStart = snap
+      stateRef.current.drawCurrent = snap
+    }
+    draw()
+  }
+
+  const onPointerMove = (cx: number, cy: number) => {
+    const pos = screenToCanvas(cx, cy)
+    const st = stateRef.current
+    
+    if (st.dragging && st.dragId) {
+      const newGX = Math.max(0, Math.round((pos.x - st.dragOffsetX) / CELL))
+      const newGY = Math.max(0, Math.round((pos.y - st.dragOffsetY) / CELL))
+      // Update locally for smooth preview
+      const sec = st.sections.find(s => s.id === st.dragId)
+      if (sec) {
+        sec.gx = newGX
+        sec.gy = newGY
+      }
+      draw()
+    } else if (st.drawing) {
+      st.drawCurrent = { x: snapToGrid(pos.x), y: snapToGrid(pos.y) }
+      draw()
+    }
+  }
+
+  const onPointerUp = (cx: number, cy: number) => {
+    const pos = screenToCanvas(cx, cy)
+    const st = stateRef.current
+    
+    if (st.dragging && st.dragId) {
+      const newGX = Math.max(0, Math.round((pos.x - st.dragOffsetX) / CELL))
+      const newGY = Math.max(0, Math.round((pos.y - st.dragOffsetY) / CELL))
+      onMove(st.dragId, newGX, newGY)
+      st.dragging = false
+      st.dragId = null
+    } else if (st.drawing) {
+      const x = Math.min(st.drawStart.x, st.drawCurrent.x)
+      const y = Math.min(st.drawStart.y, st.drawCurrent.y)
+      const gw = Math.max(1, Math.round(Math.abs(st.drawCurrent.x - st.drawStart.x) / CELL))
+      const gh = Math.max(1, Math.round(Math.abs(st.drawCurrent.y - st.drawStart.y) / CELL))
+      if (gw > 0 && gh > 0) {
+        onAdd({
+          id: `s${Date.now()}`,
+          gx: Math.round(x / CELL),
+          gy: Math.round(y / CELL),
+          gw, gh
+        })
+      }
+      st.drawing = false
+      st.drawStart = { x: 0, y: 0 }
+      st.drawCurrent = { x: 0, y: 0 }
+    }
+    draw()
+  }
 
   // Resize observer
   useEffect(() => {
-    function update() {
-      if (containerRef.current) {
-        const w = containerRef.current.offsetWidth
-        setStageSize({ width: w, height: Math.max(460, Math.round(w * 0.6)) })
-      }
-    }
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-
-  // Space key for pan mode
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.code === 'Space' && !e.repeat &&
-          !(e.target instanceof HTMLInputElement) &&
-          !(e.target instanceof HTMLTextAreaElement)) {
-        e.preventDefault()
-        spacePressedRef.current = true
-        setSpacePressed(true)
-      }
-    }
-    function onKeyUp(e: KeyboardEvent) {
-      if (e.code === 'Space') {
-        spacePressedRef.current = false
-        setSpacePressed(false)
-        if (isPanningRef.current) {
-          isPanningRef.current = false
-          setIsPanning(false)
-          panStartRef.current = null
-        }
-      }
-    }
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('keyup', onKeyUp)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('keyup', onKeyUp)
-    }
-  }, [])
-
-  // Native DOM events: wheel zoom + middle/space pan (bypasses Konva cancelBubble)
-  useEffect(() => {
     const container = containerRef.current
     if (!container) return
-
-    function onWheel(e: WheelEvent) {
-      e.preventDefault()
-      const stage = stageRef.current
-      if (!stage) return
-      const pointer = stage.getPointerPosition()
-      if (!pointer) return
-
-      const scaleBy = 1.08
-      const oldScale = scaleRef.current
-      const direction = e.deltaY < 0 ? 1 : -1
-      const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE,
-        direction > 0 ? oldScale * scaleBy : oldScale / scaleBy))
-
-      const mousePointTo = {
-        x: (pointer.x - stagePosRef.current.x) / oldScale,
-        y: (pointer.y - stagePosRef.current.y) / oldScale,
-      }
-      const newPos = {
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale,
-      }
-
-      scaleRef.current = newScale
-      stagePosRef.current = newPos
-      setScale(newScale)
-      setStagePos(newPos)
-    }
-
-    function onMouseDown(e: MouseEvent) {
-      const isMid = e.button === 1
-      const isSpaceDrag = e.button === 0 && spacePressedRef.current
-      if (isMid || isSpaceDrag) {
-        e.preventDefault()
-        panStartRef.current = {
-          clientX: e.clientX, clientY: e.clientY,
-          stageX: stagePosRef.current.x, stageY: stagePosRef.current.y,
-        }
-        isPanningRef.current = true
-        setIsPanning(true)
-      }
-    }
-
-    function onMouseMove(e: MouseEvent) {
-      if (isPanningRef.current && panStartRef.current) {
-        const dx = e.clientX - panStartRef.current.clientX
-        const dy = e.clientY - panStartRef.current.clientY
-        const newPos = {
-          x: panStartRef.current.stageX + dx,
-          y: panStartRef.current.stageY + dy,
-        }
-        stagePosRef.current = newPos
-        setStagePos(newPos)
-      }
-    }
-
-    function onMouseUp(e: MouseEvent) {
-      if (isPanningRef.current && (e.button === 1 || e.button === 0)) {
-        isPanningRef.current = false
-        setIsPanning(false)
-        panStartRef.current = null
-      }
-    }
-
-    function onTouchStartNative(e: TouchEvent) {
-      if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX
-        const dy = e.touches[0].clientY - e.touches[1].clientY
-        lastTouchDistRef.current = Math.sqrt(dx * dx + dy * dy)
-        e.preventDefault()
-      }
-    }
-
-    function onTouchMoveNative(e: TouchEvent) {
-      if (e.touches.length === 2 && lastTouchDistRef.current !== null) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX
-        const dy = e.touches[0].clientY - e.touches[1].clientY
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const factor = dist / lastTouchDistRef.current
-        lastTouchDistRef.current = dist
-
-        const oldScale = scaleRef.current
-        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, oldScale * factor))
-
-        const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2
-        const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2
-        const rect = container?.getBoundingClientRect()
-        if (!rect) return
-        const px = cx - rect.left
-        const py = cy - rect.top
-
-        const pointTo = {
-          x: (px - stagePosRef.current.x) / oldScale,
-          y: (py - stagePosRef.current.y) / oldScale,
-        }
-        const newPos = {
-          x: px - pointTo.x * newScale,
-          y: py - pointTo.y * newScale,
-        }
-
-        scaleRef.current = newScale
-        stagePosRef.current = newPos
-        setScale(newScale)
-        setStagePos(newPos)
-        e.preventDefault()
-      }
-    }
-
-    function onTouchEndNative(e: TouchEvent) {
-      if (e.touches.length < 2) lastTouchDistRef.current = null
-    }
-
-    // Prevent middle-click scroll
-    container.addEventListener('wheel', onWheel, { passive: false })
-    container.addEventListener('mousedown', onMouseDown)
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-    container.addEventListener('touchstart', onTouchStartNative, { passive: false })
-    container.addEventListener('touchmove', onTouchMoveNative, { passive: false })
-    container.addEventListener('touchend', onTouchEndNative)
-
-    return () => {
-      container.removeEventListener('wheel', onWheel)
-      container.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-      container.removeEventListener('touchstart', onTouchStartNative)
-      container.removeEventListener('touchmove', onTouchMoveNative)
-      container.removeEventListener('touchend', onTouchEndNative)
-    }
+    const ro = new ResizeObserver(() => {
+      const w = container.clientWidth
+      const h = Math.max(400, Math.round(w * 0.6))
+      setCanvasSize({ w, h })
+    })
+    ro.observe(container)
+    return () => ro.disconnect()
   }, [])
 
-  // Convert screen pointer to canvas coords (accounts for scale + pan)
-  function getPos(): { x: number; y: number } | null {
-    const stage = stageRef.current
-    if (!stage) return null
-    const pos = stage.getPointerPosition()
-    if (!pos) return null
-    const s = scaleRef.current
-    return {
-      x: Math.max(0, (pos.x - stagePosRef.current.x) / s),
-      y: Math.max(0, (pos.y - stagePosRef.current.y) / s),
+  // Draw on every change
+  useEffect(() => { draw() }, [draw, sections, selectedColor, canvasSize])
+
+  // Mouse events
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const onMD = (e: MouseEvent) => {
+      if (e.button !== 0) return
+      e.preventDefault()
+      const rect = canvas.getBoundingClientRect()
+      onPointerDown(e.clientX - rect.left, e.clientY - rect.top)
     }
-  }
-
-  // Konva Stage events — drawing & resizing only (panning handled by native above)
-  function handleMouseDown(e: any) {
-    if (isPanningRef.current) return
-    if (mode === 'move') return
-    if (isSectionDragRef.current) return  // Don't draw when dragging a section
-    const name: string = e.target?.name?.() ?? ''
-    if (name !== 'bg' && e.target !== stageRef.current) return
-    onDeselect()
-    const pos = getPos()
-    if (!pos) return
-    const s: DrawState = { x0: snapPx(pos.x), y0: snapPx(pos.y), x1: snapPx(pos.x), y1: snapPx(pos.y) }
-    drawingRef.current = s
-    setDrawing(s)
-  }
-
-  function handleMouseMove(e: any) {
-    if (isPanningRef.current) return
-    const pos = getPos()
-    if (!pos) return
-
-    if (drawingRef.current) {
-      const s = { ...drawingRef.current, x1: snapPx(pos.x), y1: snapPx(pos.y) }
-      drawingRef.current = s
-      setDrawing(s)
-      return
+    const onMM = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      onPointerMove(e.clientX - rect.left, e.clientY - rect.top)
+    }
+    const onMU = (e: MouseEvent) => {
+      if (e.button !== 0) return
+      const rect = canvas.getBoundingClientRect()
+      onPointerUp(e.clientX - rect.left, e.clientY - rect.top)
     }
 
-    if (resizingRef.current) {
-      const r = resizingRef.current
-      const dx = snapFt(pos.x) - snapFt(r.startX)
-      const dy = snapFt(pos.y) - snapFt(r.startY)
-      const o = r.orig
-      let gx = o.gx, gy = o.gy, gw = o.gw, gh = o.gh
-      switch (r.corner) {
-        case 'br': gw = Math.max(MIN_FT, o.gw + dx); gh = Math.max(MIN_FT, o.gh + dy); break
-        case 'bl': gx = Math.min(o.gx + o.gw - MIN_FT, o.gx + dx); gw = Math.max(MIN_FT, o.gx + o.gw - gx); gh = Math.max(MIN_FT, o.gh + dy); break
-        case 'tr': gy = Math.min(o.gy + o.gh - MIN_FT, o.gy + dy); gw = Math.max(MIN_FT, o.gw + dx); gh = Math.max(MIN_FT, o.gy + o.gh - gy); break
-        case 'tl': gx = Math.min(o.gx + o.gw - MIN_FT, o.gx + dx); gy = Math.min(o.gy + o.gh - MIN_FT, o.gy + dy); gw = Math.max(MIN_FT, o.gx + o.gw - gx); gh = Math.max(MIN_FT, o.gy + o.gh - gy); break
+    // Touch events
+    const onTD = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault()
+        const rect = canvas.getBoundingClientRect()
+        const t = e.touches[0]
+        onPointerDown(t.clientX - rect.left, t.clientY - rect.top)
       }
-      onUpdate(r.sectionId, { gx, gy, gw, gh })
     }
-  }
-
-  function handleMouseUp() {
-    if (isPanningRef.current) return
-    if (drawingRef.current) {
-      const d = drawingRef.current
-      const dragged = Math.abs(d.x1 - d.x0) >= CELL || Math.abs(d.y1 - d.y0) >= CELL
-      if (dragged) {
-        const px = Math.min(d.x0, d.x1)
-        const py = Math.min(d.y0, d.y1)
-        const gw = Math.max(MIN_FT, Math.abs(snapFt(d.x1) - snapFt(d.x0)))
-        const gh = Math.max(MIN_FT, Math.abs(snapFt(d.y1) - snapFt(d.y0)))
-        onAdd({ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, gx: snapFt(px), gy: snapFt(py), gw, gh })
-        if (!hasDrawnRef.current) { hasDrawnRef.current = true; onFirstDraw?.() }
+    const onTM = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault()
+        const rect = canvas.getBoundingClientRect()
+        const t = e.touches[0]
+        onPointerMove(t.clientX - rect.left, t.clientY - rect.top)
       }
-      drawingRef.current = null
-      setDrawing(null)
     }
-    if (resizingRef.current) {
-      resizingRef.current = null
-      setResizing(null)
+    const onTU = (e: TouchEvent) => {
+      if (e.changedTouches.length > 0) {
+        const rect = canvas.getBoundingClientRect()
+        const t = e.changedTouches[0]
+        onPointerUp(t.clientX - rect.left, t.clientY - rect.top)
+      }
     }
-  }
 
-  function startResize(e: any, sectionId: string, corner: Corner, s: DockSection) {
-    e.cancelBubble = true
-    const pos = getPos()
-    if (!pos) return
-    const rs: ResizeState = { sectionId, corner, startX: pos.x, startY: pos.y, orig: { gx: s.gx, gy: s.gy, gw: s.gw, gh: s.gh } }
-    resizingRef.current = rs
-    setResizing(rs)
-  }
-
-  // Touch wrappers (single-touch drawing; multi-touch pinch handled natively)
-  function onTouchStart(e: any) {
-    if (e.evt?.touches?.length !== 1) return
-    // If touching a section (has id), let Konva draggable handle it — don't draw
-    const targetId: string = e.target?.id ? e.target.id() : ''
-    const hitSection = targetId && targetId !== '' && e.target !== stageRef.current
-    if (hitSection) return  // Konva Group draggable takes over
-    // Touching empty canvas — draw
-    e.evt?.preventDefault()
-    handleMouseDown(e)
-  }
-  function onTouchMove(e: any) {
-    if (e.evt?.touches?.length === 1 && !isSectionDragRef.current) { e.evt?.preventDefault(); handleMouseMove(e) }
-  }
-  function onTouchEnd() { if (!isSectionDragRef.current) handleMouseUp() }
-
-  // Zoom button helpers
-  function adjustZoom(factor: number) {
-    const oldScale = scaleRef.current
-    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, oldScale * factor))
-    const cx = stageSize.width / 2
-    const cy = stageSize.height / 2
-    const pointTo = {
-      x: (cx - stagePosRef.current.x) / oldScale,
-      y: (cy - stagePosRef.current.y) / oldScale,
+    // Wheel zoom
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      const st = stateRef.current
+      const rect = canvas.getBoundingClientRect()
+      const mouseX = e.clientX - rect.left
+      const mouseY = e.clientY - rect.top
+      const factor = e.deltaY < 0 ? 1.1 : 0.9
+      const newScale = Math.max(0.3, Math.min(4, st.scale * factor))
+      st.panX = mouseX - (mouseX - st.panX) * (newScale / st.scale)
+      st.panY = mouseY - (mouseY - st.panY) * (newScale / st.scale)
+      st.scale = newScale
+      draw()
     }
-    const newPos = {
-      x: cx - pointTo.x * newScale,
-      y: cy - pointTo.y * newScale,
+
+    canvas.addEventListener('mousedown', onMD)
+    window.addEventListener('mousemove', onMM)
+    window.addEventListener('mouseup', onMU)
+    canvas.addEventListener('touchstart', onTD, { passive: false })
+    window.addEventListener('touchmove', onTM, { passive: false })
+    window.addEventListener('touchend', onTU)
+    canvas.addEventListener('wheel', onWheel, { passive: false })
+
+    return () => {
+      canvas.removeEventListener('mousedown', onMD)
+      window.removeEventListener('mousemove', onMM)
+      window.removeEventListener('mouseup', onMU)
+      canvas.removeEventListener('touchstart', onTD)
+      window.removeEventListener('touchmove', onTM)
+      window.removeEventListener('touchend', onTU)
+      canvas.removeEventListener('wheel', onWheel)
     }
-    scaleRef.current = newScale
-    stagePosRef.current = newPos
-    setScale(newScale)
-    setStagePos(newPos)
-  }
+  }, [canvasSize, onAdd, onMove, onDelete])
 
-  function resetView() {
-    scaleRef.current = DEFAULT_SCALE
-    stagePosRef.current = { x: 0, y: 0 }
-    setScale(DEFAULT_SCALE)
-    setStagePos({ x: 0, y: 0 })
-    if (stageRef.current) {
-      stageRef.current.scale({ x: DEFAULT_SCALE, y: DEFAULT_SCALE })
-      stageRef.current.position({ x: 0, y: 0 })
-      stageRef.current.batchDraw()
-    }
-  }
-
-  // Draw preview
-  let preview = null
-  if (drawing) {
-    const px = Math.min(drawing.x0, drawing.x1)
-    const py = Math.min(drawing.y0, drawing.y1)
-    const pw = Math.max(MIN_FT * CELL, Math.abs(drawing.x1 - drawing.x0))
-    const ph = Math.max(MIN_FT * CELL, Math.abs(drawing.y1 - drawing.y0))
-    const wFt = Math.max(MIN_FT, Math.abs(snapFt(drawing.x1) - snapFt(drawing.x0)))
-    const hFt = Math.max(MIN_FT, Math.abs(snapFt(drawing.y1) - snapFt(drawing.y0)))
-    preview = (
-      <Group listening={false}>
-        <Rect x={px} y={py} width={pw} height={ph} fill={hexToRgba(selectedColor, 0.28)} stroke={selectedColor} strokeWidth={1.5} dash={[6, 3]} cornerRadius={3} />
-        <Text x={px + 8} y={py + 8} text={`${wFt} × ${hFt} ft`} fill="#EEF1FA" fontSize={13} fontStyle="bold" />
-        <Text x={px + 8} y={py + 26} text={`$${(wFt * hFt * priceRate).toLocaleString()}`} fill="#4ade80" fontSize={11} />
-      </Group>
-    )
-  }
-
-  // Grid lines for virtual canvas
-  const gridLines: React.ReactNode[] = []
-  for (let c = 0; c <= VIRTUAL_CELLS; c++) gridLines.push(
-    <Line key={`v${c}`} points={[c * CELL, 0, c * CELL, VIRTUAL_SIZE]} stroke="rgba(138,149,201,0.055)" strokeWidth={1} listening={false} />
-  )
-  for (let r = 0; r <= VIRTUAL_CELLS; r++) gridLines.push(
-    <Line key={`h${r}`} points={[0, r * CELL, VIRTUAL_SIZE, r * CELL]} stroke="rgba(138,149,201,0.055)" strokeWidth={1} listening={false} />
-  )
-
-  // Shore line anchored at bottom of initial viewport in canvas coords
-  const SHORE_Y = stageSize.height - CELL
-
-  const orderedSections = selectedId
-    ? [...sections.filter(s => s.id !== selectedId), ...sections.filter(s => s.id === selectedId)]
-    : sections
-
-  const cursor = isPanning ? 'grabbing' : spacePressed ? 'grab' : drawing ? 'crosshair' : resizing ? 'nwse-resize' : 'crosshair'
-  const pxPerFt = Math.round(CELL * scale)
+  const cursor = stateRef.current.dragging ? 'grabbing' : stateRef.current.drawing ? 'crosshair' : 'crosshair'
 
   return (
-    <div ref={containerRef} style={{ width: '100%', cursor, position: 'relative' }}>
-
-      {/* Zoom controls — top-right overlay */}
+    <div ref={containerRef} style={{ width: '100%', position: 'relative', cursor }}>
+      <canvas
+        ref={canvasRef}
+        width={canvasSize.w}
+        height={canvasSize.h}
+        style={{ display: 'block', width: '100%', touchAction: 'none' }}
+      />
       <div style={{
-        position: 'absolute', top: '10px', right: '10px', zIndex: 10,
-        display: 'flex', flexDirection: 'column', gap: '4px',
-        pointerEvents: 'all',
+        position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)',
+        fontSize: '11px', color: 'rgba(138,149,201,0.6)', pointerEvents: 'none',
+        background: 'rgba(7,12,34,0.7)', padding: '4px 10px', borderRadius: '20px',
       }}>
-        <button onClick={() => adjustZoom(1.2)} title="Zoom in" style={btnBase}>+</button>
-        <button onClick={() => adjustZoom(1 / 1.2)} title="Zoom out" style={btnBase}>−</button>
-        <button
-          onClick={resetView}
-          title="Reset view"
-          style={{ ...btnBase, fontSize: '10px', width: 'auto', padding: '0 6px', letterSpacing: '0.02em' }}
-        >Reset</button>
-      </div>
-
-      <Stage
-        ref={stageRef}
-        width={stageSize.width}
-        height={stageSize.height}
-        x={stagePos.x}
-        y={stagePos.y}
-        scaleX={scale}
-        scaleY={scale}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <Layer>
-          {/* Full virtual canvas background */}
-          <Rect name="bg" x={0} y={0} width={VIRTUAL_SIZE} height={VIRTUAL_SIZE} fill="#070c22" />
-          {gridLines}
-          {/* Shore line */}
-          <Rect x={0} y={SHORE_Y} width={VIRTUAL_SIZE} height={CELL} fill="rgba(138,149,201,0.04)" listening={false} />
-          <Line points={[0, SHORE_Y, VIRTUAL_SIZE, SHORE_Y]} stroke="rgba(138,149,201,0.22)" strokeWidth={2} dash={[8, 4]} listening={false} />
-          <Text x={8} y={SHORE_Y + 8} text="SHORE" fill="rgba(138,149,201,0.3)" fontSize={10} fontStyle="bold" listening={false} />
-        </Layer>
-
-        <Layer>
-          {orderedSections.map(s => {
-            const px = s.gx * CELL
-            const py = s.gy * CELL
-            const pw = s.gw * CELL
-            const ph = s.gh * CELL
-            const sqft = s.gw * s.gh
-            const price = sqft * priceRate
-            const sel = selectedId === s.id
-            return (
-              <Group
-                key={s.id}
-                x={px} y={py}
-                draggable={true}
-                onDragStart={(e) => { e.cancelBubble = true; isSectionDragRef.current = true }}
-                onDragEnd={(e) => {
-                  e.cancelBubble = true
-                  isSectionDragRef.current = false
-                  if (!onMove) return
-                  // Group offset from its origin after drag
-                  // After drag, node.x()/y() = new absolute position of group
-                  const newGX = Math.max(0, Math.round(e.target.x() / CELL))
-                  const newGY = Math.max(0, Math.round(e.target.y() / CELL))
-                  e.target.position({ x: s.gx * CELL, y: s.gy * CELL })
-                  onDeselect()
-                  onMove(s.id, newGX, newGY)
-                }}
-              >
-                <Rect
-                  x={2} y={2} width={pw - 4} height={ph - 4}
-                  fill={sel ? hexToRgba(selectedColor, 0.9) : hexToRgba(selectedColor, 0.65)}
-                  stroke={sel ? '#EEF1FA' : 'rgba(238,241,250,0.4)'}
-                  strokeWidth={sel ? 2 : 1}
-                  cornerRadius={4}
-                  id={s.id}
-                  onMouseDown={(e) => {
-                    e.cancelBubble = true
-                    onSelect(s.id)
-                    const stage = e.target.getStage()
-                    if (!stage) return
-                    const startGX = s.gx, startGY = s.gy
-                    const scale = stage.scaleX()
-                    const startPtr = stage.getPointerPosition()
-                    if (!startPtr) return
-                    const container = stage.container()
-                    container.style.cursor = 'grabbing'
-                    let lastGX = startGX, lastGY = startGY
-                    function onMM(ev: MouseEvent) {
-                      const containerRect = container.getBoundingClientRect()
-                      const stageX = stage?.x() ?? 0; const stageY = stage?.y() ?? 0; const px = (ev.clientX - containerRect.left - stageX) / scale
-                      const py = (ev.clientY - containerRect.top - stageY) / scale
-                      const startPxX = (startPtr!.x - (stage?.x() ?? 0)) / scale
-                      const startPyY = (startPtr!.y - (stage?.y() ?? 0)) / scale  
-                      const newGX = Math.max(0, startGX + Math.round((px - startPxX) / CELL))
-                      const newGY = Math.max(0, startGY + Math.round((py - startPyY) / CELL))
-                      if ((newGX !== lastGX || newGY !== lastGY) && onMove) {
-                        lastGX = newGX; lastGY = newGY
-                        onMove(s.id, newGX, newGY)
-                      }
-                    }
-                    function onMU() {
-                      isSectionDragRef.current = false
-                      container.style.cursor = 'crosshair'
-                      window.removeEventListener('mousemove', onMM)
-                      window.removeEventListener('mouseup', onMU)
-                    }
-                    window.addEventListener('mousemove', onMM)
-                    window.addEventListener('mouseup', onMU)
-                  }}
-                  onMouseEnter={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = mode === 'move' ? 'grab' : 'pointer'; }}
-                  onMouseLeave={(e) => { const stage = e.target.getStage(); if (stage) stage.container().style.cursor = mode === 'move' ? 'grab' : 'crosshair'; }}
-                  onTouchStart={(e) => {
-                    e.cancelBubble = true
-                    if (mode === 'move') {
-                      e.evt.preventDefault()
-                      e.evt.stopPropagation()
-                    }
-                    onSelect(s.id)
-                    // In draw mode, just select — don't drag
-                    if (mode === 'draw') return
-                    if (!onMove) return
-                    isSectionDragRef.current = true
-                    const stage = e.target.getStage()
-                    if (!stage) return
-                    const startGX = s.gx, startGY = s.gy
-                    const scale = stage.scaleX()
-                    const stageX = stage.x()
-                    const stageY = stage.y()
-                    const touch = e.evt.touches[0]
-                    if (!touch) return
-                    const container = stage.container()
-                    const containerRect = container.getBoundingClientRect()
-                    const startClientX = touch.clientX
-                    const startClientY = touch.clientY
-                    function onTM(ev: TouchEvent) {
-                      ev.preventDefault()
-                      ev.stopPropagation()
-                      const t = ev.touches[0]
-                      if (!t) return
-                      const dPxX = (t.clientX - startClientX) / scale
-                      const dPxY = (t.clientY - startClientY) / scale
-                      const dGX = Math.round(dPxX / CELL)
-                      const dGY = Math.round(dPxY / CELL)
-                      const newGX = Math.max(0, startGX + dGX)
-                      const newGY = Math.max(0, startGY + dGY)
-                      if (onMove) onMove(s.id, newGX, newGY)
-                    }
-                    function onTE() {
-                      isSectionDragRef.current = false
-                      window.removeEventListener('touchmove', onTM)
-                      window.removeEventListener('touchend', onTE)
-                    }
-                    window.addEventListener('touchmove', onTM, { passive: false })
-                    window.addEventListener('touchend', onTE)
-                  }}
-                />
-                <Text x={10} y={10} text={`${s.gw} × ${s.gh} ft`} fill="#EEF1FA" fontSize={12} fontStyle="bold" listening={false} />
-                <Text x={10} y={27} text={`${sqft} sqft — $${price.toLocaleString()}`} fill="#8A95C9" fontSize={10} listening={false} />
-
-                {sel && (
-                  <>
-                    <Group
-                      onMouseDown={(e) => { e.cancelBubble = true; onDelete(s.id) }}
-                      onTouchStart={(e) => { e.cancelBubble = true; onDelete(s.id) }}
-                    >
-                      <Rect x={pw - 26} y={4} width={22} height={22} fill="rgba(239,68,68,0.85)" cornerRadius={4} />
-                      <Text x={pw - 26 + 5} y={7} text="×" fill="#fff" fontSize={14} fontStyle="bold" listening={false} />
-                    </Group>
-
-                    {([
-                      { corner: 'tl' as Corner, cx: 0, cy: 0 },
-                      { corner: 'tr' as Corner, cx: pw, cy: 0 },
-                      { corner: 'bl' as Corner, cx: 0, cy: 0 + ph },
-                      { corner: 'br' as Corner, cx: pw, cy: 0 + ph },
-                    ]).map(({ corner, cx, cy }) => (
-                      <Circle
-                        key={corner}
-                        x={cx} y={cy} radius={7}
-                        fill="#3B4A8F" stroke="#8A95C9" strokeWidth={2}
-                        onMouseDown={(e) => startResize(e, s.id, corner, s)}
-                        onTouchStart={(e) => startResize(e, s.id, corner, s)}
-                      />
-                    ))}
-                  </>
-                )}
-              </Group>
-            )
-          })}
-
-          {preview}
-        </Layer>
-      </Stage>
-
-      {/* Scale legend */}
-      <div style={{
-        padding: '6px 12px', background: 'rgba(14,20,51,0.8)',
-        borderTop: '1px solid rgba(138,149,201,0.1)',
-        fontSize: '11px', color: '#4B5563',
-        display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '4px',
-      }}>
-        <span>Click to select · drag section to move · drag corners to resize · × to delete · scroll to zoom</span>
-        <span style={{ color: '#8A95C9', fontWeight: 600 }}>1 ft = {pxPerFt}px &nbsp;·&nbsp; {Math.round(scale * 100)}%</span>
+        Drag to draw · Touch dock to move it
       </div>
     </div>
   )

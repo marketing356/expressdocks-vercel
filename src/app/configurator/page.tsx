@@ -52,6 +52,7 @@ export default function ConfiguratorPage() {
   const colorName = WPC_COLORS.find(c => c.hex === selectedColor)?.name ?? 'Teak'
 
   function addSection(s: DockSection) { setSections(p => [...p, s]) }
+  function moveSection(id: string, gx: number, gy: number) { setSections(p => p.map(s => s.id === id ? { ...s, gx, gy } : s)) }
   function updateSection(id: string, c: Partial<DockSection>) {
     setSections(p => p.map(s => s.id === id ? { ...s, ...c } : s))
   }
@@ -218,14 +219,10 @@ export default function ConfiguratorPage() {
         <ConfiguratorCanvas
           sections={sections}
           priceRate={priceRate}
-          selectedId={selectedId}
           selectedColor={selectedColor}
           onAdd={addSection}
-          onUpdate={updateSection}
+          onMove={moveSection}
           onDelete={deleteSection}
-          onSelect={setSelectedId}
-          onDeselect={() => setSelectedId(null)}
-          onFirstDraw={() => setTimeout(() => setHintVisible(false), 2500)}
         />
 
         {hintVisible && (
