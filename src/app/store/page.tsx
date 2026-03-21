@@ -1,46 +1,55 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'ExpressDocks Store | ExpressDocks',
-  description: 'Shop dock accessories, hardware, decking components, and replacement parts. Everything you need to maintain and enhance your ExpressDocks system.',
+  title: 'Dock Accessories & Parts | ExpressDocks',
+  description: 'Dock accessories, replacement parts, and add-ons for your aluminum dock system.',
 }
 
 export default function Page() {
   return (
-    <main className="max-w-4xl mx-auto py-16 px-6">
-      <div className="text-6xl mb-6">🛒</div>
-      <h1 className="text-4xl font-bold text-[#0a1628] mb-6">ExpressDocks Store</h1>
-      <p className="text-xl text-gray-600 mb-10 leading-relaxed">Shop dock accessories, hardware, decking components, and replacement parts. Everything you need to maintain and enhance your ExpressDocks system.</p>
+    <main className="max-w-4xl mx-auto py-16 px-6" style={{ background: '#0E1433', color: '#EEF1FA', minHeight: '100vh' }}>
+      <h1 className="text-4xl font-bold text-center mb-6">Dock Accessories & Parts</h1>
+      <p className="text-xl text-center mb-10 leading-relaxed" style={{ color: '#8A95C9' }}>
+        Accessories, replacement parts, and add-ons for your ExpressDocks aluminum dock system.
+      </p>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-10">
-        <h2 className="text-2xl font-bold text-[#0a1628] mb-4">Get Your Free Custom 3D Design</h2>
-        <p className="text-gray-600 mb-6">Send us your waterfront sketch or project details. Use our free Dock Builder to design your dock instantly — or contact us and we will help.</p>
-        <a href="/contact" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold transition text-lg">
-          Request Free Quote →
+      <div className="rounded-xl p-8 mb-10" style={{ background: '#151B3D', border: '1px solid rgba(138,149,201,0.2)' }}>
+        <h2 className="text-2xl font-bold mb-4">Request Your Free Quote</h2>
+        <p className="mb-6" style={{ color: '#8A95C9' }}>Tell us what you need and we'll provide pricing.</p>
+        <a href="/contact" className="inline-block px-8 py-4 rounded-lg font-bold transition text-lg"
+          style={{ background: '#00D4FF', color: '#0E1433' }}>
+          Request Free Quote
         </a>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-12">
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">📞</div>
-          <div className="font-bold text-[#0a1628]">Call Us</div>
-          <a href="tel:8003702285" className="text-blue-600 hover:underline">800-370-2285</a>
+        <div className="p-6 rounded-xl text-center" style={{ border: '1px solid rgba(138,149,201,0.2)' }}>
+          <div className="w-8 h-8 mx-auto mb-2" style={{ color: '#00D4FF' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+          </div>
+          <div className="font-bold">Call Us</div>
+          <a href="tel:8003702285" style={{ color: '#00D4FF' }}>800-370-2285</a>
         </div>
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">✉️</div>
-          <div className="font-bold text-[#0a1628]">Email Us</div>
-          <a href="mailto:info@expressdocks.com" className="text-blue-600 hover:underline text-sm">info@expressdocks.com</a>
+        <div className="p-6 rounded-xl text-center" style={{ border: '1px solid rgba(138,149,201,0.2)' }}>
+          <div className="w-8 h-8 mx-auto mb-2" style={{ color: '#00D4FF' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <div className="font-bold">Email Us</div>
+          <a href="mailto:info@expressdocks.com" className="text-sm" style={{ color: '#00D4FF' }}>info@expressdocks.com</a>
         </div>
-        <div className="p-6 border border-gray-200 rounded-xl text-center">
-          <div className="text-3xl mb-2">🎨</div>
-          <div className="font-bold text-[#0a1628]">Free 3D Design</div>
-          <div className="text-sm text-gray-500">Instantly</div>
+        <div className="p-6 rounded-xl text-center" style={{ border: '1px solid rgba(138,149,201,0.2)' }}>
+          <div className="w-8 h-8 mx-auto mb-2" style={{ color: '#00D4FF' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+            </svg>
+          </div>
+          <div className="font-bold">Free Quote</div>
+          <span className="text-sm" style={{ color: '#8A95C9' }}>Custom pricing</span>
         </div>
-      </div>
-
-      <div className="text-center">
-        <a href="/blog" className="text-blue-600 hover:text-blue-800 font-medium mr-6">Read Our Blog →</a>
-        <a href="/pricing" className="text-blue-600 hover:text-blue-800 font-medium">View Pricing →</a>
       </div>
     </main>
   )

@@ -25,7 +25,7 @@ export default function Page() {
   return (
     <main style={{ background: '#0E1433', minHeight: '100vh', color: '#EEF1FA' }}>
       <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(138,149,201,0.2)', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <span style={{ fontWeight: 800, fontSize: '16px' }}>🎨 Dock Builder 3D — Preview</span>
+        <span style={{ fontWeight: 800, fontSize: '16px' }}>Dock Designer 3D — Preview</span>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {COLORS.map(c => (
             <button key={c.hex} title={c.name} onClick={() => setColor(c.hex)} style={{

@@ -27,9 +27,9 @@ export type DockSection = {
 }
 
 const DOCK_TYPES = [
-  { label: 'Residential',        detail: '$60/sqft', rate: 60 },
-  { label: 'Commercial',         detail: '$75/sqft', rate: 75 },
-  { label: 'Fingers / Gangways', detail: '$85/sqft', rate: 85 },
+  { label: 'Residential',        detail: 'Standard', rate: 0 },
+  { label: 'Commercial',         detail: 'Marina-grade', rate: 0 },
+  { label: 'Fingers / Gangways', detail: 'Premium', rate: 0 },
 ]
 
 const WPC_COLORS = [
@@ -123,7 +123,7 @@ export default function ConfiguratorPage() {
           dockType: DOCK_TYPES[rateIdx].label,
           sqft: totalSqft,
           renderUrl,
-          details: `DOCK BUILDER RENDER LEAD\n\nType: ${DOCK_TYPES[rateIdx].label}\nColor: ${colorName}\nTotal: ${totalSqft} sqft — $${totalPrice.toLocaleString()}\nRender: ${renderUrl}`,
+          details: `DOCK BUILDER RENDER LEAD\n\nType: ${DOCK_TYPES[rateIdx].label}\nColor: ${colorName}\nTotal: ${totalSqft} sqft\nRender: ${renderUrl}`,
         }),
       })
       setSubmitted(true)
@@ -145,14 +145,14 @@ export default function ConfiguratorPage() {
       }}>
         <div style={{ minWidth: '140px' }}>
           <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Builder</div>
-          <div style={{ color: '#4B5A90', fontSize: '11px', marginTop: '1px' }}>Free design tool</div>
+          <div style={{ color: '#4B5A90', fontSize: '11px', marginTop: '1px' }}>Design your dock</div>
         </div>
 
         <div style={{ flex: 1, textAlign: 'center' }}>
           {sections.length > 0 ? (
             <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '6px' }}>
               <span style={{ color: '#8A95C9', fontSize: '13px' }}>Total: {totalSqft} sqft —</span>
-              <span style={{ color: '#4ade80', fontWeight: 800, fontSize: '22px' }}>${totalPrice.toLocaleString()}</span>
+              <span style={{ color: '#00D4FF', fontWeight: 700, fontSize: '16px' }}>Request Quote</span>
             </div>
           ) : (
             <span style={{ color: '#374151', fontSize: '13px' }}>Draw your first section to see pricing</span>
@@ -184,7 +184,7 @@ export default function ConfiguratorPage() {
         display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap',
       }}>
         <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 800, letterSpacing: '0.05em', flexShrink: 0 }}>
-          🎨 Decking Color:
+          Decking Color:
         </span>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {WPC_COLORS.map(c => (
@@ -414,11 +414,11 @@ export default function ConfiguratorPage() {
                 borderRadius: '14px', padding: '14px 40px',
               }}>
                 <div style={{ fontSize: '11px', color: '#6B7280', marginBottom: '4px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Starting at</div>
-                <div style={{ fontSize: '42px', fontWeight: 900, color: '#4ade80', lineHeight: 1 }}>
-                  ${totalPrice.toLocaleString()}
+                <div style={{ fontSize: '42px', fontWeight: 900, color: '#00D4FF', lineHeight: 1 }}>
+                  Request Quote
                 </div>
                 <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
-                  Installed &nbsp;&middot;&nbsp; Financing available &nbsp;&middot;&nbsp; Free design consult
+                  Installed &nbsp;&middot;&nbsp; Financing available &nbsp;&middot;&nbsp; Expert consultation
                 </div>
               </div>
             </div>

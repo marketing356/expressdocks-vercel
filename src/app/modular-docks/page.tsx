@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Modular Dock Systems | ExpressDocks',
-  description: 'Flexible modular aluminum dock systems that snap together and can be reconfigured. Factory-direct from $60/sqft.',
+  description: 'Flexible modular aluminum dock systems that snap together and can be reconfigured as needed.',
 }
 
 export default function Page() {
@@ -23,7 +23,7 @@ export default function Page() {
         <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Products</p>
         <h1 className="text-5xl md:text-6xl font-black mb-6">Modular Dock Systems</h1>
         <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
-          Flexible aluminum dock systems that snap together, reconfigure easily, and last a lifetime. From <strong>$60/sqft</strong>.
+          Flexible aluminum dock systems that snap together, reconfigure easily, and last a lifetime.
         </p>
         <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105"
           style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
@@ -42,26 +42,65 @@ export default function Page() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-black mb-6" style={{ color: '#EEF1FA' }}>The Smart Choice for Flexible Waterfront Access</h2>
-            <p className="mb-4" style={{ color: 'rgba(238,241,250,0.7)' }}>Modular dock systems give you the freedom to expand, reconfigure, or relocate your dock as your needs change — without starting from scratch.</p>
-            <ul className="space-y-3" style={{ color: 'rgba(238,241,250,0.75)' }}>
-              <li className="flex items-center gap-3"><span style={{ color: '#8A95C9' }}>✓</span> Snap-together aluminum sections</li>
-              <li className="flex items-center gap-3"><span style={{ color: '#8A95C9' }}>✓</span> Easily expanded or reconfigured</li>
-              <li className="flex items-center gap-3"><span style={{ color: '#8A95C9' }}>✓</span> No welding or special tools required</li>
-              <li className="flex items-center gap-3"><span style={{ color: '#8A95C9' }}>✓</span> Same 50-year residential guarantee</li>
-              <li className="flex items-center gap-3"><span style={{ color: '#8A95C9' }}>✓</span> From <strong style={{ color: '#EEF1FA' }}>$60/sqft</strong> factory-direct</li>
+            <h2 className="text-3xl font-bold mb-6">Why Modular?</h2>
+            <p className="text-lg mb-6" style={{ color: 'rgba(238,241,250,0.8)' }}>
+              Modular means flexibility. Start with what you need today, expand when you're ready. Reconfigure your layout without replacing anything.
+            </p>
+            <ul className="space-y-3 text-lg" style={{ color: 'rgba(238,241,250,0.8)' }}>
+              <li className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                Snap-together aluminum sections
+              </li>
+              <li className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                Easily expanded or reconfigured
+              </li>
+              <li className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                No welding or special tools required
+              </li>
+              <li className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                Same 25-year warranty
+              </li>
+              <li className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                Quick and easy installation
+              </li>
             </ul>
           </div>
-          <div className="rounded-2xl p-8" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
-            <h3 className="text-2xl font-bold mb-4" style={{ color: '#EEF1FA' }}>Design Your Modular Dock</h3>
-            <p className="mb-6" style={{ color: 'rgba(238,241,250,0.7)' }}>Get a Use our Dock Builder to design your dock instantly.</p>
-            <a href="/contact" className="block text-center py-3 rounded-lg font-bold transition hover:scale-105"
-              style={{ background: '#3B4A8F', color: '#EEF1FA' }}>
-              Start Free Design →
-            </a>
+          <div className="rounded-2xl overflow-hidden">
+            <img src="/images/modular-35fa1d2a.webp" alt="Modular dock assembly" className="w-full h-auto" />
           </div>
+        </div>
+      </section>
+
+      <section className="py-16 px-6 text-center" style={{ background: '#151B3D' }}>
+        <h2 className="text-3xl font-bold mb-4">Ready to Design Your Modular Dock?</h2>
+        <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: '#8A95C9' }}>
+          Use our Dock Designer to configure your layout, or talk to our team for expert guidance.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/configurator" className="inline-block px-8 py-4 rounded-lg font-bold transition"
+            style={{ background: '#00D4FF', color: '#0E1433' }}>
+            Open Dock Designer
+          </a>
+          <a href="/contact" className="inline-block px-8 py-4 rounded-lg font-bold border transition"
+            style={{ borderColor: '#3B4A8F', color: '#EEF1FA' }}>
+            Request Free Quote
+          </a>
         </div>
       </section>
     </main>

@@ -530,3 +530,47 @@ Wade is never static. He gets smarter every week.
 Wade should eventually know more about dock questions than any single salesperson — because he has access to every conversation ever had, every question ever asked, every objection ever raised.
 
 A human salesperson forgets. Wade never forgets.
+
+---
+
+## Large Project Oversight / GC Coordination
+
+### What We Offer on Large Projects
+- For large commercial projects, we provide **construction oversight**
+- We work directly with the customer's **General Contractor (GC)** to coordinate the installation
+- We don't install ourselves — but we make sure the GC does it right
+- This includes: on-site supervision, technical guidance, quality checks during installation
+
+### Website Language (add to "What We Do" / Services section)
+"For large commercial and marina projects, we offer construction oversight — working directly with your general contractor to ensure your dock system is installed correctly from start to finish."
+
+### Wade Q&A
+**Q: Do you oversee the installation on big projects?**
+"On larger commercial projects, yes — we work directly with your GC to provide oversight and make sure everything goes in exactly right. We're there to support the install even if we're not swinging the wrench."
+
+**Q: Can you manage my contractor?**
+"We can coordinate with your general contractor on large projects — provide technical oversight, answer questions on-site, and make sure the installation matches the design we built and documented in our facility."
+
+---
+
+## Engineering Coordination — Commercial/Marina Projects
+
+### What We Offer
+- We work directly with the customer's engineer or engineering firm
+- We can provide engineering drawings, specs, and technical documentation
+- Our systems are designed to meet commercial marine standards
+- We coordinate on load ratings, pile spacing, tidal range calculations, slip dimensions
+- We speak the language — PE stamps, load calculations, site plans
+
+### Website Language (add to Commercial page)
+"Our team works directly with your engineers and project managers to ensure every specification is met. We provide complete technical documentation, engineering drawings, and material certifications for permit and approval processes."
+
+### Wade Q&A
+**Q: Do you work with engineers?**
+"Absolutely — on commercial projects we work directly with your engineering team. We provide full technical specs, material certifications, and engineering drawings. If your PE needs something specific, we'll get it to them."
+
+**Q: Do your docks meet engineering standards?**
+"Yes — our aluminum 6061-T6 systems are built to commercial marine standards. We can provide material certs, load ratings, and full documentation for your engineering review and permitting process."
+
+**Q: Can you provide engineering drawings?**
+"Yes — we provide complete engineering drawings and technical documentation for all commercial projects. Your engineer will have everything they need for permits and approvals."

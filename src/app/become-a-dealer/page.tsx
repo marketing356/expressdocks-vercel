@@ -1,18 +1,21 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Become an ExpressDocks Dealer | $50–$125/sqft Margin',
-  description: 'Offer marina-grade aluminum dock systems and keep $50–$125 per square foot in your pocket. Free to join. No inventory required. Factory-direct pricing.',
+  title: 'Become a Dealer | ExpressDocks',
+  description: 'Partner with ExpressDocks to offer premium aluminum dock systems. Factory-direct pricing, marketing support, and industry-leading warranty.',
 }
 
 export default function Page() {
   return (
     <main style={{ background: '#0E1433', color: '#EEF1FA' }}>
-      <section className="py-24 px-6 text-center" style={{ borderBottom: '1px solid rgba(138,149,201,0.15)' }}>
-        <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Dealer Program</p>
-        <h1 className="text-5xl md:text-6xl font-bold mb-6">Become an ExpressDocks Dealer</h1>
-        <p className="text-2xl mb-8 max-w-3xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
-          Offer your clients a marina-grade aluminum dock system with solid WPC decking — and keep <strong style={{ color: '#EEF1FA' }}>$50 to $125 per square foot</strong> in your pocket.
+      <section className="relative py-32 px-6 text-center" style={{
+        backgroundImage: 'linear-gradient(rgba(14,20,51,0.7), rgba(14,20,51,0.7)), url("/images/commercial-drone.webp")',
+        backgroundSize: 'cover', backgroundPosition: 'center'
+      }}>
+        <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Partner With Us</p>
+        <h1 className="text-5xl md:text-6xl font-bold mb-6">Become a Dealer</h1>
+        <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
+          Offer your customers commercial-grade aluminum docks with factory-direct pricing.
         </p>
         <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105"
           style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
@@ -21,66 +24,60 @@ export default function Page() {
       </section>
 
       <section className="max-w-6xl mx-auto py-16 px-6">
-        <div className="grid md:grid-cols-3 gap-6 mb-16 text-center">
-          <div className="p-8 rounded-2xl" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
-            <div className="text-4xl font-black mb-2" style={{ color: '#8A95C9' }}>$75</div>
-            <div className="text-sm" style={{ color: 'rgba(238,241,250,0.65)' }}>Your cost per sq ft</div>
-          </div>
-          <div className="p-8 rounded-2xl" style={{ background: '#3B4A8F', boxShadow: '0 8px 40px rgba(59,74,143,0.4)' }}>
-            <div className="text-4xl font-black mb-2" style={{ color: '#EEF1FA' }}>$150+</div>
-            <div className="text-sm" style={{ color: 'rgba(238,241,250,0.8)' }}>What you charge clients</div>
-          </div>
-          <div className="p-8 rounded-2xl" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
-            <div className="text-4xl font-black mb-2" style={{ color: '#8A95C9' }}>50yr</div>
-            <div className="text-sm" style={{ color: 'rgba(238,241,250,0.65)' }}>Residential guarantee</div>
-          </div>
-        </div>
-
-        <h2 className="text-3xl font-bold mb-8 text-center" style={{ color: '#EEF1FA' }}>Who Should Become a Dealer?</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
-          {[
-            { icon: '⚓', title: 'Dock Builders', desc: 'Replace wood builds with premium aluminum — charge more, work less, have happier clients.' },
-            { icon: '🏗️', title: 'Marine Contractors', desc: 'Add factory-direct dock systems to your project quotes and capture the full waterfront scope.' },
-            { icon: '🏠', title: 'Waterfront Home Builders', desc: 'Every lakefront or coastal home you build is a dock opportunity. Close it yourself.' },
-            { icon: '🌿', title: 'Landscape Contractors', desc: 'Working on waterfront properties? Offer the dock as part of the complete outdoor living package.' },
-            { icon: '🔨', title: 'General Contractors', desc: 'Any renovation on a waterfront property is an opportunity to upsell a dock system.' },
-            { icon: '🏝️', title: 'Caribbean & Canadian Contractors', desc: 'We ship anywhere. Resorts, marinas, and residential waterfront — fully supported.' },
-          ].map(item => (
-            <div key={item.title} className="p-6 rounded-2xl" style={{ background: 'rgba(59,74,143,0.1)', border: '1px solid rgba(138,149,201,0.15)' }}>
-              <div className="text-2xl mb-2">{item.icon}</div>
-              <h3 className="font-bold mb-2" style={{ color: '#EEF1FA' }}>{item.title}</h3>
-              <p className="text-sm" style={{ color: 'rgba(238,241,250,0.65)' }}>{item.desc}</p>
+        <h2 className="text-3xl font-bold mb-10 text-center">Why Partner With ExpressDocks?</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Direct Pricing */}
+          <div className="text-center p-6">
+            <div className="w-12 h-12 mx-auto mb-4" style={{ color: '#00D4FF' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+              </svg>
             </div>
-          ))}
-        </div>
-
-        <h2 className="text-3xl font-bold mb-8 text-center" style={{ color: '#EEF1FA' }}>Dealer Benefits</h2>
-        <div className="space-y-4 mb-16">
-          {[
-            { icon: '📍', title: 'Local Leads Sent to You', desc: 'We generate leads in your geographical area and send them directly to you.' },
-            { icon: '💰', title: 'Factory-Direct Pricing', desc: 'You order at our factory-direct price. You set your own retail price and keep the full margin.' },
-            { icon: '📦', title: 'No Inventory Required', desc: 'Order only when you have a job. No warehouse, no stock, no capital tied up.' },
-            { icon: '📐', title: 'Full Design Support', desc: 'Our engineering team helps you design the right system for every project. Quick turnaround on all quotes.' },
-            { icon: '🎓', title: 'Training & Resources', desc: 'Installation guides, product specs, marketing materials, and sales support.' },
-            { icon: '🛡️', title: 'Industry-Leading Warranty', desc: 'Back every job with a 50-year residential guarantee.' },
-          ].map(item => (
-            <div key={item.title} className="flex gap-4 p-5 rounded-xl" style={{ background: 'rgba(59,74,143,0.1)', border: '1px solid rgba(138,149,201,0.15)' }}>
-              <span className="text-2xl">{item.icon}</span>
-              <div>
-                <h3 className="font-bold" style={{ color: '#EEF1FA' }}>{item.title}</h3>
-                <p className="text-sm mt-1" style={{ color: 'rgba(238,241,250,0.65)' }}>{item.desc}</p>
-              </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>Factory-Direct Pricing</h3>
+            <p className="text-sm" style={{ color: '#8A95C9' }}>You order at our factory-direct price. You set your own retail price and keep the full margin.</p>
+          </div>
+          {/* Marketing Support */}
+          <div className="text-center p-6">
+            <div className="w-12 h-12 mx-auto mb-4" style={{ color: '#00D4FF' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" />
+              </svg>
             </div>
-          ))}
+            <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>Marketing Support</h3>
+            <p className="text-sm" style={{ color: '#8A95C9' }}>Access product images, spec sheets, and co-branded marketing materials.</p>
+          </div>
+          {/* Quick Turnaround */}
+          <div className="text-center p-6">
+            <div className="w-12 h-12 mx-auto mb-4" style={{ color: '#00D4FF' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>Quick Turnaround</h3>
+            <p className="text-sm" style={{ color: '#8A95C9' }}>Quick turnaround on all quotes.</p>
+          </div>
+          {/* Industry Warranty */}
+          <div className="text-center p-6">
+            <div className="w-12 h-12 mx-auto mb-4" style={{ color: '#00D4FF' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>Industry-Leading Warranty</h3>
+            <p className="text-sm" style={{ color: '#8A95C9' }}>Back every job with a 25-year residential guarantee.</p>
+          </div>
         </div>
+      </section>
 
-        <div className="rounded-2xl p-10 text-center" style={{ background: '#3B4A8F' }}>
-          <h2 className="text-3xl font-bold mb-4" style={{ color: '#EEF1FA' }}>Apply to Become a Dealer</h2>
-          <p className="mb-6" style={{ color: 'rgba(238,241,250,0.85)' }}>Becoming an ExpressDocks dealer is free — and it comes with everything you need to start selling immediately.</p>
-          <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold transition hover:scale-105" style={{ background: '#EEF1FA', color: '#0E1433' }}>
-            Apply Now →
-          </a>
-        </div>
+      <section className="py-16 px-6 text-center" style={{ background: '#151B3D' }}>
+        <h2 className="text-3xl font-bold mb-4">Ready to Partner?</h2>
+        <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: '#8A95C9' }}>
+          Contact us to learn more about our dealer program and how we can help grow your business.
+        </p>
+        <a href="/contact" className="inline-block px-8 py-4 rounded-lg font-bold transition"
+          style={{ background: '#00D4FF', color: '#0E1433' }}>
+          Apply Now
+        </a>
       </section>
     </main>
   )

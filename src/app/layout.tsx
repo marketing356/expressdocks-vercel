@@ -13,10 +13,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'ExpressDocks | Factory-Direct Aluminum Floating Docks',
-  description: 'Premium aluminum floating dock systems. Factory-direct pricing from $60/sqft. Ships US, Canada & Caribbean. 50-year residential guarantee.',
+  description: 'Premium aluminum floating dock systems. Custom aluminum dock systems. Ships US, Canada & Caribbean. 50-year residential guarantee.',
   openGraph: {
     title: 'ExpressDocks | Factory-Direct Aluminum Floating Docks',
-    description: 'Premium aluminum floating dock systems starting at $60/sqft. Free 3D Dock Builder.',
+    description: 'Premium aluminum floating dock systems. Custom designs. Builder.',
     url: 'https://www.expressdocks.com',
     siteName: 'ExpressDocks',
     type: 'website',
@@ -72,8 +72,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div>
               <h4 className="font-semibold mb-3">Contact</h4>
               <ul className="space-y-1 text-sm text-gray-400">
-                <li>📞 <a href="tel:8003702285" className="hover:text-white">800-370-2285</a></li>
-                <li>✉️ <a href="mailto:info@expressdocks.com" className="hover:text-white">info@expressdocks.com</a></li>
+                <li>Phone: <a href="tel:8003702285" className="hover:text-white">800-370-2285</a></li>
+                <li>Email: <a href="mailto:info@expressdocks.com" className="hover:text-white">info@expressdocks.com</a></li>
                 <li>📍 Middletown, Delaware</li>
               </ul>
               <div className="flex gap-3 mt-4">

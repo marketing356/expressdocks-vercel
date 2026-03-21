@@ -136,8 +136,8 @@ export default function Contact() {
             <div className="rounded-2xl p-6" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
               <h2 className="text-xl font-bold mb-4" style={{ color: '#EEF1FA' }}>Contact Directly</h2>
               <ul className="space-y-3" style={{ color: 'rgba(238,241,250,0.75)' }}>
-                <li>📞 <a href="tel:8003702285" className="font-semibold hover:text-white transition" style={{ color: '#EEF1FA' }}>800-370-2285</a></li>
-                <li>✉️ <a href="mailto:info@expressdocks.com" className="hover:text-white transition" style={{ color: '#8A95C9' }}>info@expressdocks.com</a></li>
+                <li>Phone: <a href="tel:8003702285" className="font-semibold hover:text-white transition" style={{ color: '#EEF1FA' }}>800-370-2285</a></li>
+                <li>Email: <a href="mailto:info@expressdocks.com" className="hover:text-white transition" style={{ color: '#8A95C9' }}>info@expressdocks.com</a></li>
                 <li>📍 Middletown, Delaware</li>
               </ul>
             </div>
@@ -145,15 +145,12 @@ export default function Contact() {
             <div className="rounded-2xl p-6" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
               <h3 className="font-bold mb-2" style={{ color: '#EEF1FA' }}>Free Custom Quote</h3>
               <p className="text-sm" style={{ color: 'rgba(238,241,250,0.65)' }}>Send us any sketch, photo, or description of your waterfront. Our team creates a complete custom 3D dock design — completely free, no obligation to buy.</p>
-              <p className="text-xs mt-3" style={{ color: '#8A95C9' }}>Most customers receive their 3D design within 24 hours.</p>
+              <p className="text-xs mt-3" style={{ color: '#8A95C9' }}>We respond to all quote requests promptly.</p>
             </div>
 
             <div className="rounded-2xl p-6" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
               <h3 className="font-bold mb-3" style={{ color: '#EEF1FA' }}>Factory-Direct Pricing</h3>
               <ul className="text-sm space-y-1" style={{ color: 'rgba(238,241,250,0.65)' }}>
-                <li>• Residential: from <strong style={{ color: '#EEF1FA' }}>$60/sqft</strong></li>
-                <li>• Commercial/Marina: from <strong style={{ color: '#EEF1FA' }}>$75/sqft</strong></li>
-                <li>• Fingers & Gangways: from <strong style={{ color: '#EEF1FA' }}>$85/sqft</strong></li>
               </ul>
             </div>
           </div>
