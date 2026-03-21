@@ -194,32 +194,6 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
   // Store draw function in ref for zoom buttons
   useEffect(() => { drawRef.current = draw }, [draw])
 
-  // Center view on all sections (or origin if none)
-  const centerView = () => {
-    const st = stateRef.current
-    const { w, h } = canvasSize
-    const secs = st.sections
-    if (secs.length === 0) {
-      st.panX = w / 2
-      st.panY = h / 2
-      st.scale = 0.5
-    } else {
-      const minX = Math.min(...secs.map(s => s.gx)) * CELL
-      const maxX = Math.max(...secs.map(s => s.gx + s.gw)) * CELL
-      const minY = Math.min(...secs.map(s => s.gy)) * CELL
-      const maxY = Math.max(...secs.map(s => s.gy + s.gh)) * CELL
-      const cxV = (minX + maxX) / 2
-      const cyV = (minY + maxY) / 2
-      const spanX = maxX - minX + CELL * 4
-      const spanY = maxY - minY + CELL * 4
-      const newScale = Math.min(0.9, Math.min(w / spanX, h / spanY))
-      st.scale = Math.max(0.15, newScale)
-      st.panX = w / 2 - cxV * st.scale
-      st.panY = h / 2 - cyV * st.scale
-    }
-    drawRef.current?.()
-  }
-
   // Convert screen coords to canvas/grid coords
   const screenToCanvas = (cx: number, cy: number) => {
     const { scale, panX, panY } = stateRef.current
@@ -392,7 +366,6 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
         const t = e.touches[0]
         onPointerDown(t.clientX - rect.left, t.clientY - rect.top)
       } else if (e.touches.length === 2) {
-        wasPinching = true
         // Two-finger gesture start — stop any drawing
         stateRef.current.drawing = false
         stateRef.current.dragging = false
@@ -456,13 +429,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
         const t = e.changedTouches[0]
         onPointerUp(t.clientX - rect.left, t.clientY - rect.top)
       }
-      // After two-finger gesture, center content
-      if (e.touches.length === 0 && wasPinching) {
-        wasPinching = false
-        setTimeout(() => centerView(), 50)
-      }
     }
-    let wasPinching = false
 
     // Wheel zoom
     const onWheel = (e: WheelEvent) => {
@@ -513,7 +480,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
         {[
           { label: '+', action: () => { const s = stateRef.current; s.scale = Math.min(4, s.scale * 1.3); drawRef.current?.() } },
           { label: '−', action: () => { const s = stateRef.current; s.scale = Math.max(0.1, s.scale / 1.3); drawRef.current?.() } },
-          { label: '⊡', action: () => centerView() },
+          { label: '⊡', action: () => { const s = stateRef.current; s.scale = 0.5; s.panX = 0; s.panY = 0; drawRef.current?.() } },
         ].map(btn => (
           <button key={btn.label} onMouseDown={(e) => { e.preventDefault(); btn.action() }}
             style={{ width: '32px', height: '32px', background: 'rgba(14,20,51,0.9)', border: '1px solid rgba(138,149,201,0.3)', color: '#EEF1FA', borderRadius: '6px', cursor: 'pointer', fontSize: btn.label === '⊡' ? '14px' : '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
