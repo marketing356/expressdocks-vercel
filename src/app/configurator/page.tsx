@@ -4,6 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 const ConfiguratorCanvas = dynamic(() => import('@/components/ConfiguratorCanvas'), { ssr: false })
+const DockBuilder3D = dynamic(() => import('@/components/DockBuilder3D'), { ssr: false })
 
 export type DockSection = {
   id: string
@@ -30,6 +31,7 @@ const WPC_COLORS = [
 
 export default function ConfiguratorPage() {
   const [sections, setSections] = useState<DockSection[]>([])
+  const [view, setView] = useState<'2d' | '3d'>('2d')
   const [rateIdx, setRateIdx] = useState(0)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hintVisible, setHintVisible] = useState(true)
@@ -214,8 +216,31 @@ export default function ConfiguratorPage() {
       </div>
 
 
-            {/* Canvas area */}
-      <div style={{ flex: 1, position: 'relative' }}>
+            {/* View toggle */}
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(138,149,201,0.15)', background: '#080d26' }}>
+        <button
+          onClick={() => setView('2d')}
+          style={{
+            padding: '10px 24px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none',
+            background: view === '2d' ? '#3B4A8F' : 'transparent',
+            color: view === '2d' ? '#EEF1FA' : '#8A95C9',
+            borderRight: '1px solid rgba(138,149,201,0.15)',
+            transition: 'all 0.15s',
+          }}
+        >✏️ Draw 2D</button>
+        <button
+          onClick={() => setView('3d')}
+          style={{
+            padding: '10px 24px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none',
+            background: view === '3d' ? '#3B4A8F' : 'transparent',
+            color: view === '3d' ? '#EEF1FA' : sections.length > 0 ? '#8A95C9' : '#4B5A90',
+            transition: 'all 0.15s',
+          }}
+        >🎮 View 3D {sections.length === 0 && <span style={{ fontSize: '10px', opacity: 0.6 }}>— draw first</span>}</button>
+      </div>
+
+      {/* Canvas area */}
+      <div style={{ flex: 1, position: 'relative', display: view === '2d' ? 'block' : 'none' }}>
         <ConfiguratorCanvas
           sections={sections}
           priceRate={priceRate}
@@ -238,6 +263,26 @@ export default function ConfiguratorPage() {
           </div>
         )}
       </div>
+
+      {/* 3D View */}
+      {view === '3d' && (
+        <div style={{ flex: 1, position: 'relative', minHeight: '400px' }}>
+          {sections.length === 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', color: '#8A95C9', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ fontSize: '48px' }}>🏗️</div>
+              <p style={{ fontSize: '16px', fontWeight: 600 }}>Draw your dock in 2D first</p>
+              <button onClick={() => setView('2d')} style={{ padding: '8px 20px', background: '#3B4A8F', color: '#EEF1FA', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>
+                Go to Draw Mode →
+              </button>
+            </div>
+          ) : (
+            <DockBuilder3D
+              sections={sections.map(s => ({ id: s.id, x: s.gx, z: s.gy, w: s.gw, d: s.gh }))}
+              deckingColor={selectedColor}
+            />
+          )}
+        </div>
+      )}
 
       {/* OLD bottom bar start placeholder */}
       {sections.length > 0 && (
