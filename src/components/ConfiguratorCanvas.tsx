@@ -151,7 +151,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
       ctx.fillText(`${s.gw} × ${s.gh} ft`, x + pw/2, y + ph/2 - fontSize*0.6)
       ctx.font = `${fontSize * 0.85}px Inter, sans-serif`
       ctx.fillStyle = '#8A95C9'
-      ctx.fillText(`$${(sqft * priceRate).toLocaleString()}`, x + pw/2, y + ph/2 + fontSize*0.7)
+      // No pricing shown on canvas — quote provided separately
       
       // Delete button on selected section
       if (sel) {
