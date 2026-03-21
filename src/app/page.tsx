@@ -80,7 +80,7 @@ const SwatchIcon = () => (
 )
 
 const features = [
-  { Icon: ShieldIcon, title: '25-Year Warranty', desc: "We only sell what we can stand behind. That's the standard." },
+  { Icon: ShieldIcon, title: '50-Year Warranty', desc: "We only sell what we can stand behind. That's the standard." },
   { Icon: BeamIcon, title: '6061-T6 Aluminum', desc: 'Aerospace and marine grade alloy. Corrosion-proof in salt or fresh water.' },
   { Icon: CameraIcon, title: 'Pre-Assembled & Photo-Documented', desc: 'Every dock is built and quality-checked in our facility first. Photos ship with your dock.' },
   { Icon: WrenchIcon, title: 'Basic Hand Tools', desc: 'Impact driver and wrenches. No cranes, no barges, no pile drivers needed.' },

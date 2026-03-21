@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Residential Dock Systems | ExpressDocks',
-  description: 'Commercial-grade aluminum docks for residential waterfront properties. 6061-T6 aluminum, 25-year warranty, factory pre-assembled.',
+  description: 'Commercial-grade aluminum docks for residential waterfront properties. 6061-T6 aluminum, 50-year warranty, factory pre-assembled.',
 }
 
 export default function Page() {
@@ -49,14 +49,14 @@ export default function Page() {
 
       <section className="py-16 px-6" style={{ background: '#151B3D' }}>
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* 25-Year Warranty */}
+          {/* 50-Year Warranty */}
           <div className="text-center p-6">
             <div className="w-12 h-12 mx-auto mb-4" style={{ color: '#00D4FF' }}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>25-Year Warranty</h3>
+            <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>50-Year Warranty</h3>
             <p className="text-sm" style={{ color: '#8A95C9' }}>We only sell what we can stand behind. The material makes the warranty possible.</p>
           </div>
           {/* Photo Documentation */}

@@ -78,7 +78,7 @@ export default function PricingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3" style={{ color: '#EEF1FA' }}>Delivery Location</h3>
               <p style={{ color: '#8A95C9' }}>
-                Shipping distance from our Middletown, Delaware facility to your property.
+                Shipping distance from one of our warehouses to your property.
               </p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function PricingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>25-Year Warranty</h3>
+              <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>50-Year Warranty</h3>
               <p className="text-sm" style={{ color: '#8A95C9' }}>Marine-grade aluminum backed by our comprehensive warranty</p>
             </div>
             <div className="text-center p-6">

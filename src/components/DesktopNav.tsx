@@ -56,8 +56,8 @@ export default function DesktopNav() {
           </div>
         )}
       </div>
-      <a href="/configurator" className="hover:text-blue-300 transition font-semibold" style={{ color: '#8A95C9' }}>Dock Builder</a>
-      <a href="/pricing" className="hover:text-blue-300 transition" style={{ color: '#EEF1FA' }}>Pricing</a>
+      <a href="/configurator" className="hover:text-blue-300 transition font-semibold" style={{ color: '#8A95C9' }}>Dock Designer</a>
+      <a href="/contact" className="hover:text-blue-300 transition" style={{ color: '#EEF1FA' }}>Get a Quote</a>
       <a href="/gallery" className="hover:text-blue-300 transition" style={{ color: '#EEF1FA' }}>Gallery</a>
       <a href="/about" className="hover:text-blue-300 transition" style={{ color: '#EEF1FA' }}>About</a>
       <a href="/blog" className="hover:text-blue-300 transition" style={{ color: '#EEF1FA' }}>Blog</a>

@@ -47,7 +47,7 @@ export default function Page() {
       </section>
       <section className="py-20 px-6 text-center">
         <h2 className="text-4xl font-bold mb-6">Ready to Build Yours?</h2>
-        <p className="mb-8 text-xl" style={{ color: 'rgba(238,241,250,0.7)' }}>Use our Dock Builder to design your dock instantly. Design your dock and request a quote.</p>
+        <p className="mb-8 text-xl" style={{ color: 'rgba(238,241,250,0.7)' }}>Use our Dock Designer to design your dock instantly. Design your dock and request a quote.</p>
         <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105"
           style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
           Get Free Quote →

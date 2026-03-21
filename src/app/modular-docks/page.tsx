@@ -71,7 +71,7 @@ export default function Page() {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
-                Same 25-year warranty
+                Same 50-year warranty
               </li>
               <li className="flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#00D4FF" className="w-5 h-5 flex-shrink-0">

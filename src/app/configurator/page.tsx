@@ -144,7 +144,7 @@ export default function ConfiguratorPage() {
         position: 'sticky', top: 0, zIndex: 10,
       }}>
         <div style={{ minWidth: '140px' }}>
-          <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Builder</div>
+          <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Designer</div>
           <div style={{ color: '#4B5A90', fontSize: '11px', marginTop: '1px' }}>Design your dock</div>
         </div>
 
@@ -222,7 +222,7 @@ export default function ConfiguratorPage() {
               border: mode === 'draw' ? '1px solid #3B4A8F' : '1px solid rgba(138,149,201,0.3)',
               transition: 'all 0.15s',
             }}
-          >✏️ Draw</button>
+          >Draw</button>
           <button
             onClick={() => setMode('move')}
             title="Move Mode — drag sections to reposition them"
@@ -249,7 +249,7 @@ export default function ConfiguratorPage() {
             borderRight: '1px solid rgba(138,149,201,0.15)',
             transition: 'all 0.15s',
           }}
-        >✏️ Draw 2D</button>
+        >Draw 2D</button>
         <button
           onClick={() => setView('3d')}
           style={{

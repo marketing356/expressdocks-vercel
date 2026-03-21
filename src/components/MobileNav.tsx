@@ -10,7 +10,7 @@ const navLinks = [
   { href: '/pilebuddy', label: 'PileBuddy' },
   { href: '/dockhouses', label: 'Dock Houses' },
   { href: '/cement-docks', label: 'Cement Docks' },
-  { href: '/pricing', label: 'Pricing' },
+  { href: '/contact', label: 'Get a Quote' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/about', label: 'About Us' },
   { href: '/become-a-dealer', label: 'Become a Dealer' },

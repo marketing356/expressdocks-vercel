@@ -64,7 +64,7 @@ export default function Page() {
               </svg>
             </div>
             <h3 className="text-lg font-bold mb-2" style={{ color: '#EEF1FA' }}>Industry-Leading Warranty</h3>
-            <p className="text-sm" style={{ color: '#8A95C9' }}>Back every job with a 25-year residential guarantee.</p>
+            <p className="text-sm" style={{ color: '#8A95C9' }}>Back every job with a 50-year residential guarantee.</p>
           </div>
         </div>
       </section>
