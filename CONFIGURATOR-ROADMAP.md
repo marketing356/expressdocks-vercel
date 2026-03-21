@@ -315,3 +315,38 @@ NOT photorealistic perspective — overhead drone view looking straight down
 - Residential = dramatic golden hour perspective angle (wow factor)
 - Marina = clean overhead architectural view (professional, precise, shows layout clearly)
 - Both use Flux Pro but different prompt style
+
+---
+
+## Upload Existing Schematics / Images Feature
+
+### The Use Case
+Many customers — especially commercial and marina buyers — already have:
+- Engineer-drawn schematics of their dock layout (PDF, DWG, PNG)
+- Aerial photos of their existing dock they want to replace
+- Hand-drawn sketches they want to reference
+- Previous dock plans from another manufacturer
+
+These customers don't want to use the draw tool — they want to upload what they already have.
+
+### What to Build
+Add an "Upload Your Design" option alongside the draw tool:
+- Upload button: accepts PDF, PNG, JPG, DWG (convert to image server-side)
+- Customer uploads their schematic or photo
+- System displays it in the configurator
+- Customer adds notes: "replace this dock" or "build to match this layout"
+- Image + notes submitted with the quote request
+- Goes to info@expressdocks.com with the file attached
+
+### Wade's Role
+Wade should ask:
+"Do you already have a schematic or drawing of your dock? You can upload it directly and we'll quote from that."
+
+### Why This Matters
+- Commercial buyers ALWAYS have engineer drawings
+- Removes the barrier of redrawing something that already exists
+- Higher quality leads — these are serious buyers with existing plans
+- Differentiates from competitors who force everyone to use their tool
+
+### Priority
+Phase 2 — after Monday launch. High value for commercial segment.
