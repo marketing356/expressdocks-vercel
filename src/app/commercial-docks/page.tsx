@@ -12,8 +12,8 @@ export default function Page() {
     'commercial-577417a3.webp',
     'commercial-a0d86c43.webp',
     'commercial-547eadfe.webp',
-    'gallery-real-2.webp',
-    'gallery-real-3.webp',
+    'commercial-0e5dfc13.webp',
+    'commercial-5cfce446.webp',
   ]
 
   return (

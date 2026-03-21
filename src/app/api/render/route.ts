@@ -48,9 +48,9 @@ export async function POST(req: NextRequest) {
     const colorName = COLOR_NAMES[colorKey] ?? 'teak'
     const { shape, dims } = getShapeDescription(sections ?? [])
 
-    const prompt = `Photorealistic image of a premium aluminum floating dock with ${colorName} WPC composite decking, ${shape} layout approximately ${dims}, floating on calm blue reflective lake water, sunny day, slightly elevated aerial perspective, professional real estate photography style, ultra sharp focus, cinematic lighting`
+    const prompt = `Stunning aerial photograph of a luxury custom aluminum floating dock with ${colorName} WPC composite decking. ${shape} layout approximately ${dims}, totaling ${totalSqft} square feet. Crystal clear blue water, golden hour lighting, photorealistic, 8K, luxury waterfront property, professional architectural photography, no people, calm water reflections, beautiful marina setting`
 
-    const response = await fetch('https://fal.run/fal-ai/flux/dev', {
+    const response = await fetch('https://fal.run/fal-ai/flux-pro', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${FAL_KEY}`,
@@ -58,9 +58,11 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         prompt,
-        image_size: 'landscape_4_3',
+        image_size: 'landscape_16_9',
         num_images: 1,
         num_inference_steps: 28,
+        guidance_scale: 3.5,
+        safety_tolerance: '2',
       }),
     })
 
