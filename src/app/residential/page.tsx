@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
+
 export const metadata: Metadata = {
-  title: 'Residential Dock Kits | Express Docks',
-  description: 'DIY-friendly residential dock systems. Marine-grade aluminum, maintenance-free, ships nationwide. Most docks install in a weekend.',
+  title: 'Residential Dock Systems | ExpressDocks',
+  description: 'Commercial-grade aluminum docks for residential waterfront properties. 6061-T6 aluminum, 50-year warranty, factory pre-assembled. Starting at $55/sqft.',
 }
 
 export default function Page() {
   const images = [
     'res-lifestyle-1.jpg',
-    'res-lifestyle-2.jpg',
+    'res-lifestyle-2.jpg', 
     'res-lifestyle-3.jpg',
     'res-1.jpg',
     'res-2.jpg',
@@ -26,9 +27,9 @@ export default function Page() {
         backgroundSize: 'cover', backgroundPosition: 'center'
       }}>
         <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Residential</p>
-        <h1 className="text-5xl md:text-6xl font-bold mb-6">Residential Dock Kits</h1>
-        <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
-          DIY-friendly systems that reduce project costs without sacrificing durability. Starting at <strong>$60/sqft</strong>.
+        <h1 className="text-5xl md:text-6xl font-bold mb-6">Commercial-Grade Dock.<br />Residential Installation.</h1>
+        <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
+          The same aluminum truss system used in full-scale marinas — modularized so it assembles with basic hand tools. Starting at <strong>$55/sqft</strong>.
         </p>
         <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105"
           style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
@@ -36,79 +37,108 @@ export default function Page() {
         </a>
       </section>
 
-      <section className="max-w-6xl mx-auto py-16 px-6">
-        <h2 className="text-3xl font-bold mb-10 text-center" style={{ color: '#EEF1FA' }}>The Smart Way to Add a Dock to Your Property</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {[
-            { icon: '🔧', title: 'DIY-Friendly Assembly', desc: 'Simple bolt-together design. Most docks install in a weekend using basic tools.' },
-            { icon: '🛡️', title: 'Maintenance-Free', desc: 'Marine-grade aluminum won\'t rot, rust, or require painting.' },
-            { icon: '📐', title: 'Fits Your Waterfront', desc: 'Kits available for lakes, rivers, ponds, and tidal areas. Custom sizing optional.' },
-            { icon: '🚚', title: 'Nationwide Shipping', desc: 'Compact, palletized delivery makes receiving your dock easy and affordable.' },
-          ].map(item => (
-            <div key={item.title} className="p-6 rounded-2xl" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
-              <div className="text-3xl mb-3">{item.icon}</div>
-              <h3 className="font-bold mb-2" style={{ color: '#EEF1FA' }}>{item.title}</h3>
-              <p className="text-sm" style={{ color: 'rgba(238,241,250,0.65)' }}>{item.desc}</p>
-            </div>
-          ))}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">No Barge. No Crane. No Pile Driver.</h2>
+          <p className="text-xl" style={{ color: 'rgba(238,241,250,0.85)' }}>
+            Just a truck in your driveway and a few helping hands. Our residential dock systems are designed for straightforward assembly with an impact driver and wrenches — no heavy equipment needed.
+          </p>
         </div>
+      </section>
 
-        <p className="text-lg mb-4 text-center font-semibold" style={{ color: '#8A95C9' }}>Perfect for any waterfront setting:</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12 max-w-4xl mx-auto">
-          {[
-            { icon: '🏖️', label: 'Lakefront Homes' },
-            { icon: '🌊', label: 'Ocean & Coastal' },
-            { icon: '🌿', label: 'Rivers & Canals' },
-            { icon: '🏝️', label: 'Large Estuaries' },
-            { icon: '🏡', label: 'Backyard Ponds' },
-            { icon: '⚓', label: 'Tidal Areas' },
-            { icon: '🛥️', label: 'Boat Slips' },
-            { icon: '🌁', label: 'Bulkhead Docks' },
-          ].map(item => (
-            <div key={item.label} className="flex items-center gap-2 p-3 rounded-xl" style={{ background: 'rgba(59,74,143,0.2)', border: '1px solid rgba(138,149,201,0.2)' }}>
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-sm font-medium" style={{ color: '#EEF1FA' }}>{item.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {images.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
-            {images.map((img, i) => (
-              <div key={i} className="rounded-xl overflow-hidden hover:scale-105 transition duration-300 shadow-lg">
-                <img src={`/images/${img}`} alt="Residential dock" className="w-full h-64 object-cover" loading="lazy" />
+      <section className="py-20 px-6" style={{ background: 'rgba(138,149,201,0.04)' }}>
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">What You Get</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { icon: '🛡️', title: '50-Year Warranty', desc: 'We only sell what we can stand behind for 50 years. The material makes the warranty possible.' },
+              { icon: '✈️', title: '6061-T6 Aluminum Frame', desc: 'Aerospace and marine grade alloy. Double truss construction — not cheap extruded box aluminum.' },
+              { icon: '🎨', title: 'WPC Composite Decking', desc: '6 colors available: Teak, Gray, Walnut, Charcoal, Driftwood, Espresso. Maintenance-free.' },
+              { icon: '📸', title: 'Photo Documentation', desc: 'Every step of YOUR dock assembly is photographed. Photos ship with your dock as your personal guide.' },
+              { icon: '🔧', title: 'Basic Hand Tools', desc: 'Impact driver and wrenches. No cranes, no barges, no pile drivers, no heavy equipment.' },
+              { icon: '🚚', title: 'Factory Direct Shipping', desc: 'Pre-assembled in our factory, then palletized and shipped via freight to your driveway.' },
+            ].map((item, i) => (
+              <div key={i} className="p-8 rounded-2xl" style={{ background: 'rgba(138,149,201,0.08)', border: '1px solid rgba(138,149,201,0.15)' }}>
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p style={{ color: 'rgba(238,241,250,0.7)' }}>{item.desc}</p>
               </div>
             ))}
           </div>
-        )}
+        </div>
+      </section>
 
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold mb-8" style={{ color: '#EEF1FA' }}>Frequently Asked Questions</h2>
-          <div className="space-y-4">
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-center">The Factory Process</h2>
+          <p className="text-center text-lg mb-12" style={{ color: 'rgba(238,241,250,0.7)' }}>
+            If anything doesn't fit in the factory, it's fixed there — not on your waterfront.
+          </p>
+          <div className="grid md:grid-cols-4 gap-6">
             {[
-              { q: 'Can I really install this myself?', a: 'Yes — and most customers do. Our dock systems are engineered for DIY installation using only standard hand tools. No cranes, no barges, no contractors needed. Each section weighs under 175 lbs and bolts together. Most residential docks go in over a single weekend. We include step-by-step instructions and our team is available by phone if you hit a snag.' },
-              { q: 'What exactly comes in the kit?', a: 'Everything you need to assemble and float your dock: all aluminum frame sections, solid WPC decking boards, flotation units, stainless steel hardware and fasteners, anchor cables, and full installation documentation. You supply basic power tools, a drill, and your shoreline anchoring (pile, weight, or anchor system depending on your setup — we help you choose).' },
-              { q: 'How long does shipping take?', a: 'Most residential kits ship within 2–3 weeks of order confirmation. We ship via flatbed freight palletized and shrink-wrapped to your nearest accessible delivery point. You\'ll receive tracking and we coordinate the delivery window with you directly. Rush production is available — contact us to discuss your timeline.' },
-              { q: 'Can I take it out in winter?', a: 'Yes — and that\'s one of the advantages of a modular aluminum system. The sections disconnect and stack compactly for off-season storage. Many customers in northern states pull their dock every fall and reinstall each spring in a few hours. The system is designed for exactly this kind of seasonal use without any wear from repeated removal.' },
-              { q: 'How do I know what size to order?', a: 'Send us a quick sketch of your waterfront — or just a photo and a rough description. Our team designs a custom layout recommendation — and our free Dock Builder lets you design it yourself instantly. We\'ll spec the right size based on your shoreline shape, water depth, boat size, and how you plan to use it. Most customers are surprised how personalized the process is for a factory-direct product.' },
+              { step: '1', title: 'Custom Design', time: 'Day 1' },
+              { step: '2', title: 'Factory Build', time: '~1 Week' },
+              { step: '3', title: 'Photo Documentation', time: 'Included' },
+              { step: '4', title: 'Ship to You', time: '~6 Weeks Total' },
             ].map((item, i) => (
-              <details key={i} className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(138,149,201,0.2)' }}>
-                <summary className="px-6 py-4 font-semibold cursor-pointer list-none flex justify-between" style={{ background: 'rgba(59,74,143,0.1)', color: '#EEF1FA' }}>
-                  {item.q} <span style={{ color: '#8A95C9' }}>+</span>
-                </summary>
-                <div className="px-6 py-4 text-sm" style={{ color: 'rgba(238,241,250,0.7)', background: 'rgba(14,20,51,0.5)' }}>{item.a}</div>
-              </details>
+              <div key={i} className="text-center p-6 rounded-xl" style={{ background: 'rgba(138,149,201,0.08)' }}>
+                <div className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center text-xl font-bold" style={{ background: '#3B4A8F' }}>{item.step}</div>
+                <h3 className="font-bold mb-2">{item.title}</h3>
+                <p className="text-sm" style={{ color: '#8A95C9' }}>{item.time}</p>
+              </div>
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="rounded-2xl p-10 text-center" style={{ background: '#3B4A8F' }}>
-          <h2 className="text-3xl font-bold mb-4" style={{ color: '#EEF1FA' }}>Build Your Dock, Your Way</h2>
-          <p className="mb-6" style={{ color: 'rgba(238,241,250,0.85)' }}>Tell us about your shoreline and we'll help you choose the perfect dock kit.</p>
-          <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold transition hover:scale-105" style={{ background: '#EEF1FA', color: '#0E1433' }}>
-            Get a Custom Quote →
+      <section className="py-20 px-6" style={{ background: 'rgba(138,149,201,0.04)' }}>
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">Gallery</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {images.map((img, i) => (
+              <div key={i} className="aspect-square rounded-xl overflow-hidden">
+                <img src={`/images/${img}`} alt={`Residential dock ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-8 text-center">Common Questions</h2>
+          <div className="space-y-6">
+            {[
+              { q: 'What tools do I need to install?', a: 'Impact driver and wrenches. Our modular system is designed for straightforward assembly — no cranes, barges, or heavy equipment.' },
+              { q: 'Will the dock be damaged if my lake freezes?', a: 'No — aluminum handles freezing better than wood or steel. It won\'t crack from freeze/thaw cycles. Many customers leave their docks in year-round.' },
+              { q: 'Why 50 years warranty?', a: 'Because of the material — 6061-T6 aluminum doesn\'t rust, corrode, or weaken in water. The material makes the warranty possible.' },
+              { q: 'Do you install?', a: 'We manufacture and ship only. Our modular system goes together with basic hand tools. Most customers install themselves or hire local labor.' },
+            ].map((item, i) => (
+              <div key={i} className="p-6 rounded-xl" style={{ background: 'rgba(138,149,201,0.08)', border: '1px solid rgba(138,149,201,0.15)' }}>
+                <h3 className="font-bold mb-3">{item.q}</h3>
+                <p style={{ color: 'rgba(238,241,250,0.7)' }}>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 px-6 text-center" style={{ background: 'linear-gradient(135deg, #3B4A8F 0%, #2A3A7F 100%)' }}>
+        <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Get Started?</h2>
+        <p className="text-xl mb-10 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
+          Design your dock in our 3D builder or get a custom quote from our team.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/dock3d" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105" style={{ background: '#EEF1FA', color: '#0E1433' }}>
+            3D Dock Builder
+          </a>
+          <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105" style={{ background: 'transparent', color: '#EEF1FA', border: '2px solid rgba(238,241,250,0.5)' }}>
+            Get a Quote
           </a>
         </div>
+        <p className="mt-8" style={{ color: 'rgba(238,241,250,0.7)' }}>
+          Or call: <a href="tel:800-370-2285" className="font-bold" style={{ color: '#EEF1FA' }}>800-370-2285</a>
+        </p>
       </section>
     </main>
   )
