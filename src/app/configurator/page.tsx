@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import type { DockSection3D } from '@/components/DockBuilder3D'
 
 const ConfiguratorCanvas = dynamic(() => import('@/components/ConfiguratorCanvas'), { ssr: false })
 const DockBuilder3D = dynamic(() => import('@/components/DockBuilder3D'), { ssr: false })
@@ -61,6 +62,14 @@ export default function ConfiguratorPage() {
   function deleteSection(id: string) {
     setSections(p => p.filter(s => s.id !== id))
     setSelectedId(null)
+  }
+
+  // 3D builder callbacks
+  function add3DSection(s: DockSection3D) {
+    setSections(p => [...p, { id: s.id, gx: s.x, gy: s.z, gw: s.w, gh: s.d }])
+  }
+  function move3DSection(id: string, x: number, z: number) {
+    setSections(p => p.map(s => s.id === id ? { ...s, gx: x, gy: z } : s))
   }
 
   async function renderDock() {
@@ -233,10 +242,10 @@ export default function ConfiguratorPage() {
           style={{
             padding: '10px 24px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none',
             background: view === '3d' ? '#3B4A8F' : 'transparent',
-            color: view === '3d' ? '#EEF1FA' : sections.length > 0 ? '#8A95C9' : '#4B5A90',
+            color: view === '3d' ? '#EEF1FA' : '#8A95C9',
             transition: 'all 0.15s',
           }}
-        >🎮 View 3D {sections.length === 0 && <span style={{ fontSize: '10px', opacity: 0.6 }}>— draw first</span>}</button>
+        >🎮 Build 3D</button>
       </div>
 
       {/* Canvas area */}
@@ -266,21 +275,15 @@ export default function ConfiguratorPage() {
 
       {/* 3D View */}
       {view === '3d' && (
-        <div style={{ flex: 1, position: 'relative', minHeight: '400px' }}>
-          {sections.length === 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', color: '#8A95C9', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ fontSize: '48px' }}>🏗️</div>
-              <p style={{ fontSize: '16px', fontWeight: 600 }}>Draw your dock in 2D first</p>
-              <button onClick={() => setView('2d')} style={{ padding: '8px 20px', background: '#3B4A8F', color: '#EEF1FA', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>
-                Go to Draw Mode →
-              </button>
-            </div>
-          ) : (
-            <DockBuilder3D
-              sections={sections.map(s => ({ id: s.id, x: s.gx, z: s.gy, w: s.gw, d: s.gh }))}
-              deckingColor={selectedColor}
-            />
-          )}
+        <div style={{ flex: 1, position: 'relative', minHeight: '500px' }}>
+          <DockBuilder3D
+            sections={sections.map(s => ({ id: s.id, x: s.gx, z: s.gy, w: s.gw, d: s.gh }))}
+            deckingColor={selectedColor}
+            priceRate={priceRate}
+            onAdd={add3DSection}
+            onDelete={deleteSection}
+            onMove={move3DSection}
+          />
         </div>
       )}
 
