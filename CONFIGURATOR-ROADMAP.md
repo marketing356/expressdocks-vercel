@@ -289,3 +289,29 @@ Then: "Great — I'll have someone from our team reach out within 24 hours with 
 - 50-year warranty on residential aluminum frame
 - Not comparable to Amazon/big box store dock kits
 - Price reflects commercial-grade quality at residential scale
+
+---
+
+## Marina Configurator — AI Render Style (from reference image)
+
+### Render Style: Top-Down Architectural with Real Environment
+NOT photorealistic perspective — overhead drone view looking straight down
+
+### What the Render Shows
+- True overhead/aerial view (90 degrees straight down)
+- Real water underneath — teal/green with light surface reflections
+- Shoreline/sand visible where dock meets land
+- Grey WPC decking with visible wood grain plank lines
+- Bright aluminum frame edges — clean silver
+- Galvanized pile circles with shadows on water surface
+- Bare aluminum gangway (silver, no decking) with railing lines
+- Dimension labels overlaid on image ("4'", "8'", etc)
+- Material callout text pointing to sections
+
+### fal.ai Flux Pro Prompt Template for Marina/Top-Down
+"Photorealistic aerial overhead drone photograph looking straight down at a custom aluminum floating dock system with [COLOR] WPC composite decking. [SHAPE DESCRIPTION]. [DIMENSIONS]. Clear teal-green water visible, sandy shoreline on one side, galvanized steel piles with circular shadows, bare aluminum gangway with safety railings, architectural overhead view, ultra sharp, 8K, professional marine engineering drawing style"
+
+### Key Difference from Residential Render
+- Residential = dramatic golden hour perspective angle (wow factor)
+- Marina = clean overhead architectural view (professional, precise, shows layout clearly)
+- Both use Flux Pro but different prompt style
