@@ -1,11 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import type { DockSection3D } from '@/components/DockBuilder3D'
+import ThreeErrorBoundary from '@/components/ThreeErrorBoundary'
 
 const ConfiguratorCanvas = dynamic(() => import('@/components/ConfiguratorCanvas'), { ssr: false })
-const DockBuilder3D = dynamic(() => import('@/components/DockBuilder3D'), { ssr: false })
+const DockBuilder3D = dynamic(() => import('@/components/DockBuilder3D'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, color: '#8A95C9' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>🎮</div>
+        <div>Loading 3D view...</div>
+      </div>
+    </div>
+  )
+})
 
 export type DockSection = {
   id: string
@@ -16,7 +27,7 @@ export type DockSection = {
 }
 
 const DOCK_TYPES = [
-  { label: 'Residential',        detail: '$50/sqft', rate: 50 },
+  { label: 'Residential',        detail: '$60/sqft', rate: 60 },
   { label: 'Commercial',         detail: '$75/sqft', rate: 75 },
   { label: 'Fingers / Gangways', detail: '$85/sqft', rate: 85 },
 ]
@@ -33,6 +44,8 @@ const WPC_COLORS = [
 export default function ConfiguratorPage() {
   const [sections, setSections] = useState<DockSection[]>([])
   const [view, setView] = useState<'2d' | '3d'>('2d')
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => { setIsDesktop(window.innerWidth >= 768) }, [])
   const [rateIdx, setRateIdx] = useState(0)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hintVisible, setHintVisible] = useState(true)
@@ -225,7 +238,7 @@ export default function ConfiguratorPage() {
       </div>
 
 
-            {/* View toggle */}
+            {/* View toggle — 3D only on desktop */}
       <div style={{ display: 'flex', borderBottom: '1px solid rgba(138,149,201,0.15)', background: '#080d26' }}>
         <button
           onClick={() => setView('2d')}
@@ -276,14 +289,16 @@ export default function ConfiguratorPage() {
       {/* 3D View */}
       {view === '3d' && (
         <div style={{ flex: 1, position: 'relative', minHeight: '500px' }}>
-          <DockBuilder3D
-            sections={sections.map(s => ({ id: s.id, x: s.gx, z: s.gy, w: s.gw, d: s.gh }))}
-            deckingColor={selectedColor}
-            priceRate={priceRate}
-            onAdd={add3DSection}
-            onDelete={deleteSection}
-            onMove={move3DSection}
-          />
+          <ThreeErrorBoundary>
+            <DockBuilder3D
+              sections={sections.map(s => ({ id: s.id, x: s.gx, z: s.gy, w: s.gw, d: s.gh }))}
+              deckingColor={selectedColor}
+              priceRate={priceRate}
+              onAdd={add3DSection}
+              onDelete={deleteSection}
+              onMove={move3DSection}
+            />
+          </ThreeErrorBoundary>
         </div>
       )}
 

@@ -1,415 +1,364 @@
-'use client'
+'use client';
 
-import { useRef, useState, useEffect, useMemo, useCallback, Suspense } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Grid, Html } from '@react-three/drei'
-import * as THREE from 'three'
+import React, { useRef, useState, useCallback, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, Environment, ContactShadows, Html } from '@react-three/drei';
+import * as THREE from 'three';
 
-export interface DockSection3D {
-  id: string
-  x: number   // position in feet
-  z: number
-  w: number   // width in feet
-  d: number   // depth in feet
+// Types - exported for use in other components
+export interface DockSection {
+  id: string;
+  x: number;
+  z: number;
+  width: number;
+  depth: number;
+  type: 'main' | 'finger' | 'gangway';
 }
 
-interface Props {
-  sections: DockSection3D[]
-  deckingColor: string
-  priceRate?: number
-  onAdd?: (section: DockSection3D) => void
-  onDelete?: (id: string) => void
-  onMove?: (id: string, x: number, z: number) => void
-  onSectionClick?: (id: string) => void
+export interface DockConfig {
+  sections: DockSection[];
+  deckingColor: string;
+  frameColor: string;
+  totalSqFt: number;
 }
 
-const SCALE = 0.3
-const SNAP_FT = 4
+// Decking color options
+const DECKING_COLORS: Record<string, string> = {
+  'Cedar': '#8B4513',
+  'Gray': '#808080',
+  'Weathered': '#A0A0A0',
+  'Driftwood': '#C4A484',
+  'Teak': '#D2691E',
+  'Mahogany': '#6B2F1A',
+};
 
-function snapFt(feet: number): number {
-  return Math.round(feet / SNAP_FT) * SNAP_FT
-}
-
-// Animated water plane — clicking places a new section
-function Water({ onPlace }: { onPlace: (x: number, z: number) => void }) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  useFrame((state) => {
-    if (meshRef.current) {
-      const mat = meshRef.current.material as THREE.MeshStandardMaterial
-      mat.opacity = 0.82 + Math.sin(state.clock.elapsedTime * 0.5) * 0.04
-    }
-  })
-  return (
-    <mesh
-      ref={meshRef}
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -0.05, 0]}
-      receiveShadow
-      onPointerDown={(e) => {
-        e.stopPropagation()
-        const ft_x = snapFt(e.point.x / SCALE)
-        const ft_z = snapFt(e.point.z / SCALE)
-        onPlace(ft_x, ft_z)
-      }}
-    >
-      <planeGeometry args={[200, 200]} />
-      <meshStandardMaterial
-        color="#1a4a7a"
-        transparent
-        opacity={0.82}
-        roughness={0.1}
-        metalness={0.4}
-      />
-    </mesh>
-  )
-}
-
-function DockPost({ x, z }: { x: number; z: number }) {
-  return (
-    <mesh position={[x, -0.4, z]}>
-      <cylinderGeometry args={[0.04, 0.04, 0.9, 8]} />
-      <meshStandardMaterial color="#6B7280" metalness={0.7} roughness={0.3} />
-    </mesh>
-  )
-}
-
-function DockSectionMesh({
-  section, deckingColor, selected,
-  onSelect, onStartDrag, onDelete,
-}: {
-  section: DockSection3D
-  deckingColor: string
-  selected: boolean
-  onSelect: () => void
-  onStartDrag: (worldX: number, worldZ: number) => void
-  onDelete: () => void
+// Single dock section mesh
+function DockSectionMesh({ 
+  section, 
+  deckingColor, 
+  frameColor,
+  isSelected,
+  onClick 
+}: { 
+  section: DockSection;
+  deckingColor: string;
+  frameColor: string;
+  isSelected: boolean;
+  onClick: () => void;
 }) {
-  const w = section.w * SCALE
-  const d = section.d * SCALE
-  const frameH = 0.12
-  const deckH = 0.04
-  const cx = section.x * SCALE
-  const cz = section.z * SCALE
-
-  function handleDown(e: { stopPropagation: () => void; point: THREE.Vector3 }) {
-    e.stopPropagation()
-    if (!selected) {
-      onSelect()
-    } else {
-      onStartDrag(e.point.x, e.point.z)
+  const meshRef = useRef<THREE.Group>(null);
+  
+  // Animate on hover/select
+  useFrame((state) => {
+    if (meshRef.current && isSelected) {
+      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.02 + 0.1;
     }
-  }
+  });
 
+  const deckHeight = 0.15;
+  const frameHeight = 0.4;
+  
   return (
-    <group position={[cx, 0, cz]}>
+    <group 
+      ref={meshRef}
+      position={[section.x, 0, section.z]}
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+    >
       {/* Aluminum frame */}
-      <mesh
-        position={[0, frameH / 2, 0]}
-        castShadow
-        receiveShadow
-        onPointerDown={handleDown}
-      >
-        <boxGeometry args={[w, frameH, d]} />
-        <meshStandardMaterial
-          color={selected ? '#3B5BDB' : '#9CA3AF'}
-          metalness={0.8}
-          roughness={0.3}
+      <mesh position={[0, -frameHeight / 2, 0]}>
+        <boxGeometry args={[section.width, frameHeight, section.depth]} />
+        <meshStandardMaterial 
+          color={frameColor} 
+          metalness={0.8} 
+          roughness={0.2}
         />
       </mesh>
-
-      {/* WPC decking boards */}
-      {Array.from({ length: Math.ceil(section.w) }).map((_, i) => (
-        <mesh
-          key={i}
-          position={[-w / 2 + (i + 0.5) * SCALE, frameH + deckH / 2, 0]}
-          castShadow
-          onPointerDown={handleDown}
-        >
-          <boxGeometry args={[SCALE * 0.88, deckH, d * 0.96]} />
-          <meshStandardMaterial
-            color={selected ? '#4C6EF5' : deckingColor}
-            roughness={0.8}
-            metalness={0.05}
-          />
+      
+      {/* Decking surface */}
+      <mesh position={[0, deckHeight / 2, 0]}>
+        <boxGeometry args={[section.width - 0.05, deckHeight, section.depth - 0.05]} />
+        <meshStandardMaterial 
+          color={deckingColor}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </mesh>
+      
+      {/* Deck planks detail (lines) */}
+      {Array.from({ length: Math.floor(section.width / 0.15) }).map((_, i) => (
+        <mesh key={i} position={[-section.width / 2 + 0.075 + i * 0.15, deckHeight + 0.001, 0]}>
+          <boxGeometry args={[0.01, 0.002, section.depth - 0.1]} />
+          <meshStandardMaterial color="#00000033" transparent opacity={0.2} />
         </mesh>
       ))}
-
-      {/* Selection highlight glow */}
-      {selected && (
-        <mesh position={[0, frameH + deckH + 0.01, 0]}>
-          <boxGeometry args={[w + 0.06, 0.01, d + 0.06]} />
-          <meshStandardMaterial color="#748FFC" transparent opacity={0.45} />
+      
+      {/* Selection highlight */}
+      {isSelected && (
+        <mesh position={[0, deckHeight + 0.01, 0]}>
+          <boxGeometry args={[section.width + 0.1, 0.02, section.depth + 0.1]} />
+          <meshStandardMaterial color="#00aaff" transparent opacity={0.3} />
         </mesh>
-      )}
-
-      {/* Delete button via Html overlay */}
-      {selected && (
-        <Html
-          position={[0, frameH + deckH + 0.28, 0]}
-          center
-          distanceFactor={6}
-          zIndexRange={[100, 0]}
-        >
-          <button
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete()
-            }}
-            style={{
-              background: 'rgba(239,68,68,0.92)',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '7px',
-              padding: '5px 14px',
-              fontSize: '13px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.55)',
-              userSelect: 'none',
-              letterSpacing: '0.02em',
-            }}
-          >
-            🗑 Delete
-          </button>
-        </Html>
       )}
     </group>
-  )
+  );
 }
 
-// Uses DOM pointer events + manual raycasting against y=0 plane for smooth drag
-function DragHandler({
-  isDragging,
-  onDragMove,
-  onDragEnd,
-}: {
-  isDragging: boolean
-  onDragMove: (worldX: number, worldZ: number) => void
-  onDragEnd: () => void
+// Water plane
+function Water() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      const material = meshRef.current.material as THREE.MeshStandardMaterial;
+      material.displacementScale = Math.sin(state.clock.elapsedTime * 0.5) * 0.05 + 0.1;
+    }
+  });
+  
+  return (
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
+      <planeGeometry args={[50, 50, 32, 32]} />
+      <meshStandardMaterial 
+        color="#1a5f7a"
+        transparent
+        opacity={0.8}
+        roughness={0.1}
+        metalness={0.3}
+      />
+    </mesh>
+  );
+}
+
+// Loading fallback
+function Loader() {
+  return (
+    <Html center>
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <span className="text-white text-sm">Loading 3D...</span>
+      </div>
+    </Html>
+  );
+}
+
+// Scene contents
+function Scene({ 
+  config, 
+  selectedSection, 
+  onSelectSection 
+}: { 
+  config: DockConfig;
+  selectedSection: string | null;
+  onSelectSection: (id: string | null) => void;
 }) {
-  const threeState = useThree()
-  const stateRef = useRef(threeState)
-  stateRef.current = threeState
-
-  const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), [])
-  const cbRef = useRef({ onDragMove, onDragEnd })
-  cbRef.current = { onDragMove, onDragEnd }
-
-  useEffect(() => {
-    if (!isDragging) return
-
-    function handleMove(e: PointerEvent) {
-      const { camera, raycaster, gl } = stateRef.current
-      const rect = gl.domElement.getBoundingClientRect()
-      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1
-      const ny = -((e.clientY - rect.top) / rect.height) * 2 + 1
-      raycaster.setFromCamera(new THREE.Vector2(nx, ny), camera)
-      const target = new THREE.Vector3()
-      if (raycaster.ray.intersectPlane(plane, target)) {
-        cbRef.current.onDragMove(target.x, target.z)
-      }
-    }
-
-    function handleUp() {
-      cbRef.current.onDragEnd()
-    }
-
-    window.addEventListener('pointermove', handleMove)
-    window.addEventListener('pointerup', handleUp)
-    return () => {
-      window.removeEventListener('pointermove', handleMove)
-      window.removeEventListener('pointerup', handleUp)
-    }
-  }, [isDragging, plane])
-
-  return null
-}
-
-interface SceneProps extends Props {
-  selectedId: string | null
-  onSelectChange: (id: string | null) => void
-}
-
-function Scene({
-  sections, deckingColor, onAdd, onDelete, onMove,
-  selectedId, onSelectChange,
-}: SceneProps) {
-  const [isDragging, setIsDragging] = useState(false)
-  const orbitRef = useRef<any>(null)
-  const dragIdRef = useRef<string | null>(null)
-  const dragOffsetRef = useRef({ x: 0, z: 0 })
-
-  function handlePlace(ft_x: number, ft_z: number) {
-    if (isDragging) return
-    const id = `dock_${Date.now()}`
-    onAdd?.({ id, x: ft_x, z: ft_z, w: 8, d: 4 })
-    onSelectChange(id)
-  }
-
-  function handleStartDrag(id: string, worldX: number, worldZ: number) {
-    const section = sections.find(s => s.id === id)
-    if (!section) return
-    dragIdRef.current = id
-    dragOffsetRef.current = {
-      x: worldX / SCALE - section.x,
-      z: worldZ / SCALE - section.z,
-    }
-    setIsDragging(true)
-    if (orbitRef.current) orbitRef.current.enabled = false
-  }
-
-  const handleDragMove = useCallback((worldX: number, worldZ: number) => {
-    if (!dragIdRef.current) return
-    const newX = snapFt(worldX / SCALE - dragOffsetRef.current.x)
-    const newZ = snapFt(worldZ / SCALE - dragOffsetRef.current.z)
-    onMove?.(dragIdRef.current, newX, newZ)
-  }, [onMove])
-
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false)
-    dragIdRef.current = null
-    if (orbitRef.current) orbitRef.current.enabled = true
-  }, [])
-
-  function handleDelete(id: string) {
-    onDelete?.(id)
-    onSelectChange(null)
-  }
-
   return (
     <>
-      <ambientLight intensity={0.6} />
-      <directionalLight
-        position={[10, 20, 10]}
-        intensity={1.2}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-      />
-      <directionalLight position={[-10, 10, -5]} intensity={0.4} color="#93C5FD" />
-      <color attach="background" args={['#0d1f3c']} />
-      <fog attach="fog" args={['#0d1f3c', 30, 80]} />
-
-      <Water onPlace={handlePlace} />
-
-      <Grid
-        position={[0, 0, 0]}
-        args={[40, 40]}
-        cellSize={SCALE}
-        cellThickness={0.5}
-        cellColor="#1e3a5f"
-        sectionSize={SCALE * 5}
-        sectionThickness={1}
-        sectionColor="#2a4f7a"
-        fadeDistance={30}
-        fadeStrength={2}
-        followCamera={false}
-        infiniteGrid
-      />
-
-      {sections.map(s => (
-        <group key={s.id}>
-          <DockSectionMesh
-            section={s}
-            deckingColor={deckingColor}
-            selected={selectedId === s.id}
-            onSelect={() => onSelectChange(s.id)}
-            onStartDrag={(wx, wz) => handleStartDrag(s.id, wx, wz)}
-            onDelete={() => handleDelete(s.id)}
-          />
-          <DockPost x={s.x * SCALE - s.w * SCALE / 2 + 0.2} z={s.z * SCALE - s.d * SCALE / 2 + 0.2} />
-          <DockPost x={s.x * SCALE + s.w * SCALE / 2 - 0.2} z={s.z * SCALE - s.d * SCALE / 2 + 0.2} />
-          <DockPost x={s.x * SCALE - s.w * SCALE / 2 + 0.2} z={s.z * SCALE + s.d * SCALE / 2 - 0.2} />
-          <DockPost x={s.x * SCALE + s.w * SCALE / 2 - 0.2} z={s.z * SCALE + s.d * SCALE / 2 - 0.2} />
-        </group>
-      ))}
-
-      {/* Horizon glow */}
-      <mesh position={[0, -1, -40]}>
-        <planeGeometry args={[200, 8]} />
-        <meshStandardMaterial color="#1a4a8a" transparent opacity={0.3} />
-      </mesh>
-
-      <OrbitControls
-        ref={orbitRef}
-        makeDefault
-        minPolarAngle={0.1}
-        maxPolarAngle={Math.PI / 2.2}
-        minDistance={2}
+      <PerspectiveCamera makeDefault position={[10, 8, 10]} fov={50} />
+      <OrbitControls 
+        enablePan={true}
+        enableZoom={true}
+        enableRotate={true}
+        minDistance={5}
         maxDistance={30}
-        target={[0, 0, 0]}
+        maxPolarAngle={Math.PI / 2.2}
       />
-
-      <DragHandler
-        isDragging={isDragging}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
+      
+      {/* Lighting */}
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[10, 15, 5]} intensity={1} castShadow />
+      <directionalLight position={[-5, 10, -5]} intensity={0.3} />
+      
+      {/* Environment */}
+      <Environment preset="sunset" />
+      
+      {/* Water */}
+      <Water />
+      
+      {/* Dock sections */}
+      {config.sections.map((section) => (
+        <DockSectionMesh
+          key={section.id}
+          section={section}
+          deckingColor={DECKING_COLORS[config.deckingColor] || '#808080'}
+          frameColor={config.frameColor}
+          isSelected={selectedSection === section.id}
+          onClick={() => onSelectSection(section.id)}
+        />
+      ))}
+      
+      {/* Ground shadow */}
+      <ContactShadows 
+        position={[0, -0.49, 0]} 
+        opacity={0.4} 
+        scale={30} 
+        blur={2} 
       />
+      
+      {/* Click handler for deselection */}
+      <mesh 
+        visible={false}
+        position={[0, -1, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        onClick={() => onSelectSection(null)}
+      >
+        <planeGeometry args={[100, 100]} />
+      </mesh>
     </>
-  )
+  );
 }
 
-export default function DockBuilder3D({
-  sections = [],
-  deckingColor = '#8B6914',
-  priceRate = 50,
-  onAdd,
-  onDelete,
-  onMove,
-}: Partial<Props>) {
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+// Error boundary for WebGL crashes
+class WebGLErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-  const totalSqft = sections.reduce((sum, s) => sum + s.w * s.d, 0)
-  const totalPrice = totalSqft * (priceRate ?? 50)
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
 
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('WebGL Error:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// 2D Fallback view when WebGL fails
+function Fallback2DView({ config }: { config: DockConfig }) {
+  const scale = 20;
+  
   return (
-    <div style={{ width: '100%', height: '100%', minHeight: '400px', position: 'relative' }}>
-
-      {/* Stats + hint overlay — top left */}
-      <div style={{
-        position: 'absolute', top: '12px', left: '12px', zIndex: 10,
-        background: 'rgba(8,13,38,0.88)',
-        border: '1px solid rgba(138,149,201,0.18)',
-        borderRadius: '10px', padding: '10px 16px',
-        backdropFilter: 'blur(8px)',
-        pointerEvents: 'none',
-        minWidth: '170px',
-      }}>
-        <div style={{ fontSize: '10px', color: '#4B5A90', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>
-          3D Builder
-        </div>
-        <div style={{ fontSize: '13px', color: '#EEF1FA', marginBottom: '2px' }}>
-          {sections.length} section{sections.length !== 1 ? 's' : ''} &nbsp;·&nbsp; {totalSqft} sqft
-        </div>
-        <div style={{ fontSize: '22px', fontWeight: 800, color: '#4ade80', lineHeight: 1.1 }}>
-          ${totalPrice.toLocaleString()}
-        </div>
-        <div style={{ fontSize: '10px', color: '#374151', marginTop: '6px', lineHeight: 1.5 }}>
-          Click water → place section<br />
-          Click section → select &amp; drag
+    <div className="w-full h-full bg-gradient-to-b from-sky-300 to-blue-500 flex items-center justify-center">
+      <div className="relative">
+        {/* Water background */}
+        <div 
+          className="absolute inset-0 -m-20 bg-blue-400 opacity-50 rounded-lg"
+          style={{ width: '400px', height: '400px' }}
+        />
+        
+        {/* Dock sections as 2D boxes */}
+        <svg width="360" height="360" className="relative z-10">
+          {config.sections.map((section) => (
+            <g key={section.id}>
+              {/* Frame */}
+              <rect
+                x={180 + section.x * scale - (section.width * scale) / 2}
+                y={180 + section.z * scale - (section.depth * scale) / 2}
+                width={section.width * scale}
+                height={section.depth * scale}
+                fill={config.frameColor}
+                stroke="#333"
+                strokeWidth="2"
+              />
+              {/* Decking */}
+              <rect
+                x={180 + section.x * scale - (section.width * scale) / 2 + 2}
+                y={180 + section.z * scale - (section.depth * scale) / 2 + 2}
+                width={section.width * scale - 4}
+                height={section.depth * scale - 4}
+                fill={DECKING_COLORS[config.deckingColor] || '#808080'}
+                rx="2"
+              />
+            </g>
+          ))}
+        </svg>
+        
+        {/* Info overlay */}
+        <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-2 rounded text-sm">
+          2D Preview — {config.totalSqFt} sq ft
         </div>
       </div>
+    </div>
+  );
+}
 
+// Main component
+interface DockBuilder3DProps {
+  config: DockConfig;
+  onConfigChange: (config: DockConfig) => void;
+}
+
+export default function DockBuilder3D({ config, onConfigChange }: DockBuilder3DProps) {
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
+
+  // Check WebGL support on mount
+  React.useEffect(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      setWebglSupported(!!gl);
+    } catch {
+      setWebglSupported(false);
+    }
+  }, []);
+
+  const handleSelectSection = useCallback((id: string | null) => {
+    setSelectedSection(id);
+  }, []);
+
+  // Suppress unused var warning - onConfigChange will be used for edit operations
+  void onConfigChange;
+
+  // Show 2D fallback if WebGL not supported
+  if (webglSupported === false) {
+    return <Fallback2DView config={config} />;
+  }
+
+  // Still checking
+  if (webglSupported === null) {
+    return (
+      <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+        <div className="text-white">Initializing 3D view...</div>
+      </div>
+    );
+  }
+
+  return (
+    <WebGLErrorBoundary fallback={<Fallback2DView config={config} />}>
       <Canvas
         shadows
-        camera={{ position: [5, 4, 8], fov: 50 }}
-        style={{ background: '#0d1f3c' }}
-        onPointerMissed={() => setSelectedId(null)}
+        gl={{ 
+          antialias: true,
+          alpha: false,
+          powerPreference: 'high-performance',
+          failIfMajorPerformanceCaveat: false,
+        }}
+        onCreated={({ gl }) => {
+          gl.setClearColor('#87CEEB');
+        }}
+        style={{ background: 'linear-gradient(to bottom, #87CEEB, #4A90D9)' }}
       >
-        <Suspense fallback={null}>
-          <Scene
-            sections={sections}
-            deckingColor={deckingColor}
-            priceRate={priceRate}
-            onAdd={onAdd}
-            onDelete={onDelete}
-            onMove={onMove}
-            selectedId={selectedId}
-            onSelectChange={setSelectedId}
+        <Suspense fallback={<Loader />}>
+          <Scene 
+            config={config}
+            selectedSection={selectedSection}
+            onSelectSection={handleSelectSection}
           />
         </Suspense>
       </Canvas>
-    </div>
-  )
+    </WebGLErrorBoundary>
+  );
+}
+
+// Export default config for use in parent components
+export function getDefaultDockConfig(): DockConfig {
+  return {
+    sections: [
+      { id: 'main-1', x: 0, z: 0, width: 4, depth: 8, type: 'main' },
+      { id: 'finger-1', x: 3, z: 0, width: 2, depth: 6, type: 'finger' },
+    ],
+    deckingColor: 'Gray',
+    frameColor: '#C0C0C0',
+    totalSqFt: 44,
+  };
 }

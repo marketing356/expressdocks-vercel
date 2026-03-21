@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const FAL_KEY = process.env.FAL_API_KEY ?? '4db9a2f7-e681-43e2-9ce9-fae4045e1e20:d846c178304e2325cba7125d3171c647'
+const FAL_KEY = process.env.FAL_API_KEY ?? 'a769657e-785f-4a20-b65b-4eff4fd60678:822b07002bcfcff48e2f2fa9e56e415a'
 
 const COLOR_NAMES: Record<string, string> = {
   '#8b6914': 'warm teak',
@@ -73,10 +73,9 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json()
-    const imageUrl = data?.images?.[0]?.url ?? data?.image?.url ?? null
+    const imageUrl = data?.images?.[0]?.url ?? null
 
     if (!imageUrl) {
-      console.error('fal.ai: no image URL in response', JSON.stringify(data))
       return NextResponse.json({ error: 'No image returned' }, { status: 500 })
     }
 

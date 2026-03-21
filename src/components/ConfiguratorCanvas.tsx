@@ -54,7 +54,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     dragOffsetY: 0,
     dragStartGX: 0,
     dragStartGY: 0,
-    scale: 0.5,  // Default zoom out so more grid is visible
+    scale: 0.8,  // Default — adjusted on mount via useEffect
     panX: 0,
     panY: 0,
     panning: false,
@@ -97,8 +97,9 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     ctx.translate(panX, panY)
     ctx.scale(scale, scale)
     
-    // Grid
-    ctx.strokeStyle = 'rgba(138,149,201,0.08)'
+    // Grid — major lines every 5 cells, minor lines every cell
+    // Minor grid lines
+    ctx.strokeStyle = 'rgba(138,149,201,0.18)'
     ctx.lineWidth = 0.5 / scale
     const gridW = Math.ceil(w / scale / CELL) + 2
     const gridH = Math.ceil(h / scale / CELL) + 2
@@ -106,10 +107,16 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     const startY = Math.floor(-panY / scale / CELL) * CELL
     for (let i = 0; i <= gridW; i++) {
       const x = startX + i * CELL
+      const isMajor = Math.round(x / CELL) % 5 === 0
+      ctx.strokeStyle = isMajor ? 'rgba(138,149,201,0.35)' : 'rgba(138,149,201,0.18)'
+      ctx.lineWidth = (isMajor ? 1 : 0.5) / scale
       ctx.beginPath(); ctx.moveTo(x, startY); ctx.lineTo(x, startY + (gridH + 1) * CELL); ctx.stroke()
     }
     for (let i = 0; i <= gridH; i++) {
       const y = startY + i * CELL
+      const isMajor = Math.round(y / CELL) % 5 === 0
+      ctx.strokeStyle = isMajor ? 'rgba(138,149,201,0.35)' : 'rgba(138,149,201,0.18)'
+      ctx.lineWidth = (isMajor ? 1 : 0.5) / scale
       ctx.beginPath(); ctx.moveTo(startX, y); ctx.lineTo(startX + (gridW + 1) * CELL, y); ctx.stroke()
     }
     
