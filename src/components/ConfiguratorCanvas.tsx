@@ -36,6 +36,7 @@ function snapToGrid(val: number) {
 
 export default function ConfiguratorCanvas({ sections, selectedColor, priceRate, onAdd, onMove, onDelete }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const drawRef = useRef<(() => void) | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [canvasSize, setCanvasSize] = useState({ w: 800, h: 500 })
   
@@ -53,7 +54,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     dragOffsetY: 0,
     dragStartGX: 0,
     dragStartGY: 0,
-    scale: 1,
+    scale: 0.5,  // Default zoom out so more grid is visible
     panX: 0,
     panY: 0,
     panning: false,
@@ -72,6 +73,7 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
   selectedIdRef.current = selectedId
 
   // Draw everything to canvas
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const draw = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -184,6 +186,9 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     
     ctx.restore()
   }, [canvasSize])
+
+  // Store draw function in ref for zoom buttons
+  useEffect(() => { drawRef.current = draw }, [draw])
 
   // Convert screen coords to canvas/grid coords
   const screenToCanvas = (cx: number, cy: number) => {
@@ -418,12 +423,25 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
         height={canvasSize.h}
         style={{ display: 'block', width: '100%', touchAction: 'none' }}
       />
+      {/* Zoom controls */}
+      <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 10 }}>
+        {[
+          { label: '+', action: () => { const s = stateRef.current; s.scale = Math.min(4, s.scale * 1.3); drawRef.current?.() } },
+          { label: '−', action: () => { const s = stateRef.current; s.scale = Math.max(0.1, s.scale / 1.3); drawRef.current?.() } },
+          { label: '⊡', action: () => { const s = stateRef.current; s.scale = 0.5; s.panX = 0; s.panY = 0; drawRef.current?.() } },
+        ].map(btn => (
+          <button key={btn.label} onMouseDown={(e) => { e.preventDefault(); btn.action() }}
+            style={{ width: '32px', height: '32px', background: 'rgba(14,20,51,0.9)', border: '1px solid rgba(138,149,201,0.3)', color: '#EEF1FA', borderRadius: '6px', cursor: 'pointer', fontSize: btn.label === '⊡' ? '14px' : '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {btn.label}
+          </button>
+        ))}
+      </div>
       <div style={{
         position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)',
         fontSize: '11px', color: 'rgba(138,149,201,0.6)', pointerEvents: 'none',
         background: 'rgba(7,12,34,0.7)', padding: '4px 10px', borderRadius: '20px',
       }}>
-        Drag to draw · Touch dock to move it
+        Draw · Move · + / − to zoom · ⊡ to reset view
       </div>
     </div>
   )
