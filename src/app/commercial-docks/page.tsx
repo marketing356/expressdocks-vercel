@@ -86,7 +86,7 @@ export default function Page() {
 
         <div className="rounded-2xl p-10 text-center" style={{ background: '#3B4A8F' }}>
           <h2 className="text-3xl font-bold mb-4" style={{ color: '#EEF1FA' }}>Build Your Dock, Your Way</h2>
-          <p className="mb-6" style={{ color: 'rgba(238,241,250,0.85)' }}>Request a tailored quote for your commercial waterfront project. Our team provides specifications, pricing, and timelines within 48 hours.</p>
+          <p className="mb-6" style={{ color: 'rgba(238,241,250,0.85)' }}>Request a tailored quote for your commercial waterfront project. Our team provides specifications and competitive pricing.</p>
           <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold transition hover:scale-105" style={{ background: '#EEF1FA', color: '#0E1433' }}>
             Get a Custom Quote →
           </a>

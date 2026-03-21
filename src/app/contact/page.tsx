@@ -48,7 +48,7 @@ export default function Contact() {
         <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Get In Touch</p>
         <h1 className="text-5xl md:text-6xl font-black mb-6" style={{ color: '#EEF1FA' }}>Get Your Free Quote</h1>
         <p className="text-xl max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.7)' }}>
-          Send us your waterfront sketch or project details and we&apos;ll deliver a free custom 3D design within 48 hours. No obligation.
+          Send us your waterfront sketch or project details for a free custom quote. No obligation.
         </p>
       </section>
 
@@ -143,7 +143,7 @@ export default function Contact() {
             </div>
 
             <div className="rounded-2xl p-6" style={{ background: 'rgba(59,74,143,0.15)', border: '1px solid rgba(138,149,201,0.2)' }}>
-              <h3 className="font-bold mb-2" style={{ color: '#EEF1FA' }}>Free 3D Design in 48 Hours</h3>
+              <h3 className="font-bold mb-2" style={{ color: '#EEF1FA' }}>Free Custom Quote</h3>
               <p className="text-sm" style={{ color: 'rgba(238,241,250,0.65)' }}>Send us any sketch, photo, or description of your waterfront. Our team creates a complete custom 3D dock design — completely free, no obligation to buy.</p>
               <p className="text-xs mt-3" style={{ color: '#8A95C9' }}>Most customers receive their 3D design within 24 hours.</p>
             </div>

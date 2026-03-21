@@ -60,7 +60,7 @@ export default function Page() {
             { icon: '📍', title: 'Local Leads Sent to You', desc: 'We generate leads in your geographical area and send them directly to you.' },
             { icon: '💰', title: 'Factory-Direct Pricing', desc: 'You order at our factory-direct price. You set your own retail price and keep the full margin.' },
             { icon: '📦', title: 'No Inventory Required', desc: 'Order only when you have a job. No warehouse, no stock, no capital tied up.' },
-            { icon: '📐', title: 'Full Design Support', desc: 'Our engineering team helps you design the right system for every project. Quote delivered in 48 hours.' },
+            { icon: '📐', title: 'Full Design Support', desc: 'Our engineering team helps you design the right system for every project. Quick turnaround on all quotes.' },
             { icon: '🎓', title: 'Training & Resources', desc: 'Installation guides, product specs, marketing materials, and sales support.' },
             { icon: '🛡️', title: 'Industry-Leading Warranty', desc: 'Back every job with a 50-year residential guarantee.' },
           ].map(item => (
