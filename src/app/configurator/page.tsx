@@ -27,7 +27,7 @@ export type DockSection = {
 }
 
 const DOCK_TYPES = [
-  { label: 'Residential',        detail: 'Floating & Fixed', rate: 0 },
+  { label: 'Residential',        detail: 'Standard', rate: 0 },
   { label: 'Commercial',         detail: 'Marina-grade', rate: 0 },
   { label: 'Fingers / Gangways', detail: 'Premium', rate: 0 },
 ]
@@ -56,87 +56,97 @@ export default function ConfiguratorPage() {
   const [isRendering, setIsRendering] = useState(false)
   const [renderUrl, setRenderUrl] = useState<string | null>(null)
   const [showWow, setShowWow] = useState(false)
-
   // Email image feature
   const [showEmailForm, setShowEmailForm] = useState(false)
   const [emailInput, setEmailInput] = useState('')
   const [emailSending, setEmailSending] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
 
-  // Lead form
-  const [showLeadForm, setShowLeadForm] = useState(false)
-  const [leadForm, setLeadForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    zip: '',
-    waterfront: ''
-  })
-  const [leadSubmitting, setLeadSubmitting] = useState(false)
-  const [leadSubmitted, setLeadSubmitted] = useState(false)
 
-  const totalSqft = sections.reduce((acc, s) => acc + s.gw * s.gh * 4, 0)
-  const colorName = WPC_COLORS.find(c => c.hex === selectedColor)?.name ?? 'Custom'
+  // Lead capture
+  const [form, setForm] = useState({ name: '', email: '', phone: '', zip: '' })
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
-  // Build 3D sections from 2D
-  const sections3D: DockSection3D[] = sections.map(s => ({
-    id: s.id,
-    x: s.gx * 2 - 12,
-    z: s.gy * 2 - 8,
-    w: s.gw * 2,
-    d: s.gh * 2,
-    color: selectedColor,
-  }))
+  const priceRate = DOCK_TYPES[rateIdx].rate
+  const totalSqft = sections.reduce((sum, s) => sum + s.gw * s.gh, 0)
+  const totalPrice = totalSqft * priceRate
+  const colorName = WPC_COLORS.find(c => c.hex === selectedColor)?.name ?? 'Teak'
+
+  function addSection(s: DockSection) { setSections(p => [...p, s]) }
+  function moveSection(id: string, gx: number, gy: number) { setSections(p => p.map(s => s.id === id ? { ...s, gx, gy } : s)) }
+  function updateSection(id: string, c: Partial<DockSection>) {
+    setSections(p => p.map(s => s.id === id ? { ...s, ...c } : s))
+  }
+  function deleteSection(id: string) {
+    setSections(p => p.filter(s => s.id !== id))
+    setSelectedId(null)
+  }
+
+  // 3D builder callbacks
+  function add3DSection(s: DockSection3D) {
+    setSections(p => [...p, { id: s.id, gx: s.x, gy: s.z, gw: s.w, gh: s.d }])
+  }
+  function move3DSection(id: string, x: number, z: number) {
+    setSections(p => p.map(s => s.id === id ? { ...s, gx: x, gy: z } : s))
+  }
 
   async function renderDock() {
+    if (!sections.length || isRendering) return
     setIsRendering(true)
-    setHintVisible(false)
     try {
       const res = await fetch('/api/render', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `photorealistic aerial photo of a custom aluminum floating dock with ${colorName} WPC composite decking, ${totalSqft} sqft, on a calm lake at golden hour, 8K, luxury waterfront property`
-        })
+          sections: sections.map(s => ({ x: s.gx, y: s.gy, width: s.gw, height: s.gh })),
+          totalSqft,
+          dockType: DOCK_TYPES[rateIdx].label,
+          color: selectedColor,
+        }),
       })
       const data = await res.json()
       if (data.imageUrl) {
         setRenderUrl(data.imageUrl)
         setShowWow(true)
       }
-    } catch (err) {
-      console.error('Render failed', err)
+    } catch (e) {
+      console.error('Render error:', e)
+    } finally {
+      setIsRendering(false)
     }
-    setIsRendering(false)
   }
 
-  async function handleLeadSubmit(e: React.FormEvent) {
+  async function submitLead(e: React.FormEvent) {
     e.preventDefault()
-    setLeadSubmitting(true)
+    setSubmitting(true)
     try {
-      await fetch('/api/lead', {
+      await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...leadForm,
+          ...form,
+          dockType: DOCK_TYPES[rateIdx].label,
+          sqft: totalSqft,
           renderUrl,
           details: `DOCK BUILDER RENDER LEAD\n\nType: ${DOCK_TYPES[rateIdx].label}\nColor: ${colorName}\nTotal: ${totalSqft} sqft\nRender: ${renderUrl}`,
-        })
+        }),
       })
-      setLeadSubmitted(true)
-    } catch (err) {
-      console.error('Lead submit failed', err)
+      setSubmitted(true)
+    } catch {
+      setSubmitted(true)
+    } finally {
+      setSubmitting(false)
     }
-    setLeadSubmitting(false)
   }
+
 
   // Download image handler
   const handleDownloadImage = () => {
     if (!renderUrl) return
     const link = document.createElement('a')
     link.href = renderUrl
-    link.download = `my-expressdocks-${totalSqft}sqft-${colorName.toLowerCase()}-dock.jpg`
+    link.download = `my-expressdocks-${totalSqft}sqft-${colorName.replace(/\s+/g, '-').toLowerCase()}-dock.jpg`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()
@@ -146,7 +156,6 @@ export default function ConfiguratorPage() {
   // Email image handler
   const handleEmailImage = async () => {
     if (!emailInput || !renderUrl) return
-    
     setEmailSending(true)
     try {
       const response = await fetch('/api/send-image', {
@@ -159,12 +168,9 @@ export default function ConfiguratorPage() {
           sqft: totalSqft
         })
       })
-      
       if (response.ok) {
         setEmailSent(true)
         setShowEmailForm(false)
-        // Pre-fill email in lead form
-        setLeadForm(prev => ({ ...prev, email: emailInput }))
       }
     } catch (error) {
       console.error('Failed to send email:', error)
@@ -173,552 +179,364 @@ export default function ConfiguratorPage() {
     }
   }
 
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#0A0E1A', color: 'white' }}>
-      {/* Header */}
-      <header style={{ padding: '16px 24px', borderBottom: '1px solid #1E2538', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <a href="/" style={{ fontSize: 22, fontWeight: 700, textDecoration: 'none', color: 'white' }}>
-          Express<span style={{ color: '#F59E0B' }}>Docks</span>
-        </a>
-        <div style={{ color: '#8A95C9', fontSize: 14 }}>3D Dock Builder</div>
-      </header>
+    <main style={{ background: '#080d26', minHeight: '100vh', color: '#EEF1FA', display: 'flex', flexDirection: 'column' }}>
 
-      {/* Main area */}
-      <div style={{ display: 'flex', flex: 1, flexDirection: isDesktop ? 'row' : 'column' }}>
-        {/* Sidebar */}
-        <aside style={{ width: isDesktop ? 280 : '100%', background: '#0F1322', padding: 20, borderRight: isDesktop ? '1px solid #1E2538' : 'none' }}>
-          {/* Dock type */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ fontWeight: 600, marginBottom: 8, display: 'block' }}>Dock Type</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {DOCK_TYPES.map((dt, i) => (
-                <button
-                  key={dt.label}
-                  onClick={() => setRateIdx(i)}
-                  style={{
-                    padding: '10px 14px',
-                    borderRadius: 8,
-                    border: rateIdx === i ? '2px solid #F59E0B' : '1px solid #2D3548',
-                    background: rateIdx === i ? '#1A1F32' : 'transparent',
-                    color: 'white',
-                    textAlign: 'left',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ fontWeight: 500 }}>{dt.label}</div>
-                  <div style={{ fontSize: 12, color: '#8A95C9' }}>{dt.detail}</div>
-                </button>
-              ))}
+      {/* Top bar */}
+      <div style={{
+        background: '#0E1433', borderBottom: '1px solid rgba(138,149,201,0.15)',
+        padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap',
+        position: 'sticky', top: 0, zIndex: 10,
+      }}>
+        <div style={{ minWidth: '140px' }}>
+          <div style={{ fontWeight: 800, fontSize: '17px' }}>Dock Designer</div>
+          <div style={{ color: '#4B5A90', fontSize: '11px', marginTop: '1px' }}>Design your dock</div>
+        </div>
+
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          {sections.length > 0 ? (
+            <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '6px' }}>
+              <span style={{ color: '#8A95C9', fontSize: '13px' }}>Total: {totalSqft} sqft —</span>
+              <span style={{ color: '#00D4FF', fontWeight: 700, fontSize: '16px' }}>Request Quote</span>
             </div>
-          </div>
+          ) : (
+            <span style={{ color: '#374151', fontSize: '13px' }}>Draw your first section to see pricing</span>
+          )}
+        </div>
 
-          {/* WPC Color */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ fontWeight: 600, marginBottom: 8, display: 'block' }}>Decking Color</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-              {WPC_COLORS.map(c => (
-                <button
-                  key={c.hex}
-                  onClick={() => setSelectedColor(c.hex)}
-                  style={{
-                    padding: 8,
-                    borderRadius: 8,
-                    border: selectedColor === c.hex ? '2px solid #F59E0B' : '1px solid #2D3548',
-                    background: 'transparent',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ width: '100%', height: 32, borderRadius: 4, background: c.hex, marginBottom: 4 }} />
-                  <div style={{ fontSize: 11, color: '#8A95C9' }}>{c.name}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+        <select
+          value={rateIdx}
+          onChange={(e) => setRateIdx(Number(e.target.value))}
+          style={{
+            padding: '8px 12px', borderRadius: '8px',
+            background: 'rgba(59,74,143,0.2)', border: '1px solid rgba(138,149,201,0.25)',
+            color: '#EEF1FA', fontSize: '13px', cursor: 'pointer', outline: 'none',
+          }}
+        >
+          {DOCK_TYPES.map((t, i) => (
+            <option key={i} value={i} style={{ background: '#0E1433' }}>
+              {t.label} — {t.detail}
+            </option>
+          ))}
+        </select>
+      </div>
 
-          {/* Mode toggle */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ fontWeight: 600, marginBottom: 8, display: 'block' }}>Tool Mode</label>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button
-                onClick={() => setMode('draw')}
-                style={{
-                  flex: 1,
-                  padding: '10px 0',
-                  borderRadius: 8,
-                  border: mode === 'draw' ? '2px solid #F59E0B' : '1px solid #2D3548',
-                  background: mode === 'draw' ? '#1A1F32' : 'transparent',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                ✏️ Draw
-              </button>
-              <button
-                onClick={() => setMode('move')}
-                style={{
-                  flex: 1,
-                  padding: '10px 0',
-                  borderRadius: 8,
-                  border: mode === 'move' ? '2px solid #F59E0B' : '1px solid #2D3548',
-                  background: mode === 'move' ? '#1A1F32' : 'transparent',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                ✋ Move
-              </button>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div style={{ background: '#1A1F32', borderRadius: 12, padding: 16, marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: '#8A95C9', marginBottom: 4 }}>Total Area</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: '#F59E0B' }}>{totalSqft} sqft</div>
-          </div>
-
-          {/* View toggle */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      {/* Color picker — always visible below header */}
+      <div style={{
+        background: '#0d1535',
+        borderBottom: '1px solid rgba(138,149,201,0.2)',
+        padding: '10px 20px',
+        display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap',
+      }}>
+        <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 800, letterSpacing: '0.05em', flexShrink: 0 }}>
+          Decking Color:
+        </span>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {WPC_COLORS.map(c => (
             <button
-              onClick={() => setView('2d')}
+              key={c.hex}
+              title={c.name}
+              onClick={() => setSelectedColor(c.hex)}
               style={{
-                flex: 1,
-                padding: '10px 0',
-                borderRadius: 8,
-                border: view === '2d' ? '2px solid #F59E0B' : '1px solid #2D3548',
-                background: view === '2d' ? '#1A1F32' : 'transparent',
-                color: 'white',
-                cursor: 'pointer'
+                width: '28px', height: '28px',
+                borderRadius: '50%',
+                background: c.hex,
+                border: selectedColor === c.hex ? '3px solid #EEF1FA' : '2px solid rgba(138,149,201,0.25)',
+                cursor: 'pointer',
+                boxShadow: selectedColor === c.hex ? `0 0 0 2px ${c.hex}88` : 'none',
+                transform: selectedColor === c.hex ? 'scale(1.2)' : 'scale(1)',
+                transition: 'all 0.15s',
+                outline: 'none', flexShrink: 0,
               }}
-            >
-              2D View
-            </button>
+            />
+          ))}
+        </div>
+        <span style={{ fontSize: '13px', color: '#EEF1FA', fontWeight: 600 }}>{colorName}</span>
+        {sections.length === 0 && (
+          <span style={{ fontSize: '11px', color: '#4B5A90', marginLeft: '8px' }}>Draw your dock below</span>
+        )}
+        {/* Mode toggle */}
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', flexShrink: 0 }}>
+          <button
+            onClick={() => setMode('draw')}
+            title="Draw Mode — click and drag to draw dock sections"
+            style={{
+              padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+              background: mode === 'draw' ? '#3B4A8F' : 'transparent',
+              color: mode === 'draw' ? '#EEF1FA' : '#8A95C9',
+              border: mode === 'draw' ? '1px solid #3B4A8F' : '1px solid rgba(138,149,201,0.3)',
+              transition: 'all 0.15s',
+            }}
+          >Draw</button>
+          <button
+            onClick={() => setMode('move')}
+            title="Move Mode — drag sections to reposition them"
+            style={{
+              padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+              background: mode === 'move' ? '#3B4A8F' : 'transparent',
+              color: mode === 'move' ? '#EEF1FA' : '#8A95C9',
+              border: mode === 'move' ? '1px solid #3B4A8F' : '1px solid rgba(138,149,201,0.3)',
+              transition: 'all 0.15s',
+            }}
+          >👋 Move</button>
+        </div>
+      </div>
+
+
+            {/* View toggle — 3D only on desktop */}
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(138,149,201,0.15)', background: '#080d26' }}>
+        <button
+          onClick={() => setView('2d')}
+          style={{
+            padding: '10px 24px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none',
+            background: view === '2d' ? '#3B4A8F' : 'transparent',
+            color: view === '2d' ? '#EEF1FA' : '#8A95C9',
+            borderRight: '1px solid rgba(138,149,201,0.15)',
+            transition: 'all 0.15s',
+          }}
+        >Draw 2D</button>
+        <button
+          onClick={() => setView('3d')}
+          style={{
+            padding: '10px 24px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none',
+            background: view === '3d' ? '#3B4A8F' : 'transparent',
+            color: view === '3d' ? '#EEF1FA' : '#8A95C9',
+            transition: 'all 0.15s',
+          }}
+        >🎮 Build 3D</button>
+      </div>
+
+      {/* Canvas area */}
+      <div style={{ flex: 1, position: 'relative', display: view === '2d' ? 'block' : 'none' }}>
+        <ConfiguratorCanvas
+          sections={sections}
+          priceRate={priceRate}
+          selectedColor={selectedColor}
+          onAdd={addSection}
+          onMove={moveSection}
+          onDelete={deleteSection}
+        />
+
+        {hintVisible && (
+          <div style={{
+            position: 'absolute', bottom: '32px',
+            left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(14,20,51,0.92)', border: '1px solid rgba(138,149,201,0.2)',
+            borderRadius: '10px', padding: '10px 20px',
+            color: '#8A95C9', fontSize: '13px', whiteSpace: 'nowrap',
+            pointerEvents: 'none', transition: 'opacity 0.6s, bottom 0.3s',
+          }}>
+            Click and drag to draw a dock section · Click a section to select &amp; resize
+          </div>
+        )}
+      </div>
+
+      {/* 3D View */}
+      {view === '3d' && (
+        <div style={{ flex: 1, position: 'relative', minHeight: '500px' }}>
+          <ThreeErrorBoundary>
+            <DockBuilder3D
+              sections={sections.map(s => ({ id: s.id, x: s.gx, z: s.gy, w: s.gw, d: s.gh }))}
+              deckingColor={selectedColor}
+              priceRate={priceRate}
+              onAdd={add3DSection}
+              onDelete={deleteSection}
+              onMove={move3DSection}
+            />
+          </ThreeErrorBoundary>
+        </div>
+      )}
+
+      {/* OLD bottom bar start placeholder */}
+      {sections.length > 0 && (
+        <div style={{
+          background: '#0E1433',
+          borderTop: '1px solid rgba(138,149,201,0.15)',
+          padding: '16px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '16px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', color: '#8A95C9' }}>{colorName} decking · {sections.length} section{sections.length !== 1 ? 's' : ''}</span>
             <button
-              onClick={() => setView('3d')}
+              onClick={() => { setSections([]); setSelectedId(null) }}
               style={{
-                flex: 1,
-                padding: '10px 0',
-                borderRadius: 8,
-                border: view === '3d' ? '2px solid #F59E0B' : '1px solid #2D3548',
-                background: view === '3d' ? '#1A1F32' : 'transparent',
-                color: 'white',
-                cursor: 'pointer'
+                padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                background: 'rgba(239,68,68,0.15)', color: '#f87171',
+                border: '1px solid rgba(239,68,68,0.3)', transition: 'all 0.15s',
               }}
-            >
-              3D View
-            </button>
+            >🗑 Clear All</button>
           </div>
 
-          {/* Render button */}
+          {/* Render CTA */}
           <button
             onClick={renderDock}
-            disabled={sections.length === 0 || isRendering}
+            disabled={isRendering}
             style={{
-              width: '100%',
-              padding: '14px 0',
-              borderRadius: 10,
-              border: 'none',
-              background: sections.length === 0 ? '#3D4559' : 'linear-gradient(135deg, #F59E0B, #D97706)',
-              color: sections.length === 0 ? '#6B7280' : 'white',
-              fontWeight: 700,
-              fontSize: 16,
-              cursor: sections.length === 0 ? 'not-allowed' : 'pointer',
-              opacity: isRendering ? 0.7 : 1
+              padding: '13px 32px', borderRadius: '8px',
+              background: isRendering
+                ? 'rgba(59,74,143,0.4)'
+                : 'linear-gradient(135deg, #3B4A8F 0%, #5B6FBF 100%)',
+              border: '1px solid rgba(138,149,201,0.3)',
+              color: '#EEF1FA', fontSize: '15px', fontWeight: 700,
+              cursor: isRendering ? 'default' : 'pointer',
+              boxShadow: isRendering ? 'none' : '0 4px 24px rgba(59,74,143,0.55)',
+              transition: 'transform 0.15s',
+              display: 'flex', alignItems: 'center', gap: '10px',
+              whiteSpace: 'nowrap',
             }}
+            onMouseEnter={(e) => { if (!isRendering) e.currentTarget.style.transform = 'scale(1.04)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
           >
-            {isRendering ? '🎨 Rendering...' : '✨ Generate AI Render'}
+            {isRendering ? (
+              <>
+                <span style={{
+                  display: 'inline-block', width: '15px', height: '15px',
+                  border: '2px solid rgba(255,255,255,0.25)', borderTopColor: '#EEF1FA',
+                  borderRadius: '50%', animation: 'cfgSpin 0.75s linear infinite',
+                  flexShrink: 0,
+                }} />
+                Designing your dock...
+              </>
+            ) : (
+              'See Your Dock Come to Life \u2192'
+            )}
           </button>
-        </aside>
 
-        {/* Canvas area */}
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 400, position: 'relative' }}>
-          {hintVisible && sections.length === 0 && (
-            <div style={{
-              position: 'absolute',
-              top: 20,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(245, 158, 11, 0.9)',
-              color: '#0A0E1A',
-              padding: '10px 20px',
-              borderRadius: 8,
-              fontWeight: 600,
-              zIndex: 10,
-              pointerEvents: 'none'
-            }}>
-              {mode === 'draw' ? '✏️ Click and drag to draw dock sections' : '✋ Drag sections to reposition'}
-            </div>
-          )}
-
-          {view === '2d' ? (
-            <ConfiguratorCanvas
-              sections={sections}
-              setSections={setSections}
-              selectedId={selectedId}
-              setSelectedId={setSelectedId}
-              mode={mode}
-              selectedColor={selectedColor}
-            />
-          ) : (
-            <ThreeErrorBoundary>
-              <DockBuilder3D sections={sections3D} />
-            </ThreeErrorBoundary>
-          )}
-        </main>
-      </div>
+          <style>{`@keyframes cfgSpin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
 
       {/* Wow moment full-screen modal */}
       {showWow && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.95)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: 20,
-          overflowY: 'auto'
-        }}>
-          <button
-            onClick={() => {
-              setShowWow(false)
-              setShowLeadForm(false)
-              setShowEmailForm(false)
-              setEmailSent(false)
-            }}
-            style={{
-              position: 'absolute',
-              top: 20,
-              right: 20,
-              background: 'rgba(255,255,255,0.1)',
-              border: 'none',
-              color: 'white',
-              fontSize: 24,
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              cursor: 'pointer'
-            }}
-          >
-            ✕
-          </button>
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(4,7,22,0.97)', backdropFilter: 'blur(10px)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            overflowY: 'auto',
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowWow(false) }}
+        >
+          <div style={{ width: '100%', maxWidth: '880px', padding: '0 0 80px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-          {/* The render image */}
-          {renderUrl && (
-            <img
-              src={renderUrl}
-              alt={`${colorName} dock render`}
-              style={{
-                maxWidth: '90%',
-                maxHeight: '50vh',
-                borderRadius: 16,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-              }}
-            />
-          )}
-
-          {/* Specs */}
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, color: '#F59E0B', fontWeight: 600 }}>
-              Your {totalSqft} sq ft {colorName} WPC Dock
-            </div>
-            <div style={{ fontSize: 14, color: '#8A95C9', marginTop: 4 }}>
-              {DOCK_TYPES[rateIdx].label} • Aluminum Frame • Designed by You
-            </div>
-          </div>
-
-          {/* Email sent confirmation */}
-          {emailSent && (
-            <div style={{
-              marginTop: 16,
-              background: 'rgba(34, 197, 94, 0.2)',
-              border: '1px solid #22C55E',
-              padding: '12px 24px',
-              borderRadius: 8,
-              color: '#22C55E',
-              fontWeight: 500
-            }}>
-              ✅ Your dock image has been sent! Check your inbox.
-            </div>
-          )}
-
-          {/* Download & Email buttons */}
-          <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* Close */}
             <button
-              onClick={handleDownloadImage}
+              onClick={() => setShowWow(false)}
               style={{
-                padding: '12px 24px',
-                borderRadius: 8,
-                border: '1px solid #3D4559',
-                background: 'transparent',
-                color: 'white',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8
+                alignSelf: 'flex-end', margin: '16px 20px 0',
+                background: 'transparent', border: 'none',
+                color: '#8A95C9', fontSize: '28px', cursor: 'pointer', lineHeight: 1, padding: '4px 8px',
               }}
-            >
-              ⬇️ Download Image
-            </button>
-            
-            {!emailSent && (
-              <button
-                onClick={() => setShowEmailForm(!showEmailForm)}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
-                  color: 'white',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8
-                }}
-              >
-                📧 Email My Dock Image
-              </button>
+            >×</button>
+
+            {/* Render image */}
+            {renderUrl && (
+              <div style={{ width: '100%', padding: '0 20px', boxSizing: 'border-box' }}>
+                <img
+                  src={renderUrl}
+                  alt={`${colorName} dock render`}
+                  style={{
+                    width: '100%', borderRadius: '16px', display: 'block',
+                    boxShadow: '0 8px 60px rgba(59,74,143,0.45)',
+                  }}
+                />
+              </div>
             )}
-          </div>
 
-          {/* Email form - inline expansion */}
-          {showEmailForm && !emailSent && (
-            <div style={{
-              marginTop: 20,
-              background: 'rgba(255,255,255,0.05)',
-              padding: 20,
-              borderRadius: 12,
-              width: '100%',
-              maxWidth: 400
-            }}>
-              <div style={{ fontSize: 14, color: '#8A95C9', marginBottom: 12 }}>
-                We'll send your custom dock render to your inbox
+            {/* Dock details + pricing reveal */}
+            <div style={{ textAlign: 'center', padding: '28px 24px 0' }}>
+              <div style={{ fontSize: '12px', color: '#8A95C9', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                Your {colorName} WPC Dock &nbsp;&middot;&nbsp; {DOCK_TYPES[rateIdx].label}
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: '12px 16px',
-                    borderRadius: 8,
-                    border: '1px solid #3D4559',
-                    background: '#1A1F32',
-                    color: 'white',
-                    fontSize: 16
-                  }}
-                />
-                <button
-                  onClick={handleEmailImage}
-                  disabled={!emailInput || emailSending}
-                  style={{
-                    padding: '12px 20px',
-                    borderRadius: 8,
-                    border: 'none',
-                    background: emailInput ? 'linear-gradient(135deg, #22C55E, #16A34A)' : '#3D4559',
-                    color: 'white',
-                    fontWeight: 600,
-                    cursor: emailInput ? 'pointer' : 'not-allowed',
-                    opacity: emailSending ? 0.7 : 1
-                  }}
-                >
-                  {emailSending ? '...' : 'Send'}
-                </button>
+              <div style={{ fontSize: '26px', fontWeight: 800, marginBottom: '20px' }}>
+                {totalSqft} sq ft of premium composite decking
               </div>
-            </div>
-          )}
 
-          {/* CTA buttons */}
-          <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button
-              onClick={() => setShowLeadForm(true)}
-              style={{
-                padding: '14px 32px',
-                borderRadius: 10,
-                border: 'none',
-                background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-                color: 'white',
-                fontWeight: 700,
-                fontSize: 16,
-                cursor: 'pointer'
-              }}
-            >
-              Get My Free Quote
-            </button>
-            <a
-              href="tel:800-370-2285"
-              style={{
-                padding: '14px 32px',
-                borderRadius: 10,
-                border: '1px solid #3D4559',
-                background: 'transparent',
-                color: 'white',
-                fontWeight: 600,
-                fontSize: 16,
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8
-              }}
-            >
-              📞 Call 800-370-2285
-            </a>
-          </div>
-
-          {/* Lead form modal */}
-          {showLeadForm && !leadSubmitted && (
-            <div style={{
-              marginTop: 24,
-              background: '#1A1F32',
-              padding: 24,
-              borderRadius: 16,
-              width: '100%',
-              maxWidth: 500
-            }}>
-              <h3 style={{ marginBottom: 16, fontSize: 20, fontWeight: 700 }}>Get Your Free Custom Quote</h3>
-              <form onSubmit={handleLeadSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    required
-                    value={leadForm.firstName}
-                    onChange={e => setLeadForm({ ...leadForm, firstName: e.target.value })}
-                    style={{
-                      flex: 1,
-                      padding: '12px 16px',
-                      borderRadius: 8,
-                      border: '1px solid #3D4559',
-                      background: '#0F1322',
-                      color: 'white'
-                    }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    required
-                    value={leadForm.lastName}
-                    onChange={e => setLeadForm({ ...leadForm, lastName: e.target.value })}
-                    style={{
-                      flex: 1,
-                      padding: '12px 16px',
-                      borderRadius: 8,
-                      border: '1px solid #3D4559',
-                      background: '#0F1322',
-                      color: 'white'
-                    }}
-                  />
+              <div style={{
+                display: 'inline-block',
+                background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)',
+                borderRadius: '14px', padding: '14px 40px',
+              }}>
+                <div style={{ fontSize: '11px', color: '#6B7280', marginBottom: '4px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Starting at</div>
+                <div style={{ fontSize: '42px', fontWeight: 900, color: '#00D4FF', lineHeight: 1 }}>
+                  Request Quote
                 </div>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  required
-                  value={leadForm.email}
-                  onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
-                  style={{
-                    padding: '12px 16px',
-                    borderRadius: 8,
-                    border: '1px solid #3D4559',
-                    background: '#0F1322',
-                    color: 'white'
-                  }}
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone"
-                  value={leadForm.phone}
-                  onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
-                  style={{
-                    padding: '12px 16px',
-                    borderRadius: 8,
-                    border: '1px solid #3D4559',
-                    background: '#0F1322',
-                    color: 'white'
-                  }}
-                />
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <input
-                    type="text"
-                    placeholder="ZIP Code"
-                    value={leadForm.zip}
-                    onChange={e => setLeadForm({ ...leadForm, zip: e.target.value })}
-                    style={{
-                      flex: 1,
-                      padding: '12px 16px',
-                      borderRadius: 8,
-                      border: '1px solid #3D4559',
-                      background: '#0F1322',
-                      color: 'white'
-                    }}
-                  />
-                  <select
-                    value={leadForm.waterfront}
-                    onChange={e => setLeadForm({ ...leadForm, waterfront: e.target.value })}
-                    style={{
-                      flex: 1,
-                      padding: '12px 16px',
-                      borderRadius: 8,
-                      border: '1px solid #3D4559',
-                      background: '#0F1322',
-                      color: leadForm.waterfront ? 'white' : '#8A95C9'
-                    }}
-                  >
-                    <option value="">Waterfront Type</option>
-                    <option value="lake">Lake</option>
-                    <option value="river">River</option>
-                    <option value="pond">Pond</option>
-                    <option value="ocean">Ocean/Bay</option>
-                    <option value="marina">Marina</option>
-                  </select>
+                <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
+                  Installed &nbsp;&middot;&nbsp; Financing available &nbsp;&middot;&nbsp; Expert consultation
                 </div>
-                <button
-                  type="submit"
-                  disabled={leadSubmitting}
-                  style={{
-                    padding: '14px 0',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-                    color: 'white',
-                    fontWeight: 700,
-                    fontSize: 16,
-                    cursor: 'pointer',
-                    opacity: leadSubmitting ? 0.7 : 1
-                  }}
-                >
-                  {leadSubmitting ? 'Submitting...' : 'Submit Quote Request'}
-                </button>
-              </form>
+              </div>
             </div>
-          )}
 
-          {/* Lead submitted confirmation */}
-          {leadSubmitted && (
+            {/* Lead capture */}
             <div style={{
-              marginTop: 24,
-              background: 'rgba(34, 197, 94, 0.2)',
-              border: '2px solid #22C55E',
-              padding: 24,
-              borderRadius: 16,
-              textAlign: 'center',
-              maxWidth: 400
+              width: '100%', maxWidth: '480px',
+              background: '#0E1433', border: '1px solid rgba(138,149,201,0.18)',
+              borderRadius: '16px', padding: '28px 28px 32px',
+              margin: '28px 20px 0', boxSizing: 'border-box',
             }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#22C55E', marginBottom: 8 }}>
-                Quote Request Received!
-              </div>
-              <div style={{ color: '#8A95C9' }}>
-                Our team will contact you within 24 hours with a detailed quote for your custom dock.
-              </div>
+              {submitted ? (
+                <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                  <div style={{ fontSize: '44px', marginBottom: '12px' }}>&#x2705;</div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '0 0 8px' }}>You&apos;re all set!</h3>
+                  <p style={{ color: '#8A95C9', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
+                    A dock specialist will reach out within 24 hours with your personalized quote.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 4px' }}>
+                    Lock in this design &mdash; get your free quote
+                  </h3>
+                  <p style={{ color: '#8A95C9', fontSize: '13px', lineHeight: 1.5, margin: '4px 0 20px' }}>
+                    No commitment. A specialist will reach out within 24 hours.
+                  </p>
+                  <form onSubmit={submitLead} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      {([
+                        { label: 'Full Name *', key: 'name',  type: 'text',  required: true  },
+                        { label: 'Email *',     key: 'email', type: 'email', required: true  },
+                        { label: 'Phone',       key: 'phone', type: 'tel',   required: false },
+                        { label: 'ZIP Code',    key: 'zip',   type: 'text',  required: false },
+                      ] as { label: string; key: keyof typeof form; type: string; required: boolean }[]).map(({ label, key, type, required }) => (
+                        <div key={key}>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#8A95C9', marginBottom: '5px', fontWeight: 600 }}>{label}</label>
+                          <input
+                            required={required} type={type}
+                            value={form[key]}
+                            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                            style={{
+                              width: '100%', padding: '10px 12px', borderRadius: '8px',
+                              background: 'rgba(138,149,201,0.08)', border: '1px solid rgba(138,149,201,0.2)',
+                              color: '#EEF1FA', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="submit" disabled={submitting}
+                      style={{
+                        padding: '14px', borderRadius: '8px',
+                        background: submitting ? 'rgba(59,74,143,0.4)' : 'linear-gradient(135deg, #3B4A8F, #5B6FBF)',
+                        border: 'none', color: '#EEF1FA', fontSize: '15px', fontWeight: 700,
+                        cursor: submitting ? 'default' : 'pointer', marginTop: '4px',
+                      }}
+                    >
+                      {submitting ? 'Sending\u2026' : 'Get My Free Quote \u2192'}
+                    </button>
+                    <p style={{ textAlign: 'center', color: '#4B5A90', fontSize: '11px', margin: 0 }}>
+                      No spam, ever. By Express Docks.
+                    </p>
+                  </form>
+                </>
+              )}
             </div>
-          )}
+
+          </div>
         </div>
       )}
-    </div>
+    </main>
   )
 }
