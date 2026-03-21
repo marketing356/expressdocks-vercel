@@ -60,6 +60,10 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
     panning: false,
     panStart: { x: 0, y: 0, panX: 0, panY: 0 },
     lastTouchDist: 0,
+    pinchMidX: 0,
+    pinchMidY: 0,
+    pinchPanX: 0,
+    pinchPanY: 0,
     wasDragging: false,
     sections: sections,
     selectedColor: selectedColor,
@@ -354,25 +358,73 @@ export default function ConfiguratorCanvas({ sections, selectedColor, priceRate,
       onPointerUp(e.clientX - rect.left, e.clientY - rect.top)
     }
 
-    // Touch events
+    // Touch events — single finger draw/drag, two-finger pinch-zoom + pan
     const onTD = (e: TouchEvent) => {
+      e.preventDefault()
+      const rect = canvas.getBoundingClientRect()
       if (e.touches.length === 1) {
-        e.preventDefault()
-        const rect = canvas.getBoundingClientRect()
         const t = e.touches[0]
         onPointerDown(t.clientX - rect.left, t.clientY - rect.top)
+      } else if (e.touches.length === 2) {
+        // Two-finger gesture start — stop any drawing
+        stateRef.current.drawing = false
+        stateRef.current.dragging = false
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        stateRef.current.lastTouchDist = Math.sqrt(dx * dx + dy * dy)
+        // Store midpoint for pan reference
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top
+        stateRef.current.pinchMidX = midX
+        stateRef.current.pinchMidY = midY
+        stateRef.current.pinchPanX = stateRef.current.panX
+        stateRef.current.pinchPanY = stateRef.current.panY
       }
     }
     const onTM = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        e.preventDefault()
-        const rect = canvas.getBoundingClientRect()
+      e.preventDefault()
+      const rect = canvas.getBoundingClientRect()
+      if (e.touches.length === 1 && stateRef.current.lastTouchDist === 0) {
         const t = e.touches[0]
         onPointerMove(t.clientX - rect.left, t.clientY - rect.top)
+      } else if (e.touches.length === 2) {
+        // Pinch to zoom
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const prevDist = stateRef.current.lastTouchDist
+        if (prevDist > 0) {
+          const st = stateRef.current
+          const factor = dist / prevDist
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top
+          const oldScale = st.scale
+          const newScale = Math.max(0.1, Math.min(4, oldScale * factor))
+          // Zoom toward pinch midpoint
+          st.panX = midX - (midX - st.panX) * (newScale / oldScale)
+          st.panY = midY - (midY - st.panY) * (newScale / oldScale)
+          st.scale = newScale
+          // Two-finger pan
+          const dPanX = midX - (st.pinchMidX ?? midX)
+          const dPanY = midY - (st.pinchMidY ?? midY)
+          st.panX = (st.pinchPanX ?? st.panX) + dPanX
+          st.panY = (st.pinchPanY ?? st.panY) + dPanY
+          st.pinchMidX = midX
+          st.pinchMidY = midY
+          st.pinchPanX = st.panX
+          st.pinchPanY = st.panY
+        }
+        stateRef.current.lastTouchDist = dist
+        drawRef.current?.()
       }
     }
     const onTU = (e: TouchEvent) => {
-      if (e.changedTouches.length > 0) {
+      stateRef.current.lastTouchDist = 0
+      stateRef.current.pinchMidX = 0
+      stateRef.current.pinchMidY = 0
+      stateRef.current.pinchPanX = 0
+      stateRef.current.pinchPanY = 0
+      if (e.changedTouches.length > 0 && e.touches.length === 0) {
         const rect = canvas.getBoundingClientRect()
         const t = e.changedTouches[0]
         onPointerUp(t.clientX - rect.left, t.clientY - rect.top)
