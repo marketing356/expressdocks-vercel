@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <main>
       <section className="relative text-white py-32 px-6 text-center"
-        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.55), rgba(10,22,40,0.55)), url("/images/welding-frame.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        style={{ backgroundImage: 'linear-gradient(rgba(10,22,40,0.55), rgba(10,22,40,0.55)), url("/images/about-hero.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <h1 className="text-4xl md:text-6xl font-bold mb-6">About ExpressDocks</h1>
         <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">Factory-direct aluminum dock manufacturer. Built in America. Shipped worldwide.</p>
       </section>
@@ -28,7 +28,7 @@ export default function Page() {
               <li>✓ 50-yr residential / 40-yr commercial guarantee</li>
             </ul>
           </div>
-          <img src="/images/welding-frame.webp" alt="ExpressDocks aluminum frame construction" className="rounded-xl shadow-lg w-full" />
+          <img src="/images/about-hero.webp" alt="ExpressDocks aluminum frame construction" className="rounded-xl shadow-lg w-full" />
         </div>
         <div className="bg-[#0a1628] text-white rounded-xl p-10 text-center">
           <h2 className="text-3xl font-bold mb-4">Let&apos;s Build Your Dock</h2>

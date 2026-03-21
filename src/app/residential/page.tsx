@@ -28,7 +28,7 @@ export default function Page() {
         <p className="text-sm font-semibold tracking-[0.3em] uppercase mb-4" style={{ color: '#8A95C9' }}>Residential</p>
         <h1 className="text-5xl md:text-6xl font-bold mb-6">Residential Dock Kits</h1>
         <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(238,241,250,0.85)' }}>
-          DIY-friendly systems that reduce project costs without sacrificing durability. Starting at <strong>$50/sqft</strong>.
+          DIY-friendly systems that reduce project costs without sacrificing durability. Starting at <strong>$60/sqft</strong>.
         </p>
         <a href="/contact" className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition hover:scale-105"
           style={{ background: '#3B4A8F', color: '#EEF1FA', boxShadow: '0 4px 24px rgba(59,74,143,0.5)' }}>
