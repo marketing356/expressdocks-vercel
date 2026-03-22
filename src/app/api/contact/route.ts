@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'sales@ribitboats.com',
-    pass: 'udjx opyc rjab errg',
-  },
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,21 +19,26 @@ export async function POST(req: NextRequest) {
         <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Waterfront</td><td style="padding:8px;border:1px solid #ddd">${waterfrontType || '—'}</td></tr>
         <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Sq Footage</td><td style="padding:8px;border:1px solid #ddd">${sqft || '—'}</td></tr>
         <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Details</td><td style="padding:8px;border:1px solid #ddd">${details || '—'}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${new Date().toISOString()}</td></tr>
+        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}</td></tr>
       </table>
     `
 
-    await transporter.sendMail({
-      from: '"ExpressDocks Website" <sales@ribitboats.com>',
-      to: 'info@expressdocks.com',
-      replyTo: email || 'info@expressdocks.com',
-      subject: `New Dock Quote Request — ${name || 'Unknown'} (${dockType || 'Unknown type'})`,
-      html,
+    const { data: result, error } = await resend.emails.send({
+      from: 'ExpressDocks Website <info@expressdocks.com>',
+      to: ['info@expressdocks.com'],
+      replyTo: email || undefined,
+      subject: `New Lead: ${name || 'Website Contact'}`,
+      html: html,
     })
 
-    return NextResponse.json({ success: true, message: 'Thank you! We will contact you within 24 hours.' })
-  } catch (e) {
-    console.error('Contact form error:', e)
-    return NextResponse.json({ success: false, message: 'Something went wrong. Please call us at 800-370-2285.' }, { status: 500 })
+    if (error) {
+      console.error('Resend error:', error)
+      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, messageId: result?.id })
+  } catch (err) {
+    console.error('Contact form error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
